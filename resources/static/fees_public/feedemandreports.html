@@ -1,0 +1,267 @@
+<script>
+
+var feeProcessArray;
+var feeProcessArrayReport;
+var feeProcessDetailsMap={};
+var fullData;
+var feeProcessToCategory={};
+
+$(document).ready(function()
+{
+	$('#btnGetFees').unbind().bind('click',function()
+	{
+		getAllFeeDemands($('#selectProgram').val(),$('#selectBatch').val());
+	});
+	getAllPrograms();
+	$('#feeProcess').unbind().bind('change',function()
+	{
+		var feeName=$(this).val();
+		if(feeName=="all")
+		{
+			createReport(fullData);
+		}
+		var arr=prepareDataForReports(feeName);
+		createReport(arr);
+	});
+	$('#printReport').unbind().bind('click',function()
+	{
+		printReport('gridTable');
+	});
+});
+
+function makeFeeCategoryArray()
+{
+	for(var i=0;i<feeProcessArrayReport.length;i++)
+	{
+		var feeCatArray=new Array();
+		for(var j=0;j<fullData.length;j++)
+		{
+			if(fullData[j]['fee_collection_unique_name']==feeProcessArrayReport[i])
+			{
+			  if(feeCatArray.indexOf(fullData[j]['sfs_fee_category_name']) == -1)
+			  {
+				  feeCatArray.push(fullData[j]['sfs_fee_category_name']);
+			  } 
+			}
+		}
+		feeProcessToCategory[feeProcessArrayReport[i]]=feeCatArray;
+	}
+	console.log("Category array map");
+	console.log(feeProcessToCategory)
+}
+
+function prepareDataForReports(feeName)
+{
+	console.log("Inside prepare data for reports")
+	var tempData=new Array();
+	for(var i=0;i<fullData.length;i++)
+	{
+		if(fullData[i]['fee_collection_unique_name']==feeName)
+		{
+			tempData.push(fullData[i])		
+		}
+	}
+	console.log(tempData);
+	return tempData;
+}
+
+function createReport(data)
+{
+	$('#gridTable').empty();
+	feeProcessArrayReport=new Array();
+	for(var i=0;i<data.length;i++)
+	{	
+		if(feeProcessArrayReport.indexOf(data[i]['fee_collection_unique_name'])==-1)
+		{
+			feeProcessArrayReport.push(data[i]['fee_collection_unique_name']);
+			var feepro=data[i]['fee_collection_unique_name'];
+		}
+		feeProcessDetailsMap[data[i]['fee_collection_unique_name']]=data[i];
+	}
+	for(var i=0;i<feeProcessArrayReport.length;i++)
+	{
+		console.log("Iteration "+feeProcessArrayReport.length)
+		var fp=feeProcessArrayReport[i];
+		var initTr=$('<tr>');
+		var initTd=$('<td>');
+		var tab=$('<table>');
+		var tr1=$('<tr><td><h3><b>Fee Process Name</td><td>'+fp+'</b></h3></td></tr>');
+		var tr1v2=$('<tr><td>Fee Identifier</td><td>'+feeProcessDetailsMap[fp]["fee_generation_academic_identity_semester"]+'</td></tr>');
+		var tr2=$('<tr><td>Collection Start Date</td><td>'+feeProcessDetailsMap[fp]["collection_start_date"]+'</td></tr>')
+		var tr3=$('<tr><td>Collection End Date</td><td>'+feeProcessDetailsMap[fp]["collection_endt_date"]+'</td></tr>')
+		var tr4=$('<tr><td>Level 1 Start Date</td><td>'+feeProcessDetailsMap[fp]["level1collection_start_date"]+'</td></tr>')
+		var tr5=$('<tr><td>Level 1 End Date</td><td>'+feeProcessDetailsMap[fp]["level1collection_endt_date"]+'</td></tr>')
+		var tr6=$('<tr><td>Level 1 Fine Amount</td><td>'+feeProcessDetailsMap[fp]["level1fine_amount"]+'</td></tr>')
+		var tr7=$('<tr><td>Level 2 Start Date</td><td>'+feeProcessDetailsMap[fp]["level2collection_start_date"]+'</td></tr>')
+		var tr8=$('<tr><td>Level 2 Start Date</td><td>'+feeProcessDetailsMap[fp]["level2collection_endt_date"]+'</td></tr>')
+		var tr9=$('<tr><td>Level 2 Fine Amount</td><td>'+feeProcessDetailsMap[fp]["level2fine_amount"]+'</td></tr>');
+		var tr10=$('<tr><td>Level 3 Daily Fine</td><td>'+feeProcessDetailsMap[fp]["level3daily_fine_amount"]+'</td></tr>');
+		var tr11=$('<tr><td>Re-Admission</td><td>'+feeProcessDetailsMap[fp]["level3re_admission_fine_amount"]+'</td></tr>');
+		var tr12=$('<tr><td>Fee Process State</td><td>'+feeProcessDetailsMap[fp]["sfs_fee_group_due_date_map_entry_state"]+'</td></tr>');
+		tab.append(tr1);
+		tab.append(tr1v2);
+		tab.append(tr2);
+		tab.append(tr3);
+		tab.append(tr4);
+		tab.append(tr5);
+		tab.append(tr6);
+		tab.append(tr7);
+		tab.append(tr8);
+		tab.append(tr9);
+		tab.append(tr10);
+		tab.append(tr11);
+		tab.append(tr12);
+		
+		if(feeProcessToCategory[fp].length>0)
+		{
+			var ttt=$('<tr><td colspan="2"><b>Category wise Fee Head Amount</b></td></tr>');
+			tab.append(ttt);
+			var tableHolder=$('<tr><td colspan="2"><table id="tab-'+fp+'"></table></td></tr>');
+			var trr=$('<tr>');
+			var tdd=$('<td>',{"colspan":"2"});//,{"colspan":"2"});
+			var tabble=$('<table>');
+			for(var ii=0;ii<feeProcessToCategory[fp].length;ii++)
+			{
+				var trs=$('<tr><td colspan="2"><b>'+feeProcessToCategory[fp][ii] +'</b></td></tr>');
+				tabble.append(trs);
+				for(var j=0;j<data.length;j++)
+				{
+					if(data[j]['fee_collection_unique_name']==fp)
+					{
+						if(data[j]['sfs_fee_category_name']==feeProcessToCategory[fp][ii])
+						{
+							var trr1=$('<tr><td>'+data[j]['sfs_fee_head_name']+'</td><td>'+data[j]['fee_head_amount_map_amount']+'</td></tr>')
+							tabble.append(trr1);
+						}
+					}
+				}
+			}
+			tdd.append(tabble);
+			trr.append(tdd);
+			tab.append(trr);
+		}
+		initTd.append(tab);
+		initTr.append(initTd);
+		$('#gridTable').append(initTr);
+		console.log("completed loop 1");
+	}
+}
+function getAllFeeDemands(pgm,batch)
+{
+	$.ajax(
+	{
+		url:"/fees/getAllFeeDemandsReport",
+		method:"get",
+		data:{"courseId":pgm,"batchId":batch},
+		success:function(data)
+		{
+			fullData=data;
+			feeProcessArray=new Array();
+			var option=$('<option value="all">All</option>');
+			$('#feeProcess').append(option);
+			for(var i=0;i<data.length;i++)
+			{	
+				if(feeProcessArray.indexOf(data[i]['fee_collection_unique_name'])==-1)
+				{
+					feeProcessArray.push(data[i]['fee_collection_unique_name']);
+					var feepro=data[i]['fee_collection_unique_name'];
+					console.log(feepro)
+					var opt=$('<option value="'+feepro+'">'+feepro+'</option>');
+					$('#feeProcess').append(opt);
+				}
+				feeProcessDetailsMap[data[i]['fee_collection_unique_name']]=data[i];
+			}
+			feeProcessArrayReport=new Array();
+			for(var i=0;i<data.length;i++)
+			{	
+				if(feeProcessArrayReport.indexOf(data[i]['fee_collection_unique_name'])==-1)
+				{
+					feeProcessArrayReport.push(data[i]['fee_collection_unique_name']);
+					var feepro=data[i]['fee_collection_unique_name'];
+				}
+				feeProcessDetailsMap[data[i]['fee_collection_unique_name']]=data[i];
+			}
+			makeFeeCategoryArray();
+			createReport(data);
+		}
+	});
+}
+function getAllPrograms()
+{
+		$.ajax(
+		{
+	   		url:'/course/getAllCourses',
+	   		method:'GET',
+	   		success:function(data)
+	   		{
+	   			setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   			$('#selectProgram').unbind().bind('change',function()
+	   			{
+	   				getAllActiveBatchesOfProgram($(this).val());
+	   			});
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+ }
+ function getAllActiveBatchesOfProgram(programId)
+ {
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatchesInAProgram',
+  	   	method:'GET',
+  	   	data:{"courseId":programId},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+  	   		setUpDropDown('selectBatch1',data,'batchId','batchCode');
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+
+</script>
+	<div class="row well" id="selectionPanel">
+		<div class="col-md-6">
+		    <label for="accountName">Select Program</label>
+		    <select class="form-control grouping" id="selectProgram"></select>
+		</div>
+		<div class="col-md-6">
+		    <label for="accountName">Select Batch</label>
+		    <select class="form-control grouping" id="selectBatch"></select>
+		</div>
+	 </div> 
+<hr>
+<div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4"><button id="btnGetFees" class="btn btn-primary form-control">Apply</button></div>
+		<div class="col-md-4"></div>
+	</div>
+
+<hr>
+
+<div class="row">
+	<div class="col-md-6">
+		<label>Select Fee Process</label>
+		<select id="feeProcess" class="form-control"></select>
+	</div>
+		<div class="col-md-6">
+		<label>Print</label>
+		<button id="printReport" class="form-control btn btn-success">Print Report</button>
+	</div>
+</div>
+<br>
+<hr>
+<div class="table-responsive cell-border well" id="gridTableDiv">
+	<table id="gridTable" class="table table-striped"></table>
+</div>
+ <hr>
+ <hr>
+ 
+ 

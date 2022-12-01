@@ -1,0 +1,266 @@
+<script>
+var feeIdentifierArray=new Array();
+var paidIdentifierArray=new Array();
+var toBePaidArray=new Array();
+var fullTranArray=new Array();
+var feeIdenToAmoutMap={};
+var feeHeadsToIdenMap={};
+var fineDateDetailsToFeeIden={};
+var today;
+var fineDetailsMap={};
+var selectedStudentCode="";
+var feeIdentifierBalanceStatusMap={};
+
+
+function fillFeeDetails(iden)
+{
+	$.ajax(
+	{
+		url:"/fees/dataForFeeFilingByStudentCode",
+		data:{"iden":iden,"studentC":selectedStudentCode},
+		success:function(data)
+		{
+			$('#activeFee').remove();
+			$('#div-'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'').replace(/\//g)).empty();
+			$('#div-'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'').replace(/\//g)).html(data);
+			$(".acc" ).accordion({collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			$('.payFee').unbind().bind('click',function()
+			{
+				//actualAmount,fineAmount,totalAmount
+				var feeIden=$(this).attr('iden');
+				var feeOnly=$(this).attr('feeOnly');
+				var tot=$(this).attr('topay');
+				var fineAmount=$(this).attr('fineAmount');
+				var actualFine=$(this).attr('actualFine');
+				var fineconcession=$(this).attr('fineconcession');
+				var pmode=$('#paymentmode').val();
+				var instrumentno=$('#instrumentno').val();
+				var userremarks=$('#concessionremarks').val();
+				var activitylog="";
+				$('#finesplitup td').each(function() {
+				     activitylog = activitylog+$(this).text()+"::";    
+				});
+				console.log("activitylog");
+				var map={};
+				map['feeIden']=feeIden;
+				map['feeOnly']=feeOnly;
+				map['tot']=tot;
+				map['fineAmount']=fineAmount;
+				map['fineconcession']=fineconcession;
+				map['pmode']=pmode;
+				map['instrumentno']=instrumentno;
+				map['activitylog']=activitylog;
+				map['userremarks']=userremarks;
+				map['actualFine']=actualFine;
+				map['studentCode']=selectedStudentCode;
+				console.log(activitylog);
+				$.ajax(
+				{
+					url:"/fees/feeCollection-v2",
+					method:"post",
+					data:map,
+					success:function(data)
+					{
+						if(data)
+						{
+							try
+							{
+								if(data=="success")
+								{
+									showMessage("Fee Received Successfully");
+									refreshContent();
+								}
+								else
+								{
+									showMessage("Operation Failed. Contact Admin");
+									refreshContent();
+								}
+							}
+							catch(e)
+							{
+								console.log("Error while processing response data. Contact Admin"+e);
+							}
+						}
+					}
+				});
+				$(this).attr('disabled',true);
+				// make the payment method
+				
+			});
+			$('#fineConcession').unbind().bind('change',function()
+			{
+				var concession=parseFloat($(this).val());
+				var fine=parseFloat($('.payFee').attr('actualFine'));
+				var totalAmount=parseFloat($('.payFee').attr('actualFullAmount'));//actualFullAmount
+				fine=fine-concession;
+				totalAmount=totalAmount-concession;
+				$('#fineAmountVal').text(fine);
+				$('#totalAmountVal').text(totalAmount);
+				$('.payFee').attr('fineamount',fine);
+				$('.payFee').attr('topay',totalAmount);
+				$('.payFee').attr('fineconcession',concession);
+				
+			});
+		},
+	});
+
+}
+function getOutstandingFees(studentCode)
+{
+	$.ajax(
+	{
+		url:"/fees/getOwnOutsandingFeeByStudentCode-V2",
+		data:{"studentUserCode":studentCode},
+		success:function(data)
+		{
+			if(data.length>0)
+			{
+				generateFeeList(data);
+			}
+			else
+			{
+				showMessage("No Outstanding Fees");
+			}
+		}
+	});
+}
+function generateFeeList(d)
+{
+	$('#accordion').empty();
+	for (let i=0;i<d.length;i++) 
+	{
+		var html1=$('<h3 id="iden-'+d[i].replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'').replace(/\//g)+' iden="'+d[i]+'"">'+d[i]+' </h3><div id="div-'+d[i].replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/\//g)+'"></div>');
+	    $('#accordion').append(html1);
+	}
+    $( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true,
+	   beforeActivate: function( event, ui ) 
+	   {
+	   		console.log("before activating")
+	    	console.log(ui.newHeader.text());
+	    	console.log(ui.newHeader.text().split(':')[0]);
+		    var iden=ui.newHeader.text().split(':')[0];//$(this).attr('id');
+		    //iden=iden.trim();
+		    if(iden!="")
+			{	 
+		    	$('#div-'+String(iden).replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'').replace(/\//g)).height('auto');
+				fillFeeDetails(iden); 	
+			}
+	    }
+	   });
+}
+$(document).ready(function()
+{
+	$('#accordionFine').hide();
+	getAllPrograms();
+	$('#btnCallStudents').on('click',function()
+	{
+		var program=$('#selectProgram').val();
+		var batch=$('#selectBatch').val();
+		getUnverifiedStudents(program,batch);
+		$(this).hide();
+		$('#selectionPanel').hide();
+	});
+});
+
+function getUnverifiedStudents(pgm,batch)
+{
+	$.ajax(
+	{
+		url:"/students/getUnverifiedStudents",
+		method:"get",
+		data:{"courseId":pgm,"batchId":batch,"status":$('#selectStatus').val()},
+		success:function(data)
+		{
+			console.log(data);
+			setUpDataTable(data,[{"studentCode":"Admission No"},{"studentPersonalStudentName":"Name"}],'gridTable',null);
+			onDataTableClick('gridTable',function()
+			{
+				var userCode=selectedRowFromDataTable[0];
+				selectedStudentCode=userCode;
+				var un=selectedRowFromDataTable[1];
+				$('#head').text("Outstanding Fee Details of "+un+"("+userCode+")");
+				getOutstandingFees(userCode);
+				$('#gridTableDiv').hide();
+			});
+		}
+	});
+}
+function getAllPrograms()
+{
+		$.ajax(
+		{
+	   		url:'/course/getAllCourses',
+	   		method:'GET',
+	   		success:function(data)
+	   		{
+	   			setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   			$('#selectProgram').unbind().bind('change',function()
+	   			{
+	   				getAllActiveBatchesOfProgram($(this).val());
+	   			});
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+ }
+ function getAllActiveBatchesOfProgram(programId)
+ {
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatchesInAProgram',
+  	   	method:'GET',
+  	   	data:{"courseId":programId},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+  	   		setUpDropDown('selectBatch1',data,'batchId','batchCode');
+  	   		/*$('#selectBatch').unbind().bind('change',function()
+  	   		{
+  	   			getAllSemsForTheBatch($(this).val());	
+  	   		});*/
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+
+</script>
+	<div class="row well" id="selectionPanel">
+		<div class="col-md-4">
+		    <label for="accountName">Select Program</label>
+		    <select class="form-control grouping" id="selectProgram"></select>
+		</div>
+		<div class="col-md-4">
+		    <label for="accountName">Select Batch</label>
+		    <select class="form-control grouping" id="selectBatch"></select>
+		</div>
+		<div class="col-md-4">
+		    <label for="selectStatus">Select Student Status</label>
+		    <select class="form-control grouping" id="selectStatus">
+		    <option value="invalid">invalid</option>
+	    	<option value="processing">Forwarded</option>
+		    <option value="valid">Approved</option>
+		    </select>
+		</div>
+	 </div> 
+<hr>
+<div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4"><button id="btnCallStudents" class="btn btn-primary form-control">Apply</button></div>
+		<div class="col-md-4"></div>
+	</div>
+<hr>
+<div class="table-responsive cell-border well" id="gridTableDiv">
+	<table id="gridTable" class="table table-striped"></table>
+</div>
+<u><h4 id="head"></h4></u>
+<div id="accordion">
+ </div>
+ <hr>
+
+ 

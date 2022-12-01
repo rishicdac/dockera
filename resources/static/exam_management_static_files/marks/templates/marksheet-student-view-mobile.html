@@ -1,0 +1,891 @@
+<!-- Main content -->
+<div class="content">
+	<div class="container-fluid">
+		<div class="card card-info card-outline">
+			<div class="card-header ">
+				<h5 class="m-0 card-title">Marksheet Generation</h5>						
+			</div>
+			<div class="card-body">	
+				<div class="row">
+					
+						<div class="col-md-4">
+							<div class="form-group">
+							   <label for="semester">Semester</label>
+							   <select class="form-control" id="selectSemester" name="semester" required>
+									   <option>Select Semester</option>
+								</select>
+							</div>
+						</div>	
+										
+				</div>
+			</div>				
+		</div>
+	</div>
+</div>
+<!-- Marks List -->
+		<div class="row" id="viewResults"  style="display:none;">
+		  <div class="col-lg-12">
+         		<div id="docView" class="card">
+					<div class="description-block">
+						<h5 class="description-header">Marksheet </h5>
+						<hr/>
+					</div>
+					 <div class="card-body">
+						<div class="table-responsive">
+						  <table id="marksTbl" class="table table table-striped table-bordered  display" style="width:100%">
+							<thead>
+								<tr>							
+								  <th>Course Code</th>	
+								  <th>Course Title</th>
+								  <th>Internal</th>
+								  <th>External</th>
+								  <th>Total</th>
+								</tr>
+								</thead>
+						  </table>		
+						</div>
+						<!-- /.table-responsive -->
+				  </div> 				
+				</div>	
+	        </div> 
+		  </div>			
+		<!-- Marks List -->
+
+<script>
+$( document ).ready(function() {
+	
+  
+    var loggedStudentId = $("#usercode").val();
+    getStudentInfo();
+	  
+    /**
+ 	* To load loggedin student details
+ 	*/
+    function getStudentInfo()
+	{
+        $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		async:false,
+	   		data:{"userCodes":loggedStudentId},
+	   		success: function(data)
+	   		{
+	   		  studentData = data[loggedStudentId];
+	   		 
+	   		studentProgram = studentData.programCode;
+			 studentBatch = studentData.batchCode;
+			 getAllActiveSemesterOfBatch(studentBatch);
+               
+              },
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+        
+	}
+ 	 
+ 	 /**
+	  To get all semesters the given batchid
+	  */
+	 function getAllActiveSemesterOfBatch(batchId)
+	 {
+
+		  $.ajax({
+					"url" : "/batch/getAllSemestersInABatch",
+					"method" : "GET",
+					data : {"batchId":batchId},
+					success :function(data) {
+					console.log(data);
+					    try{
+						   if(data && data.length >0){
+							   $('#selectSemester').empty();
+							   $('#selectSemester').append('<option>Select Semester</option>');
+							   for(var i=0;i< data.length;i++){
+							   	   $("#selectSemester").append('<option value='+data[i]['semesterIdentity']['semesterCode']+'>'+data[i]['semesterIdentity']['semesterCode']+'</option>');
+							   }
+						 }
+						}
+						catch(e){
+						    console.error(e);
+						    showMessage(" Error occurred while processing semester list"); 
+						}
+													
+						
+					},
+					error :function(e) {
+					     showMessage(err);
+					}
+				});
+		}
+ 	 
+    
+	
+	$('#selectSemester').unbind().bind('change',function(){
+
+	  var program =studentProgram;
+	  var batch = studentBatch;
+	  var semester = $( "#selectSemester option:selected" ).val();	  
+	  getMarksheet(program,batch,semester);
+	  
+	 }); 
+	
+	
+	 function getMarksheet(studentProgram,studentBatch,semester)
+	 {
+		 var result=[];
+		 $.ajax({
+				"url" : BASE_URL+"getFinalMarks/"+studentProgram +"/"+studentBatch+"/"+semester+"/",
+				"method" : "GET",
+				 async:false,
+				 success :function(data) {
+					 console.log(data.data)
+						if(data.data===null)		
+							result=[];
+						else
+							result=data.data;
+						populateDatatable(result);
+						$("#viewResults").show();
+				},
+				error :function(e) {
+				     showMessage(err);
+				}
+			});
+	 }
+	  
+	function populateDatatable(data)
+	{
+		$('#marksTbl').DataTable().clear().destroy();
+		var marksData=$('#marksTbl').DataTable({			
+			  "language": {
+			      "emptyTable": "No data available in table"
+			    },
+				data:data,
+				"columns":[
+				{"data":"courseCode"},
+				{"data":"courseName"},
+				{"data":"internal"},
+				{"data":"external"},
+				{"data":"total"}				
+			
+				]
+			});
+	}
+})
+
+var types;
+
+$(document).ready(function() {
+
+	getAllPrograms();
+	getAllAcademicYear();
+	
+	 /* 
+    	To Evaluation Types
+	*/
+	function loadEvaluationypes(programId){
+		
+        $.ajax(
+        {
+              "url":MARKS_CONFIG_URL+programId,
+              success:function(data)
+              {
+                     types= data.data;
+                     setUpDropDown("selectRevaluationType",types,"id","evaluationType");
+              }
+        });
+	}
+
+    /* 
+      To list the programs
+	*/
+	
+	function getAllPrograms()
+	{
+	
+		$.ajax({
+	   		url:'/course/getAllCourses',
+	   		method:'GET',
+	   		success:function(data)
+	   		{
+	   		    setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   			$('#selectProgram').unbind().bind('change',function()
+	   			{
+	   			
+	   				getAllActiveBatchesOfProgram($(this).val());
+	   				loadEvaluationypes($(this).val());
+	   				
+	   			});
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+		
+	}
+	
+	/**
+	  To get all batches for the given programid
+	*/
+	 function getAllActiveBatchesOfProgram(programId)
+	 {
+	// $("#selectBatch").prop( "disabled", false );
+		$.ajax(
+		{
+	  		url:'/batch/getAllActiveBatchesInAProgram',
+	  	   	method:'GET',
+	  	   	data:{"courseId":programId},
+	  	   	success:function(data)
+	  	   	{	  	   	
+	  	        setUpDropDown("selectBatch",data,"batchId","batchCode");
+	  	   		$('#selectBatch').unbind().bind('change',function()
+	   			{	  	   			
+	  	   			getAllActiveSemesterOfBatch($(this).val());	  
+	  	   			getStudentList();
+	   			});	  	   		
+	  	   	},
+	  	   	error:function(err)
+	  	   	{
+	  	   		showMessage(err);
+	  	   	}
+	  	 });	  
+	  }
+	  
+	  /**
+	  To get all semesters the given batchid
+	  */
+	 function getAllActiveSemesterOfBatch(batchId)
+	 {
+		//$("#selectSemester").prop( "disabled", false );
+		  $.ajax({
+					"url" : "/batch/getAllSemestersInABatch",
+					"method" : "GET",
+					data : {"batchId":batchId},
+					success :function(data) {
+					console.log(data);
+					
+					    try{
+						   if(data && data.length >0){
+							   $('#selectSemester').empty();
+							   $('#selectSemester').append('<option selected disabled>Select</option>');
+							   for(var i=0;i< data.length;i++){
+							   	   $("#selectSemester").append('<option value='+data[i]['semesterIdentity']['semesterCode']+'>'+data[i]['semesterIdentity']['semesterCode']+'</option>');
+							   }
+						      }  		
+						   		
+							}
+							catch(e){
+							    console.error(e);
+							    showMessage(" Error occurred while processing semester list"); 
+							}
+							$('#selectSemester').unbind().bind('change',function()
+						   	{	
+								var program = $( "#selectProgram option:selected" ).val();
+								getCourses();	
+								getVivaType();
+								getExamTypes(program,batchId,$(this).val());
+						   	});
+							
+					},
+					error :function(e) {
+					     showMessage(err);
+					}
+				});
+		} 
+	 /**
+	  * To get Exam Names
+	  */
+	 function getExamTypes(program,batch,semester)
+	 {
+		 $.ajax({
+             "url": EXAM_NAME_URL+"schedule/list",
+             "type":"POST",
+             "data":{"program":program,"batch":batch,"semester":semester},
+             success: function(data)
+             {
+              var examDetails = data.data;    
+             setUpDropDown("selectExamType",examDetails,"id","name_exam");
+             },
+             error:function(err)
+             {
+            	 showMessage(err);
+             }
+		 });
+	 }
+	 
+	  /**
+	  To get Courses under program
+	  */
+	 function getCourses()
+	 {
+
+		 var program = $('#selectProgram').val();
+		 var batch = $('#selectBatch').val();
+		 var semester = $('#selectSemester').val();
+		
+		 console.log(semester)
+		 $.ajax({
+			 url: "/academic/getValidCourseSemMappingsV2",
+			 method: 'GET',
+			 data:{"program":program,"batch":batch,"sem":semester},
+			 async:false,
+			 success: function(data)
+			 {
+			 setUpDropDown("selectCourse",data,"course_code","course_name");		
+			 },
+			 error:function(err)
+			 {
+			 showMessage(err);
+			 }
+		 });
+	 }
+	  /**
+	  To get Academic Year
+	  */
+	 function getAllAcademicYear()
+		{
+		
+			$.ajax({
+		   		url:'/academics/api/v1/academics/getDetailsByMasterId/masterId/83',
+		   		//url:'nualsTest/api/v1/academics/getDetailsByMasterId/masterId/83',
+		   		method:'GET',
+		   		success:function(data)
+		   		{
+		   		    setUpDropDown("selectAcademicYear",data,"detailName","detailName");
+		   			
+		   		},
+		   		error:function(err)
+		   		{
+		   			showMessage(err);
+		   		}
+		   	});
+		}
+	
+	 /**
+	  To get Viva Type
+	  */
+	 function getVivaType()
+		{
+		  
+			$.ajax({
+		   		url:'/academic/getValidCourseSemMappingsWithOtherCourses',
+		   		method:'GET',
+		   		data:{"program":$('#selectProgram').val(),"batch":$('#selectBatch').val(),"sem":$('#selectSemester').val()},
+		   		success:function(data)
+		   		{
+		   			console.log(data);
+		   		    setUpDropDown("selectVivatype",data[1],"other_course_code","other_course_name");
+		   			
+		   		},
+		   		error:function(err)
+		   		{
+		   			showMessage(err);
+		   		}
+		   	});
+		}
+
+});
+/**
+To get Student List
+*/
+function getStudentList()
+{
+	 var studentList;
+	 $.ajax({
+	   		url:'/students/getStudentsDetailsByProgramAndBatch-V2',
+	   		method:'GET',
+	   		data:{"programId":$('#selectProgram').val(),"batchId":$('#selectBatch').val()},
+	   		async: false,
+	   		success:function(data)
+	   		{
+	   			//console.log(data);	   			
+	   			studentList = jQuery.map(data, function(val, index) { 
+	                return { 
+	                    "studentId":val.studentCode,
+	                    "studentCode":val.regNo,
+	                    "studentName": val.studentName,
+	                    "report":0,
+	                    "viva":0,
+	                    "isPresent":true
+	                }; 
+	            }) 
+	            setUpDropDown("selectStudent",studentList,"studentId","studentCode");
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+	return studentList;
+}
+
+/**
+ * Add Student 
+ * 
+ */
+
+function AddStudentRegNo(studentList,studentDetails)
+{	
+	console.log(studentList);
+	console.log(studentDetails);
+	 $.each(studentList, function(i, el) {		 
+		 $.each(studentDetails, function(i, sd) {
+			 //console.log(el);
+			// console.log(sd);
+			 //console.log(el.student_id+"---"+sd.studentCode);
+			// console.log(el.studentId+"---"+sd.studentCode);
+			if(parseInt(el.student_id) === parseInt(sd.studentId) || parseInt(el.studentId) === parseInt(sd.studentId) )
+				{
+					el.studentCode = sd.studentCode;//Register Number
+				}
+		 })
+	 })
+	 console.log(studentList);
+	 return studentList;
+}
+//global variables and fns
+	
+	/* base url for exam management */
+	//var BASE_URL = "certificate-management/certificate-management/api/v1/academics/certificate-management/";
+	var BASE_URL = "/certificate-management/api/v1/academics/certificate-management/";
+	var BASE_MINIO = "/filerepo_public/minioFiles/nuals"; 
+	loadCertMappings();
+	/* CERTIFICATE TYPES */
+	var ORIGINAL_TYPE = 1388;
+	var DUPLICATE_TYPE = 1389;
+	var MIGRATION = 1400;
+	var TRANSCRIPT = 1399;
+	var DEGREE = 1397;
+	var PROVISIONAL = 1398;
+	var NO_DUES = 1655;
+	var TRANSFER = 1401;
+	var CONDUCT = 2166; //need to check
+	var ATTENDANCE = 2168 ; //need to check
+	var CONSOLIDATED_MARK_SHEET = 2170;//need to check
+	var studentAdmissionDateTime;
+	
+	var certMap = new Map();
+	
+	/* fn to convert form data to json */
+	$.fn.serializeObject = function()
+	{
+	    var o = {};
+	    var a = this.serializeArray();
+	    $.each(a, function() {
+	        if (o[this.name] !== undefined) {
+	            if (!o[this.name].push) {
+	                o[this.name] = [o[this.name]];
+	            }
+	            o[this.name].push(this.value || '');
+	        } else {
+	            o[this.name] = this.value || '';
+	        }
+	    });
+	    return o;
+	 };
+
+ 
+ 	$('.datepicker').datepicker({
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true,
+		pickerPosition: "bottom-left"
+	});  
+	
+	$('.datepicker-month-year').datepicker({
+	    format: 'M-yyyy',	
+	    startView: "months", 
+        minViewMode: "months",						   
+		autoclose:true,
+		clearBtn:true
+	});
+	
+	
+	function loadCertMappings()
+	{
+		$.ajax({
+			   type: "GET",
+			   url:  BASE_URL + "getCertificateMapping",
+			   headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			   },		   
+			   success: function(result)
+			   {
+				  var data = result.data;
+				  
+				  data.forEach(element => {
+					  console.log(element);
+					  if(element.mappedId == null){
+						  toastr.error("Failed to Map "+element.certName +" certificates.Kindly contact Admin");
+						  }
+					  else 
+				    certMap.set(element.certName,element.mappedId);
+				  });
+				 //  console.log(certMap.get('ORIGINAL_TYPE'));
+				 // for (const [key, value] of certMap.entries()) {
+				 //	  console.log(key, value);
+				 //	}
+			   }
+			 });
+		
+	}
+	function openCertificates(certificateurl){
+		  window.open(BASE_MINIO+"/"+certificateurl, '_blank');
+			/*$.ajax({
+				   type: "GET",
+				   url:  BASE_URL + "getAffidavitCertificate/"+certificateId,
+				   headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				   },		   
+				   success: function(result)
+				   {
+					  console.log(result);
+					  window.open(result.DownloadLink, '_blank');
+					// $('#affidavitUrl').attr("href",result.DownloadLink);
+					 
+				   }
+				 });*/
+		
+	}
+	
+	
+	
+	/*$('.datetimepicker').datetimepicker({
+      language: 'en'
+    //  pick12HourFormat: true
+    });*/
+    
+     /**
+    *  Get the logged in student details
+    **/
+         
+   function getStudentInfo(studentId)
+	{
+       var studentData = {};       
+	    $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		async:false,
+	   		data:{"userCodes":studentId},
+	   		success: function(data)
+	   		{
+	   		  studentData = data;
+	   		  console.log(data);	   		
+	   		  setStudentInfo(data,studentId);	   		  
+	   		  return data;
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   		 toastr.error("Failed to load student details");
+	   		}
+	   	});
+	   	
+	   	return studentData; 
+	 }
+	 
+	 
+	 /**
+    *  set the student details
+    **/
+         
+   function setStudentInfo(data,studentId)
+	{
+	  var studentDetails = data[studentId];
+	  console.log( studentDetails);
+	  loggedStudentProgramId = studentDetails.programCode;
+ 		//alert(programId);
+ 		
+	  $("#student_reg_no").text(studentDetails.regNo ? studentDetails.regNo : "----");
+      $("#student_name").text(studentDetails.studentName);
+      $("#student_gender").text(studentDetails.studentPersonalGender);
+      $("#student_code").text(studentDetails.studentCode);
+      $("#program_name").text(studentDetails.programName);
+      $("#batch_name").text(studentDetails.batchName);
+      $("#semester").text(studentDetails.semester);
+      $("#division").text(studentDetails.division ? studentDetails.division: "-----")
+      $("#student_roll_no").text(studentDetails.rollNo ? studentDetails.rollNo:"-----");
+     
+	}
+
+   
+   function loadDataOnPreview(data)
+	{
+		console.log("Data :: "+JSON.stringify(data));
+		console.log(data.purpose);
+		
+		
+	   if(data.originalNo)
+		   {
+		   $('#duplicate_org_no').show();
+		   $('#label_duplicate_org_no').show();
+		   $('#duplicate_org_no').text(data.originalNo);
+		   }
+	   else{
+		   $('#duplicate_org_no').hide();
+		   $('#label_duplicate_org_no').hide();
+	   }
+	 
+	   if(data.isAffidavit==true && data.affidavit!=null)
+		   {
+		   $('#isAffidavit').text('Yes');
+		   $('#isAffidavit').show();
+		   $('#label_isAffidavit').show();
+		   $('.AffidavitLink').show();
+		   }
+		 
+	   else{
+		 
+		   $('#isAffidavit').hide();
+		   $('#label_isAffidavit').hide();
+		   $('.AffidavitLink').hide();
+	   }
+	  
+	   if(parseInt(data.noCopies)>0)
+		   {
+			  $('#transcript_copy').show();
+			  $('#label_transcript_copy').show();
+			  $('#transcript_copy').text(data.noCopies);
+		   }
+	   else{
+		  $('#transcript_copy').hide();
+		  $('#label_transcript_copy').hide();
+	   }
+	  
+	   if(data.remarks)
+		   {
+		   $('#noduenumber').text(data.remarks);
+		   $('#noduenumber').show();
+		   $('#label_noduenumber').show();
+		   }		
+	   else{
+		   $('#noduenumber').hide();
+		   $('#label_noduenumber').hide();
+	   }
+	  
+	   if(data.nameId == TRANSFER || data.nameId == MIGRATION)
+		   {
+		   loadInterUniversityData(data.studentId);
+		   $('#interuniversity').show();
+		   $('#label_interuniversity').show();
+		   
+		   }
+	   else
+		   {
+		   $('#interuniversity').hide();
+		   $('#label_interuniversity').hide();
+		   
+		   }
+	  
+	   if(data.purpose)
+		   {
+		   $('#purpose_certificate').text(data.purpose);
+		   $('#purpose_certificate').show();
+		   $('#label_purpose_certificate').show();
+		   }
+		
+	   else{
+		   $('#purpose_certificate').hide();
+		   $('#label_purpose_certificate').hide();
+	   }
+		//$('#fee').text(data.paymentsAmount?data.paymentsAmount:0);//TODO Add Fee details
+		$('#fee').text(data.paymentsAmount?data.paymentsAmount+" Rs/-":"0 Rs/-");
+		$('#applnType').text(data.name+"("+data.type+")");
+		$('#collapseExample').show();
+		$('html, body').animate({
+		        scrollTop: $("#previewCertificate").offset().top
+		}, 1000);
+		
+	}
+	/**
+	* To load inter university details of loggedin student
+	*/
+	 function loadInterUniversityData(loggedInStudentId)
+	 {
+	    
+	      $.ajax({
+		         url: "/students/getStudentDetails",
+		         data:{"studentAdmissionUserCode":loggedInStudentId },
+				 success: function(data)
+		           {
+					 console.log(data);
+					studentAdmissionDateTime = data.sa.studentAdmissionDateTime;
+					if(data.sa.studentAdmissionInterUniversity){
+						
+						$('#interuniversity').text(
+						 	"  Inter-University Admission No -- "+data.sa.studentAdmissionInterUniversityAdmissionNo +
+						    "  , ProgramName -- "+data.sa.studentAdmissionInterUniversityOldProgramName +
+							"  , RollNo -- " +data.sa.studentAdmissionInterUniversityOldRollNo +
+							"  , University -- " + data.sa.studentAdmissionInterUniversityOldUniversity +
+							"  , Semesters completed -- " + data.sa.studentAdmissionInterUniversitySemestersCompleted 					
+						);
+						
+						
+					  
+						
+					}
+					else{
+						
+						$('#interuniversity').text("NO");
+					}
+					
+		           }
+		         });
+	 }
+	 
+   
+    /**
+   * Fee Settings
+   */
+   
+   var studentListWithData=new Array();
+   var studentCodeList=new Array();
+   
+   
+	function loadData(url)
+	{
+		let dataWithPayment=[];
+		$.ajax(
+		{
+			url:url,
+			async:false,
+			success:function(data)
+			{
+			studentListWithData=data.data;
+			console.log(studentListWithData);
+			if(studentListWithData.length>0){
+			  var studfeeidmapArray=generateFeeIdenMapArray(studentListWithData);
+			  console.log(studfeeidmapArray);
+			  dataWithPayment = getFeeOrderStatus(studfeeidmapArray);
+			}
+		}
+	})
+	
+	return dataWithPayment;
+  }
+	
+ function generateFeeIdenMapArray(data)
+	{
+		var mapArray=new Array();
+		for(let i=0;i<data.length;i++)
+		{
+			var map={};
+			var studCode=data[i]['studentId'];
+			map['feeOrderStudent']=studCode;//maintain the same key feeOrderStudent in map
+			map['feeOrderIdentity']=data[i]['orderId'];//maintain the same key feeOrderIdentity in map
+			mapArray.push(map);
+			}
+			return mapArray;
+	}
+
+ function addTostudentListWithData(data)
+	{
+	 console.log("Inside addtistudentlistwithdaTA");
+	 	console.log(data);
+		for(let i=0;i<studentListWithData.length;i++)
+		{
+		for(let j=0;j<data.length;j++)
+		{
+		//if(String(studentListWithData[i]['studentId'])==data[j]['feeOrderStudentCode'])
+		if(String(studentListWithData[i]['orderId'])==data[j]['feeOrderId'])
+		{
+		studentListWithData[i]['feeOrderStatusValue']=data[j]['feeOrderStatusValue'];
+		}
+		if(studentListWithData[i]['orderId'] == null)
+		{
+			studentListWithData[i]['feeOrderStatusValue'] = "-";  
+		}
+		
+		}
+	}
+	
+	}
+	
+	
+ function getFeeOrderStatus(datatosend)
+	{
+		console.log("calling getFeeOrderStatus function")
+		$.ajax(
+		{
+			   url:'/fees/getManyFeeOrderStatusByFeeIdentifierAndAccount',
+			   data:{'feeOrderStudents':datatosend},
+			   method:"post",
+			   async:false,
+			   success:function(data)
+			   {
+					console.log(data); 
+					if(data.length>0)
+					{
+					addTostudentListWithData(data);
+					//loadDatatable(studentListWithData);
+					//return studentListWithData;
+					}
+	           },
+		    error:function(err)
+				{
+				showMessage(err);
+				}
+		});
+		return studentListWithData;
+}
+
+
+ var ConfirmDialog = function (data,type){
+
+ var TYPE;
+ var ICON ;
+ var BTN_CLASS;
+
+	 if ( type == 'SAVE'){
+		 TYPE = 'green';
+		 ICON =  'fa fa-save';
+		 BTN_CLASS = 'btn-success';
+	 }
+	 else if ( type == 'DELETE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-trash';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else
+	 {
+		 TYPE = 'orange';
+		 ICON =  'fa fa-warning';
+		 BTN_CLASS = 'btn-warning';	
+	 }
+	 var DialogPromise = function (resolve, reject) {
+	    
+	     $.confirm({
+	        title: data.title,
+	        content:data.msg,
+	        closeIcon : true,
+	        type: TYPE,
+	        icon: ICON,
+	        offsetTop: 40,	      
+	        bgOpacity :'0.7',
+	        buttons: {  
+	            ok: {
+	                text: "<b> Yes </b>",	            
+	                keys: ['enter'],
+	                action: function(){	                    
+	                     resolve(true); 	                    
+	                }
+	            },
+	            no: function(){
+	              text: "<b> No </b>",	                  
+	                    reject(false); 
+	            }
+	        }
+     });    
+    
+   };    
+    return  new  Promise (DialogPromise);
+ }
+
+</script>
+ 
+
+<script src="mark-management/marks/js/app-commons.js"></script>
+

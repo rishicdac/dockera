@@ -1,0 +1,168 @@
+<script>
+function makeFullCapableDataTable(tablename)
+{
+	$("#"+tablename).DataTable().destroy();
+    $('#'+tablename+ ' tfoot th').each( function ()
+    {
+        var title = $(this).text();
+        console.log(">>>>>>>>>>>>>");
+        console.log(title);
+        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+    });
+	
+    var dtable=$('#'+tablename).DataTable({
+        dom: 'Bfrtip',
+        buttons: 
+        [
+	       {
+ 		       extend: 'print',
+ 		       exportOptions: {
+ 		     	columns: ':visible'
+ 		                }
+ 		            }, 
+              {
+                extend: 'copyHtml5',
+                exportOptions: {
+                	columns: ':visible'
+                }
+            },
+            {
+                extend: 'excelHtml5',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                exportOptions: {
+                	columns: ':visible'
+                }
+            },
+            'colvis'
+        ], 
+        columnDefs: [ {
+            targets: -1,
+            visible: true
+        } ],
+        initComplete: function () {
+            // Apply the search
+            this.api().columns().every( function () {
+                var that = this;
+ 
+                $( 'input', this.footer() ).on( 'keyup change clear', function () {
+                    if ( that.search() !== this.value ) {
+                        that
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
+            } );
+        }
+    } );
+}
+$(document).ready(function()
+{
+	$('.dp').datepicker({
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true
+	});
+	$('#printRep').unbind().bind('click',function()
+	{
+		if($('#fromDate').val()!="" && $('#toDate').val()!="")
+		{
+			$.ajax(
+			{
+				url:"/fees/listAllTranDateBased",
+				data:{"fromDate":$('#fromDate').val(),"toDate":$('#toDate').val()},
+				success:function(data)
+				{
+					try
+					{
+						if(data.length>0)
+						{
+							for(let i=0;i<data.length;i++)
+							{
+								data[i]['serialno']=i+1;			
+							}
+						}
+						setUpDataTable(data,[{"studentname":"Name"},{"admissioncode":"admissioncode"},{"rollno":"rollno"},
+						{"coursecode":"coursecode"},{"batchcode":"batchcode"},{"feecategory":"feecategory"},
+						{"feehead":"feehead"},{"refundable":"refundable"},{"amount":"amount"},
+						{"feename":"feename"},{"trantime":"trantime"},{"feegroupname":"feegroupname"}],"gridTable",null);
+						
+						makeFullCapableDataTable('gridTable');
+					}
+					catch(e)
+					{
+						console.log(e)
+						showMessage("Error processing Data from server. Contact Admin");
+					}
+				}
+			});
+		}
+		else
+		{
+			$.ajax(
+			{
+				url:"/fees/listAllTran",
+				success:function(data)
+				{
+					try
+					{
+						if(data.length>0)
+						{
+							for(let i=0;i<data.length;i++)
+							{
+								data[i]['serialno']=i+1;			
+							}
+						}
+						setUpDataTable(data,[{"studentname":"Name"},{"admissioncode":"admissioncode"},{"rollno":"rollno"},
+						{"coursecode":"coursecode"},{"batchcode":"batchcode"},{"feecategory":"feecategory"},
+						{"feehead":"feehead"},{"refundable":"refundable"},{"amount":"amount"},
+						{"feename":"feename"},{"trantime":"trantime"},{"feegroupname":"feegroupname"}],"gridTable",null);
+						
+						makeFullCapableDataTable('gridTable');
+					}
+					catch(e)
+					{
+						console.log(e)
+						showMessage("Error processing Data from server. Contact Admin");
+					}
+				}
+			});
+		 }
+	});
+
+});
+</script>
+
+<div class="row"><div class="col-md-12">This report generation takes time based on date difference.(Leave Dates blank to get full Tran data<p class="text-danger">(Warning:Huge Data may slow down response)</p></div></div>
+<hr>
+<div class="row">
+	<!-- <div class="col-md-2"></div>-->
+	<div class="col-md-6">
+		<label class="label">From</label>	
+		 <input type="text" class="form-control grouping dp" id="fromDate"></select>
+	</div>
+	<!-- <div class="col-md-2"><label class="label">To</label></div>-->
+	<div class="col-md-6">
+		 <label class="label">To</label>
+		 <input type="text" class="form-control grouping dp" id="toDate"></select>
+	</div>
+</div>
+<hr>
+<div class="row">
+	<div class="col-md-4"><button class="btn btn-success " id="printRep">Generate Report</button></div>
+	<div class="col-md-8"></div>
+</div>
+<hr>
+<div class="row">
+	<div class="col-md-12">
+		<div class="table-responsive" id="reportDiv">
+			<table class="table table-striped" id="gridTable">
+			</table>	
+		</div>
+	</div>
+</div>
+ 

@@ -1,0 +1,302 @@
+<script>
+var filter="";
+var feeheadid="";
+var feegroupid="";
+function makeFullCapableDataTable(tablename)
+{
+	$("#"+tablename).DataTable().destroy();
+    $('#'+tablename+ ' tfoot th').each( function ()
+    {
+        var title = $(this).text();
+        console.log(">>>>>>>>>>>>>");
+        console.log(title);
+        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+    });
+	
+    var dtable=$('#'+tablename).DataTable({
+        dom: 'Bfrtip',
+        buttons: 
+        [
+	       {
+ 		       extend: 'print',
+ 		       exportOptions: {
+ 		     	columns: ':visible'
+ 		                }
+ 		            }, 
+              {
+                extend: 'copyHtml5',
+                exportOptions: {
+                	columns: ':visible'
+                }
+            },
+            {
+                extend: 'excelHtml5',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                exportOptions: {
+                	columns: ':visible'
+                }
+            },
+            'colvis'
+        ], 
+        columnDefs: [ {
+            targets: -1,
+            visible: true
+        } ],
+        initComplete: function () {
+            // Apply the search
+            this.api().columns().every( function () {
+                var that = this;
+ 
+                $( 'input', this.footer() ).on( 'keyup change clear', function () {
+                    if ( that.search() !== this.value ) {
+                        that
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
+            } );
+        }
+    } );
+}
+function getAllFeeGroups()
+{
+	$.ajax(
+	{
+		"url":"/fees/getAllFeeHeadGroups",
+		"method":"GET",
+		success:function(data)
+		{
+			try
+			{
+				console.log(data);
+				setUpDropDown('selectFeeGroup',data,'sfsFeeHeadGroupId','sfsFeeHeadGroupName');
+			}
+			catch(e)
+			{
+				showMesage("Error in processing information.contact Admin");
+			}
+		}
+	});
+}
+
+function getFeeHeadGroupReportWithoutDate()
+{
+	$.ajax(
+	{	
+		"url":"/fees/getFeeHeadGroupReportWithoutDate",
+		"data":{"feegroupid":feegroupid},
+		"success": function(data)
+		{
+			setUpDataTable(data,[
+			{"tranid":"Trand-Id"},{"feename":"Fee Name"},
+			{"appliedto":"Applied To"},{"feeheadname":"Fee Head"},{"feegroupname":"Fee Group"},
+			{"trandate":"Applied Date"},{"tranmount":"Amount"},
+			{"transum":"Sum"}],"gridTable",null);
+			makeFullCapableDataTable('gridTable');
+		}
+	});
+}
+function getFeeHeadReportWithoutDate()
+{
+	$.ajax(
+	{	
+		"url":"/fees/listAllTranFeeHeadBased",
+		"data":{"feeheadid":feeheadid},
+		"success": function(data)
+		{
+			setUpDataTable(data,[
+			{"tranid":"Trand-Id"},{"feename":"Fee Name"},
+			{"appliedto":"Applied To"},{"feeheadname":"Fee Head"},{"feegroupname":"Fee Group"},
+			{"trandate":"Applied Date"},{"tranmount":"Amount"},
+			{"transum":"Sum"}],"gridTable",null);
+			makeFullCapableDataTable('gridTable');
+		}
+	});
+}
+function getFeeHeadGroupReportWithDate()
+{
+	$.ajax(
+	{	
+		"url":"/fees/getFeeHeadGroupReportWithDate",
+		"data":{"feegroupid":feegroupid,"fromDate":$('#fromDate').val(),"toDate":$('#toDate').val()},
+		"success": function(data)
+		{
+			setUpDataTable(data,[
+			{"tranid":"Trand-Id"},{"feename":"Fee Name"},
+			{"appliedto":"Applied To"},{"feeheadname":"Fee Head"},{"feegroupname":"Fee Group"},
+			{"trandate":"Applied Date"},{"tranmount":"Amount"},
+			{"transum":"Sum"}],"gridTable",null);
+			makeFullCapableDataTable('gridTable');
+		}
+	});
+}
+function getFeeHeadReportWithDate()
+{
+	$.ajax(
+	{	
+		"url":"/fees/listAllTranFeeHeadAndDateBased",
+		"data":{"feeheadid":feeheadid,"fromDate":$('#fromDate').val(),"toDate":$('#toDate').val()},
+		"success": function(data)
+		{
+			setUpDataTable(data,[
+			{"tranid":"Trand-Id"},{"feename":"Fee Name"},
+			{"appliedto":"Applied To"},{"feeheadname":"Fee Head"},{"feegroupname":"Fee Group"},
+			{"trandate":"Applied Date"},{"tranmount":"Amount"},
+			{"transum":"Sum"}],"gridTable",null);
+			makeFullCapableDataTable('gridTable');
+		}
+	});
+}
+function getReportData()
+{
+	if(filter=="hws")
+	{
+		if(($('#fromDate').val()!="")&&($('#toDate').val()!=""))//from date and to date null
+		{
+			getFeeHeadReportWithDate();	
+		}
+		else
+		{
+			getFeeHeadReportWithoutDate();
+		}
+	}
+	else if(filter =="gws")
+	{
+		if(($('#fromDate').val()!="")&&($('#toDate').val()!=""))//from date and to date null
+		{
+			getFeeHeadGroupReportWithDate();	
+		}
+		else
+		{
+			getFeeHeadGroupReportWithoutDate();
+		}
+	}
+}
+
+$(document).ready(function()
+{
+	getAllFeeGroups();
+	$('.dp').datepicker({
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true
+	});
+	$('#btnSave').unbind().bind('click',function()
+	{
+		getReportData();
+	});
+	
+	$('#selectFeeHead').unbind().bind('change',function()
+	{
+		feeheadid=$(this).val();;
+	});
+	$('#process').unbind().bind('change',function()
+	{
+		$('#feeGroupDiv2').show();
+		$('#feeGroupDiv4').show();
+		$('#btnsaveDiv').show();
+		filter=$(this).val();
+		if(filter=="hws")
+		{
+			$('#feeGroupDiv3').show();
+			$('#selectFeeGroup').unbind().bind('change',function()
+			{
+				$.ajax(
+				{	
+					"url":"/fees/getAllFeeHeadsMappedToGroup",
+					"data":{"groupId":$(this).val()},
+					"success": function(data)
+					{
+						setUpDropDown('selectFeeHead',data,'sfsFeeHeadId','sfsFeeHeadName')
+					}
+				});
+			});
+		}
+		else if(filter=="gws")
+		{
+			$('#feeGroupDiv3').hide();
+			$('#selectFeeGroup').unbind().bind('change',function()
+			{
+				feegroupid=$(this).val();
+			});
+		}
+		else
+		{
+			$('#feeGroupDiv2').hide();
+			$('#btnsave').hide();
+		}
+
+	});
+	
+	$('#saveButton').unbind().bind('click',function()
+	{
+		$.ajax(
+		{
+			"url":"fees/saveFeeConfig",
+			"method":"post",
+			"data":{"processName":$('#process').val(),"sfsFeeHeadForConfig":selectedRowFromDataTable[0]},
+			"success":function(data)
+			{
+				console.log(data);
+				$('#dialogEdit').modal('toggle');
+				showMessage("");
+			}
+		});
+	});
+})
+
+</script>
+<hr>
+	<div class="from-group" id="feeGroupDiv1">
+		<label for="selectFeeGroup">Select Filter</label>
+		<select class="form-control" id="process">
+			<option value="na">Select Filter</option>
+			<option value="gws">Group wise sum</option>
+			<option value="hws">Head wise sum</option>
+		</select>
+	</div>
+	<hr>
+	<div class="from-group" id="feeGroupDiv2" style="display:none">
+		<label for="selectFeeGroup">Select Fee Group </label>
+		<select class="form-control" id="selectFeeGroup" name="selectFeeGroup">
+		</select>
+	</div>
+	<div class="from-group" id="feeGroupDiv3" style="display:none">
+		<label for="selectFeeGroup">Select Fee Head </label>
+		<select class="form-control" id="selectFeeHead" name="selectFeeHead">
+		</select>
+	</div>
+	<div class="row" id="feeGroupDiv4" style="display:none">
+		<!-- <div class="col-md-2"></div>-->
+		
+		<div class="col-md-6">
+			<label class="label">From</label>	
+			 <input type="text" class="form-control grouping dp" id="fromDate"></select>
+		</div>
+		<!-- <div class="col-md-2"><label class="label">To</label></div>-->
+		<div class="col-md-6">
+			 <label class="label">To</label>
+			 <input type="text" class="form-control grouping dp" id="toDate"></select>
+		</div>
+		<p class="">Leave dates blank if you need complete data(slow response expected)</p>
+	</div>	
+	<hr>
+	<div class="row" id="btnsaveDiv" style="display:none">
+		<div class="col-md-3"></div>	
+		<div class="col-md-6"><button id="btnSave" class="btn btn-success form-control">Submit</button></div>
+		<div class="col-md-3"></div>
+	</div> 
+	<hr>
+	<div class="table-responsive">
+		<table class="table" id="gridTable">
+		</table>
+	</div>
+
+
+	
+

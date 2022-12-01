@@ -1,0 +1,207 @@
+<script src="/students_public/jszip.min.js"></script>
+<script src="/students_public/pdfmake.min.js"></script>
+<script src="/students_public/vfs_fonts.js"></script>
+<script src="/students_public/buttons.flash.min.js"></script>
+<script src="/students_public/buttons.html5.min.js"></script>
+<script src="/students_public/buttons.print.min.js"></script>
+<script src="/students_public/buttons.colVis.min.js"></script>
+<script>
+var feeIdentifierArray=new Array();
+var paidIdentifierArray=new Array();
+var toBePaidArray=new Array();
+var fullTranArray=new Array();
+var feeIdenToAmoutMap={};
+var feeHeadsToIdenMap={};
+var fineDateDetailsToFeeIden={};
+var today;
+var fineDetailsMap={};
+var selectedStudentCode="";
+var feeIdentifierBalanceStatusMap={};
+var feeHeadIdToNameMap={};
+var feeHeadIdToAmountMap={};
+var SelectedOrMappedUser;
+
+
+function getStudentClatDetails()
+{
+	$.ajax(
+	{
+		url:'/students/getClatDetails',
+	   	method:'GET',
+	   	data:{"userCodeStudentClat":SelectedOrMappedUser},
+	   	success:function(data)
+	   	{
+	   		console.log(data);
+	   		bindViews(data);
+	   	},
+	   	error:function(err)
+	   	{
+	   		showMessage(err);
+	   	}
+	 });	  
+}
+
+$(document).ready(function()
+{
+	$('#accordionFine').hide();
+	getAllPrograms();
+	$('#btnCallStudents').on('click',function()
+	{
+		var program=$('#selectProgram').val();
+		var batch=$('#selectBatch').val();
+		getUnverifiedStudents(program,batch);
+		$(this).hide();
+		$('#selectionPanel').hide();
+	});
+	$('#printReport').unbind().bind('click',function()
+	{
+		printReport2('reportDiv','Student Details');	
+	});
+});
+
+function getUnverifiedStudents(pgm,batch)
+{
+	$.ajax(
+	{
+		url:"/students/getStudentsDetailsByProgramAndBatch-V2",
+		method:"get",
+		data:{"programId":pgm,"batchId":batch},
+		success:function(data)
+		{
+			console.log(data);
+			setUpDataTable(data,[{"studentCode":"Admission No"},{"studentName":"Name"},{"studentPersonalGender":"Gender"},{"semester":"Current Semester"},{"division":"Current Division"},{"stream":"Stream"},{"regNo":"Reg No"},{"rollNo":"Roll No:"}],'gridTable',null);
+			$('#printBtnDiv').show();
+  	   		$('#printBtnDiv').show();
+			$("#gridTable").DataTable().destroy();
+				
+			    $('#gridTable tfoot th').each( function () {
+			        var title = $(this).text();
+			        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+			    } );
+				
+  		    var dtable=$('#gridTable').DataTable( {
+  		        dom: 'Bfrtip',
+  		        buttons: 
+  		        [
+	  		              {
+		  		                extend: 'print',
+		  		                exportOptions: {
+		  		                	columns: ':visible'
+		  		                }
+		  		            }, 
+  		              {
+  		                extend: 'copyHtml5',
+  		                exportOptions: {
+  		                	columns: ':visible'
+  		                }
+  		            },
+  		            {
+  		                extend: 'excelHtml5',
+  		                exportOptions: {
+  		                    columns: ':visible'
+  		                }
+  		            },
+  		            {
+  		                extend: 'pdfHtml5',
+  		                exportOptions: {
+  		                	columns: ':visible'
+  		                }
+  		            },
+  		            'colvis'
+  		        ], 
+  		        columnDefs: [ {
+  		            targets: -1,
+  		            visible: false
+  		        } ],
+  		        initComplete: function () {
+  		            // Apply the search
+  		            this.api().columns().every( function () {
+  		                var that = this;
+  		 
+  		                $( 'input', this.footer() ).on( 'keyup change clear', function () {
+  		                    if ( that.search() !== this.value ) {
+  		                        that
+  		                            .search( this.value )
+  		                            .draw();
+  		                    }
+  		                } );
+  		            } );
+  		        }
+  		    } );
+		}
+	});
+}
+function getAllPrograms()
+{
+		$.ajax(
+		{
+	   		url:'/course/getAllCourses',
+	   		method:'GET',
+	   		success:function(data)
+	   		{
+	   			setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   			$('#selectProgram').unbind().bind('change',function()
+	   			{
+	   				getAllActiveBatchesOfProgram($(this).val());
+	   			});
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+ }
+ function getAllActiveBatchesOfProgram(programId)
+ {
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatchesInAProgram',
+  	   	method:'GET',
+  	   	data:{"courseId":programId},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+  	   		setUpDropDown('selectBatch1',data,'batchId','batchCode');
+
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+
+</script>
+	<div class="row well" id="selectionPanel">
+		<div class="col-md-6">
+		    <label for="accountName">Select Program</label>
+		    <select class="form-control grouping" id="selectProgram"></select>
+		</div>
+		<div class="col-md-6">
+		    <label for="accountName">Select Batch</label>
+		    <select class="form-control grouping" id="selectBatch"></select>
+		</div>
+	 </div> 
+<hr>
+<div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4"><button id="btnCallStudents" class="btn btn-primary form-control">Apply</button></div>
+		<div class="col-md-4"></div>
+</div>
+<hr>
+ <div class="row" id="printBtnDiv" style="display:none">
+	 <div class="col-md-3"></div>
+	 <div class="col-md-6">
+	   Use column visibility button to check for any additional data
+	 </div>
+	 <div class="col-md-3"></div>
+ </div> 
+<div class="table-responsive cell-border well" id="gridTableDiv">
+	<table id="gridTable" class="table table-striped"></table>
+</div>
+ <hr>
+
+
+
+ 

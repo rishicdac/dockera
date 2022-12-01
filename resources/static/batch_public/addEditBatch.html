@@ -1,0 +1,521 @@
+<script>
+var noOfSems=0;
+var semDatesMap={};
+var globalBatchStartDate;
+var globalBatchEndDate;
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Batch-Id"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTableRecords",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function getSemDates(batchId)
+{
+	$.ajax({
+  		url:'/batch/getAllSemestersInABatch',
+  		method:'GET',
+  		data:{"batchId":batchId},
+  		success:function(data)
+  		{
+  			try
+  			{
+	  			console.log(data);
+	  			for(var i=0;i<data.length;i++)
+	  			{
+	  				semDatesMap[data[i]['semesterIdentity']['semesterCode']]={"startDate":data[i]['semesterStartDate'],"endDate":data[i]['semesterEndDate']};
+	  				var len=String(data[i]['semesterIdentity']['semesterCode']).length;
+	  				var sem=String(data[i]['semesterIdentity']['semesterCode']).replace('semester','');
+	  				var startDate=data[i]['semesterStartDate'].split('T')[0];
+	  				var endDate=data[i]['semesterEndDate'].split('T')[0];
+	  				$('#editstartDate'+String(sem)).val(startDate);
+	  				$('#editendDate'+String(sem)).val(endDate);
+	  			}
+  			}
+  			catch(e)
+  			{
+  				showMessage("Could not retreive sem dates");			
+  			}
+  		}
+	})
+}
+function getAllBatches()
+{
+	$.ajax({
+  		url:'/batch/getAllBatchesValidInvalid',
+  		method:'GET',
+  		success:function(data)
+  		{
+  			console.log(data);
+  			try
+  			{
+  			for(var i=0;i<data.length;i++)
+  			{
+  				var d1=data[i]['batchStartDate'];
+  				d1=d1.split('T')[0];
+  				data[i]['batchStartDate']=d1;
+  				var d2=data[i]['batchProposedEndDate'];
+  				d2=d2.split('T')[0];
+  				data[i]['batchProposedEndDate']=d2;
+  			}
+  			}
+  			catch(e)
+  			{
+  				console.log("Error in processing batch data");
+  			}
+  			setUpDataTable(data,[{"batchId":"ID"},{"batchCode":"Code"},{"batchTitle":"Name"},{"courseCode":"Belong to Program"},
+  				{"batchStatus":"Status"},{"batchStartDate":"Start Date"},{"batchProposedEndDate":"Likely End Date"},{"batchMinBatchStrength":"Min Strength"},
+  				{"batchMaxBatchStrength":"Max Strength"},{"courseId":"Mapped Program Id"}],"gridTableBatches",null);
+  	   		onDataTableClick("gridTableBatches",function()
+   	   		{
+   	   			$('#dialogeEditBatch').modal('toggle');
+   	   			$('#editbatchId').val(selectedRowFromDataTable[0]);
+   	   			getRecordTimeLines(selectedRowFromDataTable[0],"Batch");
+   	   			$('#editselectCourse').val(selectedRowFromDataTable[9]);
+   	   			getCourseDetailsForEdit(selectedRowFromDataTable[9]);
+   	   			$('#editbatchCode').val(selectedRowFromDataTable[1]);
+   	   			$('#editbatchTitle').val(selectedRowFromDataTable[2]);
+   	   			$('#editbatchStartDate').val(selectedRowFromDataTable[5]);
+   	   			globalBatchDate=selectedRowFromDataTable[5];
+   	   			$('#editbatchProposedEndDate').val(selectedRowFromDataTable[6]);
+   	   			globalBatchEndDate=selectedRowFromDataTable[6];
+   	   			$('#editbatchMinBatchStrngth').val(selectedRowFromDataTable[7]);
+   	   			$('#editbatchMaxBatchStrength').val(selectedRowFromDataTable[8]);
+   	   			if(selectedRowFromDataTable[4]!="invalid")
+   	   			{
+   	   				$('#btnSave').attr('disabled',true)
+   	   			}
+   	   			else
+   	   			{
+   	   				$('#btnSave').attr('disabled',false)
+   	   			}
+   	   		});
+  			
+  		},
+  		error:function(err)
+  		{
+  			showMessage(err);
+  		}
+  	});
+}
+function prepareAddSemView(divId)
+{
+	$('#'+divId).empty();
+	for(var i=0;i<noOfSems;i++)
+	{
+		var div00=$('<div class="table-responsive"></table>');
+		var div0=$('<table class="table table-striped"></table>');
+		var sem=i+1;
+		var tr0=('<tr><td>Semester</td><td>Start Date</td><td>End Date</td></tr>');
+		div0.append(tr0);
+		var tr=$('<tr>');
+		var div1=$('<td><input class="form-group" type="text" value="semester'+sem+'" id="semester'+sem+'" readonly></input></td>');
+		var div2=$('<td><input class="form-group dp1" type="text" id="startDate'+sem+'"></input></td>');
+		var div3=$('<td><input class="form-group dp1" type="text"  id="endDate'+sem+'"></input></td>');
+		tr.append(div1);
+		tr.append(div2);
+		tr.append(div3);
+		div0.append(tr);
+		div00.append(div0);
+		$('#'+divId).append(div00);
+	}
+	$('.dp1').datepicker({
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true
+	});
+	$('.dp1').datepicker().on('changeDate', function (ev) {
+		try
+		{
+			var thisDate=new Date($(this).val());
+			var gStartDate=new Date(globalBatchStartDate)
+			var gEndDate=new Date(globalBatchEndDate)
+		    if(thisDate.getTime()<gStartDate.getTime())
+			{
+			   alert("Semester Cannot start before batch Start Date");
+			   $(this).val("");
+			}
+			if(thisDate.getTime()>gEndDate.getTime())
+			{
+			   alert("Semester Cannot end after batch End Date");
+			   $(this).val("");
+			}
+		}
+		catch(e)
+		{
+			alert("Make Sure you have entered Batch Start Date");
+		}
+	});
+}
+function prepareAddSemViewEdit(divId)
+{
+	$('#'+divId).empty();
+	for(var i=0;i<noOfSems;i++)
+	{
+		var div00=$('<div class="table-responsive"></table>');
+		var div0=$('<table class="table table-striped"></table>');
+		var sem=i+1;
+		var tr0=('<tr><td>Semester</td><td>Start Date</td><td>End Date</td></tr>');
+		div0.append(tr0);
+		var tr=$('<tr>');
+		var div1=$('<td><input class="form-group" type="text" value="semester'+sem+'" id="semester'+sem+'" readonly></input></td>');
+		var div2=$('<td><input class="form-group dp1" type="text" id="editstartDate'+sem+'"></input></td>');
+		var div3=$('<td><input class="form-group dp1" type="text"  id="editendDate'+sem+'"></input></td>');		
+		tr.append(div1);
+		tr.append(div2);
+		tr.append(div3);
+		div0.append(tr);
+		div00.append(div0);
+		$('#'+divId).append(div00);
+	}
+	$('.dp1').datepicker({
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true
+	});
+}
+function getCourseDetails(courseId)
+{
+	courseDetails={};
+	$.ajax({
+  		url:'/course/getCourseDetailsById',
+  		method:'GET',
+  		data:{"courseId":courseId},
+  		success:function(data)
+  		{
+  			console.log(data);
+  			courseDetails=data;
+  			noOfSems=parseInt(data["courseNoOfSems"]);
+  			prepareAddSemView("semSetterDiv");
+  		},
+  		error:function(err)
+  		{
+  			showMessage(err);
+  		}
+  	});
+}
+function getCourseDetailsForEdit(courseId)
+{
+	courseDetails={};
+	$.ajax(
+	{
+  		url:'/course/getCourseDetailsById',
+  		method:'GET',
+  		data:{"courseId":courseId},
+  		success:function(data)
+  		{
+  			console.log(data);
+  			courseDetails=data;
+  			noOfSems=parseInt(data["courseNoOfSems"]);
+  			prepareAddSemViewEdit("editSemSetterDiv");
+  			getSemDates($('#editbatchId').val());
+  		},
+  		error:function(err)
+  		{
+  			showMessage(err);
+  		}
+  	});
+}
+$(document).ready(function()
+{
+	$('.dp').datepicker({
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true
+	});
+	$('#batchStartDate').datepicker().on('changeDate', function (ev) {
+	    globalBatchStartDate=$(this).val();
+	});
+	$('#batchProposedEndDate').datepicker().on('changeDate', function (ev) {
+	    globalBatchEndDate=$(this).val();
+	});
+	$('#editbatchStartDate').datepicker().on('changeDate', function (ev) {
+	    globalBatchStartDate=$(this).val();
+	});
+	$('#editbatchProposedEndDate').datepicker().on('changeDate', function (ev) {
+	    globalBatchEndDate=$(this).val();
+	});
+	getAllBatches();
+	$.ajax({
+  		url:'/course/getAllCourses',
+  		method:'GET',
+  		success:function(data)
+  		{
+  			console.log("All courses");
+  			console.log(data);
+  			setUpDropDown("selectCourse",data,"courseId","courseCode");
+  			setUpDropDown("editselectCourse",data,"courseId","courseCode");
+  			$('#selectCourse').unbind().bind('change',function()
+  			{
+  				getCourseDetails($(this).val());
+  			})
+  		},
+  		error:function(err)
+  		{
+  			showMessage(err);
+  		}
+  	});
+	$('#formBatchAdd').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"batchStatus","value":"invalid"});
+		var sw=new Array();
+        $.ajax(
+   		{
+   			"url":"/batch/addBatch",
+   			"method":"POST",
+   			 data:formData,
+   			 success:function(data)
+   			 {
+   				var batchCreated=data["batchId"];
+   				var courseMapped=data["mappedCourse"]["courseId"];
+   				for(var i=1;i<=noOfSems;i++)
+   				{
+   					var sem="semester"+String(i);
+   					var startDate=$('#startDate'+String(i)).val();
+   					var endDate=$('#endDate'+String(i)).val();
+   					sw.push({'mappedBatch':batchCreated,'mappedCourse':courseMapped,'semesterCode':sem,'semesterStartDate':startDate,'semesterEndDate':endDate});
+   				}
+   				if(sw.length>0)
+   				{
+	   				$.ajax(
+	   				{
+	   					url:"/batch/addSemester",
+	   					method:"post",
+	   					dataType:"JSON",
+	   					data:{semesterWrappers:sw},
+	   					success:function(data)
+	   					{
+	   						console.log(data);
+	   						if(data.length>0)
+	   						{
+	   							showMessage("Batch and Semester Details added successfully");	
+	   							
+	   						}
+	   					}
+	   				});
+	   				clearDataTable('gridTableBatches');
+	   				getAllBatches();
+	   				$('#dialogeAddBatch').modal('toggle');
+	   				
+   			   }
+   			   else
+   			   {
+   				showMessage("Batch Added successfully.But Semester details not added.")	
+   			   }
+   			 }
+   		});	
+	});
+	
+	$('#formBatchEdit').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"batchStatus","value":"invalid"});
+		var sw=new Array();
+        $.ajax(
+   		{
+   			"url":"/batch/addBatch",
+   			"method":"POST",
+   			 data:formData,
+   			 success:function(data)
+   			 {
+   				console.log(data);
+   				var batchCreated=data["batchId"];
+   				var courseMapped=data["mappedCourse"]["courseId"];
+   				
+   				for(var i=1;i<=noOfSems;i++)
+   				{
+   					var sem="semester"+String(i);
+   					var startDate=$('#editstartDate'+String(i)).val();
+   					var endDate=$('#editendDate'+String(i)).val();
+   					sw.push({'mappedBatch':batchCreated,'mappedCourse':courseMapped,'semesterCode':sem,'semesterStartDate':startDate,'semesterEndDate':endDate});
+   				}
+   				
+   				if(sw.length>0)
+   				{
+	   				$.ajax(
+	   				{
+	   					url:"/batch/addSemester",
+	   					method:"post",
+	   					dataType:"JSON",
+	   					data:{semesterWrappers:sw},
+	   					success:function(data)
+	   					{
+	   						console.log(data);
+	   						if(data.length>0)
+	   						{
+	   							showMessage("Batch and Semester Details saved successfully.");	
+	   						}
+	   					}
+	   				});
+	   				$('#dialogeEditBatch').modal('toggle');
+	   				clearDataTable('gridTableBatches');
+	   				getAllBatches();
+   			   }
+   			   else
+   			   {
+   				showMessage("Batch Added successfully.But Semester details not added.")	
+   			   }
+   			 }
+   		});	
+	});
+	$('#showAddModal').unbind().bind('click',function()
+	{
+		$('#formBatchAdd input[type="text"]').val('');
+		$('#dialogeAddBatch').modal({backdrop: 'static', keyboard: false});
+	});
+});
+</script>
+
+<div class="row">
+	<div class="col-md-8"></div>
+	<div class="col-md-4"><button type="button"  id="showAddModal" class="btn btn-primary">Add Batch</button></div>
+</div>
+<div class="table-responsive">
+	<table class="table table-bordered" id="gridTableBatches"></table>
+</div>
+
+<div class="modal fade" id="dialogeAddBatch" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">New Batch</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+	  </div>   
+	  <div class="modal-body">
+		<form id="formBatchAdd" >
+		
+		<div class="form-group">
+			<label for="selectCourse">Program Code</label>
+			<select  required class="form-control" id="selectCourse" name="courseId">
+			</select> 
+		</div>
+		<div class="form-group">
+			<label for="batchCode">Batch Code</label>
+		<input type="text" required class="form-control" id="batchCode"  name="batchCode" placeholder="Enter Batch Code">
+		</div>
+		<div class="form-group">
+			<label for="batchTitle">Batch Name</label>
+			<input required type="text" class="form-control" id="batchTitle"  name="batchTitle" placeholder="Enter Batch Name">
+		</div>
+		<div class="form-group">
+			<label for="batchStartDate;">Batch Start Date</label>
+			<input type="text" class="form-control dp" id="batchStartDate"  name="batchStartDate" placeholder="" required>
+		</div>
+		<div class="form-group">
+			<label for="batchProposedEndDate">Batch Proposed End Date</label>
+			<input type="text" class="form-control dp" id="batchProposedEndDate"  name="batchProposedEndDate" placeholder="" required>
+		</div>
+		<div class="form-group">
+			<label for="batchMinBatchStrength">Batch Minimum Strength</label>
+			<input type="number" class="form-control" id="batchMinBatchStrngth"  name="batchMinBatchStrength" placeholder="Batch Minimum Strength">
+		</div>
+		<div class="form-group">
+			<label for="batchMaxBatchStrength">Batch Maximum Strength</label>
+			<input  required type="number" class="form-control" id="batchMaxBatchStrength"  name="batchMaxBatchStrength" placeholder="Batch Maximum Strength">
+		</div>
+		<div class="form-group">
+			<label for="batchMaxBatchStrength">Remarks</label>
+			<textarea id="batchRemarks" name="batchRemarks" class="md-textarea form-control" rows="3"></textarea>
+		</div>
+		<hr>
+		<div id="semSetterDiv">
+			
+		</div>
+		<button type="submit" class="btn btn-primary">Add</button>
+		</form>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>		
+
+<div class="modal fade" id="dialogeEditBatch" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Batch Settings</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+	  </div>   
+	  <div class="modal-body">
+		<form id="formBatchEdit" >
+			<div class="form-group">
+				<label for="batchCode">Batch Id</label>
+				<input type="text" readonly required class="form-control" id="editbatchId"  name="batchId" >
+			</div>
+	
+		<div class="form-group">
+			<label for="selectCourse">Select Program</label>
+			<select  required class="form-control" id="editselectCourse" name="courseId">
+			</select> 
+		</div>
+		<div class="form-group">
+			<label for="batchCode">Batch Code</label>
+		<input type="text" required class="form-control" id="editbatchCode"  name="batchCode" placeholder="Enter Batch Code">
+		</div>
+		<div class="form-group">
+			<label for="batchTitle">Batch Name</label>
+			<input required type="text" class="form-control" id="editbatchTitle"  name="batchTitle" placeholder="Enter Batch Name">
+		</div>
+		<div class="form-group">
+			<label for="batchStartDate;">Batch Start Date</label>
+			<input type="text" class="form-control dp" id="editbatchStartDate"  name="batchStartDate" placeholder="">
+		</div>
+		<div class="form-group">
+			<label for="batchProposedEndDate">Batch Proposed End Date</label>
+			<input type="text" class="form-control dp" id="editbatchProposedEndDate"  name="batchProposedEndDate" placeholder="">
+		</div>
+		<div class="form-group">
+			<label for="batchMinBatchStrength">Batch Minimum Strength</label>
+			<input type="number" class="form-control" id="editbatchMinBatchStrngth"  name="batchMinBatchStrength" placeholder="Batch Minimum Strength">
+		</div>
+		<div class="form-group">
+			<label for="batchMaxBatchStrength">Batch Maximum Strength</label>
+			<input  required type="number" class="form-control" id="editbatchMaxBatchStrength"  name="batchMaxBatchStrength" placeholder="Batch Maximum Strength">
+		</div>
+		<div class="form-group">
+			<label for="batchMaxBatchStrength">Remarks</label>
+			<textarea id="editbatchRemarks" name="batchRemarks" class="md-textarea form-control" rows="3"></textarea>
+		</div>
+		<hr>
+		<div id="editSemSetterDiv"></div>
+		<button type="submit" id="btnSave" class="btn btn-primary">Save</button>
+		</form>
+		<hr>
+		<div id="accordion">
+ 			<h3>Record Flow History</h3>
+	  		<div>
+	   	 	<p>
+	   		 <div class="table-responsive">
+	    		<table class="table table-striped" id="gridTableRecords"></table>
+	    	</div>
+	    	</p>
+	  		</div>
+	   	</div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>	

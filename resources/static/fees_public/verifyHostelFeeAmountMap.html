@@ -1,0 +1,149 @@
+<script>
+
+var editFeeHeadId;
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Fee Head-Id"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTable2",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function getAllFeeHeads()
+{
+	$.ajax(
+	{
+		"url":"/fees/getHostelFeeMaps",
+		"method":"GET",
+		success:function(data)
+		{
+			setUpDataTable(data,[{"sfsFeeHeadId":"ID"},{"sfsFeeHeadName":"Fee Head Name"},{"hostelFeeHeadAmount":"Amount"},{"hostelFeeOrder":"Order"},{"hostelFeeSettingStatus":"status"}],"gridTable",null);
+			onDataTableClick('gridTable',function()
+	   		{
+				$('#sfsFeeHeadId').val(selectedRowFromDataTable[0]);
+				$('#editsfsFeeHeadName').val(selectedRowFromDataTable[1]);
+				$('#hostelFeeHeadAmount').val(selectedRowFromDataTable[2]);
+				$('#hostelFeeOrder').val(selectedRowFromDataTable[3])
+				if(selectedRowFromDataTable[4]=="approved")
+				{
+					$('#btnSave').attr('disabled',true);
+					$('#btnSave').prop('disabled',true);
+				}
+				else
+				{
+					$('#btnSave').attr('disabled',false);
+					$('#btnSave').prop('disabled',false);
+				}
+				$('#dialogEdit').modal({backdrop: 'static',
+	   		     keyboard: false});
+	   			getRecordTimeLines(selectedRowFromDataTable[0],"Hostel-Fee_Map")
+	   		});
+		}
+	});
+}
+$(document).ready(function()
+{
+	getAllFeeHeads();
+	$('#formEdit').on('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		console.log(formData);
+        $.ajax(
+		{
+			"url":"/fees/saveHostelFeeMapping",
+			"method":"POST",
+			 data:formData,
+			 success:function(data)
+			{
+				if(data.feeHeadAmountMapIdentity)
+				{
+					showMessage("Changes Saved");
+					$('#dialogEdit').modal('toggle');
+					clearDataTable('gridTable');
+					getAllFeeHeads();					
+				}
+			}
+						
+		});	
+	 }); 
+})
+</script>
+
+<div class="table-responsive">
+	<table id="gridTable" class="table table-striped"></table>
+</div>
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"> Fee Head Details</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<form id="formEdit" >
+			<div class="form-group">
+		   		<label for="categoryCode">Fee Head ID</label>
+		   		<input type="text" class="form-control" id="sfsFeeHeadId"  name="feeHeadId" readonly>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="categoryCode">Fee Head Name</label>
+		   		<input type="text" class="form-control" id="editsfsFeeHeadName"  name="sfsFeeHeadName"  readonly required>
+		   	</div>
+			
+			<div class="form-group">
+		   		<label for="categoryCode">Amount</label>
+		   		<input type="text" class="form-control" id="hostelFeeHeadAmount"  name="hostelFeeHeadAmount">
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="categoryCode">Amount</label>
+		   		<input type="text" class="form-control" id="hostelFeeOrder"  name="hostelFeeOrder">
+		   	</div>
+			
+			<div class="form-group">
+				<label for="accPLHeadProfity">Set Status</label>
+				<select class="form-control" name="hostelFeeSettingStatus" id="sfsFeeHeadStatus">
+				  <option value="verified">Verified</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="userRemarks">Remarks</label>
+				<textarea row="3" class="form-control" id="hostelFeeSteeingUserRemarks" name="hostelFeeSteeingUserRemarks">
+				</textarea>
+			</div>
+		   	<button type="submit"  id="btnSave" class="btn btn-primary">Save</button>
+		   	</form>
+		   	<hr>
+		   			 <div id="accordion">
+ 		 <h3>Record Flow History</h3>
+	  		<div>
+	   		 <p>
+	   			 <div class="table-responsive">
+	    			<table class="table table-striped" id="gridTable2"></table>
+	    		</div>
+	    	</p>
+	  		</div>
+	   </div>
+		</div>
+		      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>

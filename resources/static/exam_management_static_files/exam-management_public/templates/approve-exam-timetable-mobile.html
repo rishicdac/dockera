@@ -1,0 +1,757 @@
+
+<!-- Main content -->
+   <div class="content" id="timetable">
+     <div class="container-fluid">
+       <div class="row">          
+         <!-- /.col-md-12 -->
+         <div class="col-lg-12"> 
+           <div class="card card-info card-outline">
+             <div class="card-header">
+               <h5 class="m-0 card-title"> Time Table Approval</h5>
+               			
+             </div>
+             <div class="card-body">
+             <div class="row">
+	             <div class="col-md-4">
+							<div class="form-group">
+							   <label for="program">Program</label>
+							   <select class="form-control" id="selectProgram" name="program" required>
+									<option>Select Program</option>	
+								</select>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+							   <label for="batch">Batch</label>
+							   <select class="form-control" id="selectBatch" name="batch" required>
+									  <option>Select Batch</option>							  
+								</select>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+							   <label for="semester">Semester</label>
+							   <select class="form-control" id="selectSemester" name="semester" required>
+									   <option>Select Semester</option>
+								</select>
+							</div>
+						</div>	
+				</div>
+				    </div>
+         <!-- /.col-md-12 -->
+       </div>
+       <!-- /.row -->
+     </div><!-- /.container-fluid -->
+   </div>
+   
+   <!-- /.main content -->
+                   <div class="card" id="divSchedules">
+				
+					<div class="table-responsive">
+					  <table id="tblExamSchedule" class="table table table-striped table-bordered  display" style="width:100%">
+						<thead>
+							<tr>
+								
+							  <th>Academic Year </th>
+							  <th>Exam Name</th>
+							  <th>Month Year</th>
+							<!--   <th>Status</th> -->
+							  <th>Approval Status </th>
+							<!--   <th>View</th> -->
+							  <th>Approve</th>
+							 
+							</tr>
+							</thead>
+					  </table>				  
+					 
+					</div>
+					<!-- /.table-responsive -->
+				</div>	
+					
+				
+					<!-- /.table-responsive -->
+				 
+				</div>
+				
+				 
+				</div>		
+					
+		
+			    
+			<!-- /Preview Schedule -->
+			
+			<div  id="divViewSchedules">
+			<div class="row" >
+			<div class="col-lg-12">
+			<div class="invoice p-3 mb-3">
+			<div class="tab-content">
+			<div class="post">
+			<div class="user-block text-center">
+			<img class="img-circle img-bordered-sm" src="exam-management_proxy/exam-management_public/img/nuals.jpg" alt="user image" style="width:70px;height:70px;">
+			<span class="username text-center">
+			<h3>The National University of Advanced Legal Studies</h3>
+			</span>
+			<h6 id="applnType" style="font-weight:600">Exam Schedule</h6>
+			<hr/>
+			</div>
+			</div>
+			</div>
+			
+			<div class="row mb-4">
+			<div class="col-md-3">
+			<div class="description-block border-right">
+			<h5 class="description-header">Academic Year  <br/><code id="academicYear">2005-2010</code></h5>
+			</div>
+			</div>
+			
+			<div class="col-md-3">
+			<div class="description-block border-right">
+			<h5 class="description-header">Programme   <br/><code id="program">LLB </code></h5>
+			</div>
+			</div>
+			<div class="col-md-3">
+			<div class="description-block border-right">
+			<h5 class="description-header">Batch / Semester  <br/><code id="batch_sem">2005/Semester9</code></h5>
+			</div>
+			</div>
+			
+			<div class="col-md-3">
+			<div class="description-block">
+			<h5 class="description-header">Exam Type  <br/><code id="exam_type">Supplmentary</code></h5>
+			</div>
+			</div>
+			</div>
+			<hr>
+			<dl class="row pl-5 ml-3">
+			<dt class="col-sm-4 description-header" >Name of the Exam : </dt>
+			<dd class="col-sm-8" id="exam_name"> 2014-2019 Master of Law</dd>
+			<dt class="col-sm-4">Month and Year :</dt>
+			<dd class="col-sm-8" id="month_year">March 2020</dd>
+			<dt class="col-sm-4">Tentative date of Exam:</dt>
+			<dd class="col-sm-8" id="tentative_date">12-01-2020</dd>
+			<dt class="col-sm-4">Last Date of payment without fine:</dt>
+			<dd class="col-sm-8" id="date_without_fine">12-12-2019</dd>
+			<dt class="col-sm-4">Last Date of payment with fine:</dt>
+			<dd class="col-sm-8" id="date_with_fine">23-12-2019</dd>
+			<dt class="col-sm-4">Instructions:</dt>
+			<dd class="col-sm-8" id="instructions">Testing </dd>
+			<dt class="col-sm-4"> Fee Structure:</dt>
+			<dd class="col-sm-8" id="">
+			     <div class="table-responsive">
+					<table class="table" id="displayTable">					
+						</table>
+					</div>
+			</dd>
+			</dl>
+			
+			<div class="row  pl-5 pr-5">
+			<div class="col-md-12">
+			<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Timetable</div>
+			<table class="table table-bordered m-0" id="tblTimetable">
+			<thead>
+			<tr>
+			<th>Course Id</th>
+			<th>Course Name</th>
+			<th>Date </th>
+			<th>Day</th>
+			
+			<th>Start and End Time</th>
+			</tr>
+			</thead>
+			</table>
+			</div>
+		</div>
+		
+			
+			
+			<br>
+			<br>
+			<!--  Approval Division -->
+  <!-- Main content -->
+    <div class="content  pl-5 pr-5 col-md-12" id="divApproval">
+   	<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Approval Timeline</div>
+      <div class="row">
+	        
+			 <table class="table table-bordered  pl-5" id="tblApproval">
+				<thead>
+					<tr>
+					  <th>Approval Type</th>
+					    <th>Date</th>
+					    <th>By</th>
+					    <th>Remarks</th>
+					</tr>
+				</thead>
+			</table>
+
+        </div>
+               
+        
+      <div class="row">
+        <div class="col-md-12">
+		<hr>
+     <form id="formApproval" >
+       <div class="row">
+   
+
+				<div class="form-group col-md-5">
+				   <label for="examtype">Approval Type</label><span class="starSpan" style="color:red">*</span>
+				   <select class="form-control" id="selectApproveType" name="approve_type" required="">
+				          <option>Select Approval Type</option>
+						  <option>Checked</option>
+						  <option>Verified</option>
+						  <option>Approved</option>								 
+					</select>
+				</div>	
+						
+						
+				
+						<div class="col-md-5">
+							<div class="form-group">
+							   <label for="purpose">Remarks</label><span class="starSpan" style="color:red">*</span>
+							   <textarea class="form-control" rows="3" id="remarks" name="remarks" placeholder="Enter the remarks if any ..." required="" style="margin-top: 0px; margin-bottom: 0px; height: 37px;">Ok</textarea>
+							</div>
+						</div>
+				
+					<div class="col-md-2 pt-4">
+			 	<button type="submit" class="btn btn-info">Submit</button>
+		</div>
+        </div></form>
+        </div>    
+        </div>
+			</div>
+			
+			
+			</div>
+			<!-- Preview Schedule-->
+				 
+   </div>
+ </div>
+  
+  
+<script>
+//global variables and fns
+
+/* base url for exam management */
+var BASE_URL = "/exam-management/api/v1/";
+var MARKS_CONFIG_URL = "/mark-config/api/v1/academics/marks-management/evaluation-types-program/program-id/";
+var ACADEMIC_YEAR_URL = "/academics/api/v1/academics/getDetailsByMasterId/masterId/83";
+
+	
+	/* fn to convert form data to json */
+	$.fn.serializeObject = function()
+	{
+	    var o = {};
+	    var a = this.serializeArray();
+	    $.each(a, function() {
+	        if (o[this.name] !== undefined) {
+	            if (!o[this.name].push) {
+	                o[this.name] = [o[this.name]];
+	            }
+	            o[this.name].push(this.value || '');
+	        } else {
+	            o[this.name] = this.value || '';
+	        }
+	    });
+	    return o;
+	 };
+
+ 
+ 	$('.datepicker').datepicker({
+	    //format: 'yyyy-mm-dd',	
+ 		//startDate : moment() , //0
+	    format: 'dd-mm-yyyy',
+		autoclose:true,
+		clearBtn:true,
+		pickerPosition: "bottom-left"
+		
+	});  
+	
+ 	
+	$('.datepicker-month-year').datepicker({
+	    format: 'M-yyyy',	
+	    startView: "months", 
+        minViewMode: "months",						   
+		autoclose:true,
+		clearBtn:true
+	});
+	
+
+    
+    
+    //getStudentInfo();
+   	function getStudentInfo()
+	{
+
+      $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		data:{"userCodes":$("#usercode").val()},
+	   		success: function(data)
+	   		{
+	   		  console.log(data);
+	   		  return data;
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+	 }
+    var selectedConfigArray=new Array();
+//$(document).ready(function() {
+	function getAllPrograms()
+	{
+	
+		$.ajax({
+	   		url:'/course/getAllCourses',
+	   		method:'GET',
+	   		success:function(data)
+	   		{
+	   		    setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   			$('#selectProgram').unbind().bind('change',function()
+	   			{
+	   				getAllActiveBatchesOfProgram($(this).val());
+	   				loadEvaluationypes($(this).val());
+	   			    if($("#displayTable").length){
+	   				   $('#displayTable').empty();
+	   			    }
+	   			   if($(".configList").length){
+	   				 
+	   			    $('.configList').prop('checked', false);
+	   			   }
+	   			selectedConfigArray =[];
+	   			
+	   			});
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+	}
+	getAllPrograms();
+	
+    /* 
+      To list the programs
+	*/
+	
+
+	
+	/**
+	  To get all batches for the given programid
+	*/
+	 function getAllActiveBatchesOfProgram(programId)
+	 {
+	// $("#selectBatch").prop( "disabled", false );
+		$.ajax(
+		{
+	  		url:'/batch/getAllActiveBatchesInAProgram',
+	  	   	method:'GET',
+	  	   	data:{"courseId":programId},
+	  	   	success:function(data)
+	  	   	{
+	  	   	
+	  	        setUpDropDown("selectBatch",data,"batchId","batchCode");
+	  	   		$('#selectBatch').unbind().bind('change',function()
+	   			{
+	   				getAllActiveSemesterOfBatch($(this).val());
+	   				
+	   				
+	   			});
+	  	   		
+	  	   	},
+	  	   	error:function(err)
+	  	   	{
+	  	   		showMessage(err);
+	  	   	}
+	  	 });	  
+	  }
+	  
+	  /**
+	  To get all semesters the given batchid
+	  */
+	 function getAllActiveSemesterOfBatch(batchId)
+	 {
+		//$("#selectSemester").prop( "disabled", false );
+		  $.ajax({
+					"url" : "/batch/getAllSemestersInABatch",
+					"method" : "GET",
+					data : {"batchId":batchId},
+					success :function(data) {
+					console.log(data);
+					    try{
+						   if(data && data.length >0){
+							   $('#selectSemester').empty();
+							   $('#selectSemester').append('<option>Select Semester</option>');
+							   for(var i=0;i< data.length;i++){
+							   	   $("#selectSemester").append('<option value='+data[i]['semesterIdentity']['semesterCode']+'>'+data[i]['semesterIdentity']['semesterCode']+'</option>');
+							   }
+						 }
+						}
+						catch(e){
+						    console.error(e);
+						    showMessage(" Error occurred while processing semester list"); 
+						}
+													
+						
+					},
+					error :function(e) {
+					     showMessage(err);
+					}
+				});
+		}
+	 
+	 function loadEvaluationypes(programId){
+			$.ajax(
+			{
+				"url":MARKS_CONFIG_URL+programId,
+				success:function(data)
+				{
+					types= data.data; 
+					setUpDropDown("selectRevaluationType",types,"id","evaluationType");
+				}
+			});
+		
+		}
+		
+		/* load exam types */
+		function loadExamTypes(){
+			$.ajax(
+			{
+				"url":BASE_URL+"exam-management/exam-types",
+				success:function(data)
+				{
+					types= data.data; 
+					setUpDropDown("selectExamType",types,"id","type");
+				}
+			});
+		
+		}
+		
+		/* load academic year from look  up */
+		function loadAcademicYear(){
+			$.ajax(
+			{
+				"url": ACADEMIC_YEAR_URL ,//"/academics/api/v1/academics/getDetailsByMasterId/masterId/83",
+			//	"url":"/nualsTest/api/v1/academics/getDetailsByMasterId/masterId/83",
+				success:function(data)
+				{
+					 
+					setUpDropDown("selectAcademicYear",data,"id","detailName");
+				}
+			});
+		
+		}
+	 
+		
+//});
+$( document ).ready(function() {
+  
+  $('#collapseTimeTable').hide();
+  $('#collapseEditSchedule').hide();
+  $('#divSchedules').hide();
+  $('#divViewSchedules').hide();
+  $('#divApproval').hide();
+ //  $( "#divApproval" ).detach();
+ 
+  var scheduleDataTable;
+  var scheduleId;
+  
+  $('#selectSemester').unbind().bind('change',function(){
+	   
+	   var program = $( "#selectProgram option:selected" ).val();
+	   var batch = $( "#selectBatch option:selected" ).val();
+	   var semester = $( "#selectSemester option:selected" ).val();
+	   $('#divSchedules').show();
+	   $('#divViewSchedules').hide();
+	    $('#divApproval').hide();
+	  scheduleDataTable =  $('#tblExamSchedule').DataTable({
+            "language": {
+                    "emptyTable": "No timetable  available for the selected exam name"
+                  },
+			"processing": true,
+			"destroy": true,
+			"ajax":{ 
+			    "url": BASE_URL+"schedule/list",
+			    "type":"POST",
+			     "data":{"program":program,"batch":batch,"semester":semester},
+			    },
+			"columns": [
+			
+			{ "data": "academic_year" },
+			{ "data": "name_exam"},
+			{ "data": "month_year" },
+		    {"data":"approval_status","render": function(data){if (data==null) return "----"; else return data; }},
+		    
+			/*{
+				"data": null,
+				"defaultContent":
+					'<a data-toggle="collapse" href="#"  class=""small-box-footer text-danger" id="btnDetails"><i class="fas fa-eye"></i></a>'
+			},*/
+			
+			{
+				"data": null,
+				"defaultContent":
+					'<a data-toggle="collapse" href="#"  class=""small-box-footer text-danger" id="btnApprove"> <i class="fa fa-thumbs-up"></i></a>' 
+					
+			}
+		]
+		
+		});
+				
+
+   
+   $('#tblExamSchedule tbody').on('click', '#btnDetails', function () {
+   
+   
+    $('#divViewSchedules').show();
+    $('#divApproval').hide();
+    
+     $('html, body').animate({
+		        scrollTop: $("#divViewSchedules").offset().top
+		  }, 1000);
+           
+    var data = scheduleDataTable.row($(this).parents('tr')).data();
+    
+    bindViewSchedule(data);
+    bindTimeTable(data.id);
+    scheduleId = data.id;
+    getFeeDetails(data.id,data.program);
+   
+	});
+		
+	
+  
+	$('#tblExamSchedule tbody').on( 'click', 'tr', function () {
+	
+	        if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	            scheduleDataTable.$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	        }
+	    } );
+		
+	
+	 $('#tblExamSchedule tbody').on('click', '#btnApprove', function () {
+   
+		  $('#divViewSchedules').show();
+		  $('#divApproval').show();
+     		  
+     	 $('html, body').animate({
+		        scrollTop: $("#divApproval").offset().top
+		  }, 1000);
+           
+           
+           
+		 //  $('body').append($( "#divApproval" ));
+		   var data = scheduleDataTable.row($(this).parents('tr')).data();
+		    
+		    bindViewSchedule(data);
+		    bindTimeTable(data.id);
+		    scheduleId = data.id;
+		    getFeeDetails(data.id,data.program);
+        var data = scheduleDataTable.row($(this).parents('tr')).data();
+		     $.ajax({
+				   type: "GET",
+				   url:  BASE_URL+"time-table/approval/schedule-id/"+data.id,
+				   headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				   },		   
+				   success: function(result)
+				   {
+						$("#tblApproval tbody").remove();	
+						//console.log(result.data);
+						scheduleId = data.id;
+						if(result.data.length>0)	
+						{				
+							$.each(result.data, function (key, value) {
+								
+								$("#tblApproval").append($('<tbody><tr><td>' + value.approvalType + '</td><td>'+  moment(value.createdTime).format('D/MM/YYYY')+ '</td><td>' +value.createdBy+ '</td><td>' +value.remarks+ '</td></tr></tbody>'));
+							});
+						}else{
+							$("#tblApproval").append($('<tbody><tr><td colspan="5" class="text-center">No Approval data available</td></tr></tbody>'));
+						}
+								
+					 
+					 
+				   },
+			   		error:function(err)
+			   		{
+			   		  toastr.error("Failed to load time table details");
+			   		}
+				 });
+    
+  
+   	   });
+	
+	});		
+	
+	
+	/**
+	   Bind the schedule details
+	*/	
+	function bindViewSchedule(data)
+	{
+	//console.log(data.pay_date);
+	   $("#academicYear").text(data.academic_year);
+	   $("#program").text(data.programName);
+	   $("#batch_sem").text(data.batchName + " - "+data.semester);
+	   $("#exam_type").text(data.exam_type);
+	   
+	   $("#exam_name").text(data.name_exam);
+	   $("#month_year").text(data.month_year);
+	   $("#tentative_date").text( moment(data.tentative_date).format('D/MM/YYYY'));
+	   $("#date_without_fine").text( moment(data.pay_date).format('D/MM/YYYY'));
+	   $("#date_with_fine").text( moment(data.pay_date_fine).format('D/MM/YYYY'));
+	   $("#instructions").text(data.instructions);
+	
+	
+	}
+
+	/**
+	   Bind the Time table details
+	*/	
+	function bindTimeTable(scheduleId)
+	{
+	     $.ajax({
+				   type: "GET",
+				   url:  BASE_URL+"time-table/list-schedule-id/"+scheduleId,
+				   headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				   },		   
+				   success: function(result)
+				   {
+						$("#tblTimetable tbody").remove();	
+						//console.log(result.data);
+						if(result.data.length>0)	
+						{				
+							$.each(result.data, function (key, value) {
+								
+								//$("#tblTimetable").append($('<tbody><tr><td>' +  value.courseId+ '</td><td>' +value.courseName+ '</td><td>'+ moment(value.examDate).format('D/MM/YYYY')+ '</td><td>'+  moment(value.examDate).format('dddd')+ '</td><td>'+ moment(value.startDateTime, ["HH.mm"]).format("hh:mm A")+" - "+ moment(value.endDateTime, ["HH.mm"]).format("hh:mm A")+'</td></tr></tbody>'));
+								$("#tblTimetable").append($('<tbody><tr><td>' +  value.courseId+ '</td><td>' +value.courseName+ '</td><td>'+ moment(value.examDate).format('D/MM/YYYY')+ '</td><td>'+  moment(value.examDate).format('dddd')+ '</td><td>'+ value.startDateTime+" - "+ value.endDateTime+'</td></tr></tbody>'));
+							});
+						}else{
+							$("#tblTimetable").append($('<tbody><tr><td colspan="5" class="text-center">No data available</td></tr></tbody>'));
+						}
+								
+					 
+					 
+				   },
+			   		error:function(err)
+			   		{
+			   		  toastr.error("Failed to load time table details");
+			   		}
+				 });
+	
+	}
+	
+	
+	
+	
+  /**
+	 submit approval list
+	**/
+    $("#formApproval").submit(function (event) {
+         event.preventDefault();
+         
+          $.ajax({
+			   type: "POST",
+			   url:  BASE_URL+"time-table/approval",
+			   data:{"id":scheduleId,"approvalType": $( "#selectApproveType option:selected" ).val(), "remarks":$("#remarks").val()},
+			   success: function(result)
+			   {
+				 toastr.success("Approval details updated");
+				// $( "#divApproval" ).detach();
+				 $( "#divApproval" ).hide();
+				  $( "#divViewSchedules" ).hide();
+				 $('#tblExamSchedule').DataTable().ajax.reload();
+				  $('html, body').animate({
+		        scrollTop: $("#timetable").offset().top
+		              }, 1000);
+			   },
+		   		error:function(err)
+		   		{
+		   		  toastr.error("Failed to update approval details");
+		   		}
+				 });
+				 
+         
+         
+       });
+  
+
+    
+    /**
+	* To get fee details for the given schedule id
+	*/
+	 function getFeeDetails(scheduleId,programId)
+	 {
+		 //console.log(scheduleId);
+	   $.ajax({
+		         url: BASE_URL+"schedule/fees/schedule-id/"+scheduleId,
+		         async:false,
+				 success: function(data)
+		           {
+		           //console.log(data);
+					//console.log(data.data.configList);
+					//bindFeeDetails(data.data.configList);
+					selectedConfigArray = data.data.configList;
+					bindFeeDetails(selectedConfigArray,programId);
+		           }, 
+		           function(error) {
+					
+				       toastr.error("Failed loading Fee details !!");
+					
+			        }
+		           
+		         });
+	 
+	 
+	 }
+	 
+	 function bindFeeDetails(selectedConfigArray,programId)
+	 {
+
+	 $.ajax(
+			{
+				"url":"/fees/getManyFeeHeadAmountMap",
+				"data":{"pgmId":programId,"feeIdentifierList":String(selectedConfigArray)},
+				success:function(data)
+				{
+					//console.log(data.length);
+					$('#displayTable').empty();
+				
+						for(let i=0;i<data.length;i++)
+						{
+							 var tr=$('<tr><td>'+data[i]['configKey']+'</td><td>'+data[i]['feeAmount']+'</td></tr>');
+						    
+					       
+							$('#displayTable').append(tr);
+							
+						}
+						
+						
+				},
+				error:function(e)
+				{
+					//console.log("Error in calling ajax "+e);
+					toastr.error("Fee not set for this program ");
+				}
+			});
+			
+			
+	 }
+	 
+  
+});
+
+ 
+</script>
+
+
+

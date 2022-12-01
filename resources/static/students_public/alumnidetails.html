@@ -1,0 +1,549 @@
+<script>
+employemap=
+	[
+		"employerauthority",
+		"employertype",
+		"empalumniposition",
+		"empalumnienrollmentdate",
+		"empalumnijoiningdate",
+		"employername",
+		"employeraddress"
+	]
+
+	practicemap=
+	{
+		"independent":
+		[
+			"indissupreme",
+			"indsupremeposition",
+			"indsupremejoiningdate",
+			"indsupremename",
+			"indsupremeadd",
+			"indishigh",
+			"indhighposition",
+			"indhighjoiningdate",
+			"indhighname",
+			"indhighadd",
+			"indissub",
+			"indsubposition",
+			"indsubjoiningdate",
+			"indsubname",
+			"indsubadd",
+			"indenrollmentdate",
+		],
+		"associate":
+		[
+			"assoissupreme",
+			"assosupremeposition",
+			"assosupremejoiningdate",
+			"assosupremename",
+			"assosupremeadd",
+			"assoishigh",
+			"assohighposition",
+			"assohighjoiningdate",
+			"assohighname",
+			"assohighadd",
+			"assoissub",
+			"assosubposition",
+			"assosubjoiningdate",
+			"assosubname",
+			"assosubadd",
+			"assoenrollmentdate",
+			"assoemployername",
+			"assoemployeraddress"
+			
+		]
+	}
+
+function getRecordTimeLines()
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getOwnMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processName":"alumni-data"},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Record Id"},{"activityLog":"Record Log"},{"mdtllUserCode":"updated by"},{"mdtltlStatus":"status"},{"mdtlDate":"on"}],"gridTable",null);
+			}
+		}
+	});
+}
+function getOrganizationTypes()
+{
+	$.ajax(
+	{
+		url:"/academics/api/v1/academics/getLookUpDetailsByMasterName/masterName/organizationType",
+		success:function(data)
+		{
+			console.log(data);
+			setUpDropDown('employerauthority',data,'detailName','detailName');
+		}
+	});	
+}
+function getOrganizationSubTypes()
+{
+	$.ajax(
+	{
+		url:"/academics/api/v1/academics/getLookUpDetailsByMasterName/masterName/organizationSubType",
+		success:function(data)
+		{
+			console.log(data);
+			setUpDropDown('employertype',data,'detailName','detailName');
+		}
+	});	
+}
+$('document').ready(function()
+{
+	getOrganizationTypes();
+	getOrganizationSubTypes();
+	getRecordTimeLines();
+	$('.dp').datepicker({
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true
+	});
+	$('#alumnijobtype').unbind().bind('change',function()
+	{
+		if($(this).val()=="employed")
+		{
+			$('#employeddiv').show();
+			$('#practicingdiv').hide();				
+		}
+		else if($(this).val()=="practising")
+		{
+			$('#employeddiv').hide();
+			$('#practicingdiv').show();
+		}
+		else
+		{
+			$('#employeddiv').hide();
+			$('#practicingdiv').hide();
+		}
+	});
+
+	$('#practicetype').unbind().bind('change',function()
+	{
+		if($(this).val()=="independent")
+		{
+			$('#indDiv').show();
+			$('#assodiv').hide();				
+		}
+		else if($(this).val()=="associate")
+		{
+			$('#indDiv').hide();
+			$('#assodiv').show();	
+		}
+		else
+		{
+			$('#indDiv').hide();
+			$('#assodiv').hide();	
+		}
+	});
+	$('#btnAdd').unbind().bind('click',function()
+	{
+		$('#addForm input').val('');
+		$('#dialogAdd').modal({backdrop: 'static',
+		 keyboard: false});
+	});	
+
+    $('.ind1').change(function() 
+    {
+        if(this.checked) 
+        {
+        	$('#indsupremediv').show(); 
+        	$(this).val("yes");
+        }
+        else
+        {
+        	$('#indsupremediv').hide();
+        	$(this).val("");
+        }
+    });
+    $('.ind2').change(function()
+    {
+        if(this.checked) 
+        {
+        	$('#indhighdiv').show(); 
+        	$(this).val("yes");
+        }
+        else
+        {
+        	$('#indhighdiv').hide();
+        	$(this).val("");
+        }
+    });
+    
+    $('.ind3').change(function()
+    {
+        if(this.checked) 
+        {
+        	$('#indsubdiv').show(); 
+        	$(this).val("yes");
+        }
+        else
+        {
+        	$('#indsubdiv').hide();
+        	$(this).val("");
+        }
+    });
+
+    $('.asso1').change(function() {
+        if(this.checked) 
+        {
+        	$('#assosupremediv').show();  
+        	$(this).val("yes");
+        }
+        else
+        {
+        	$('#assosupremediv').hide();
+        	$(this).val("");
+        }
+    });
+    $('.asso2').change(function()
+    {
+        if(this.checked) 
+        {
+        	$('#assohighdiv').show();
+        	$(this).val("yes");
+        }
+        else
+        {
+        	$('#assohighdiv').hide();
+        	$(this).val("");
+        }
+    });
+    
+    $('.asso3').change(function()
+    {
+        if(this.checked) 
+        {
+        	$('#assosubdiv').show();
+        	$(this).val("yes");
+        }
+        else
+        {
+        	$('#assosubdiv').hide();
+        	$(this).val("");
+        }
+    });
+    $('#btnsave').unbind().bind('click',function()
+    {
+    	var formdata=new Array();
+    	var jobtype=$('#alumnijobtype').val();
+    	if(jobtype=="employed")
+    	{
+    		for( let i=0;i<employemap.length;i++)
+    		{
+    			if(employemap[i]=="empalumnienrollmentdate")
+    			{
+    				if($('#'+employemap[i]).val()!="")
+    					formdata.push({"name":"enrollmentdate","value":$('#'+employemap[i]).val()});
+    			}
+    			else
+    			{
+    				if($('#'+employemap[i]).val()!="")
+    					formdata.push({"name":employemap[i],"value":$('#'+employemap[i]).val()});
+    			}
+    		}
+    		formdata.push({"name":"alumnijobtype","value":jobtype});
+    	}
+    	else if(jobtype=="practising")
+    	{
+    		if($('#practicetype').val())
+    		{
+    			var pracmap=practicemap[$('#practicetype').val()];
+    			for( let i=0;i<pracmap.length;i++)
+        		{
+    				/*			"assoemployername",
+					"assoemployeraddress"*/
+    				if(pracmap[i]=="assoemployername")
+    				{
+    					if($('#'+pracmap[i]).val()!="")
+    						formdata.push({"name":"employername","value":$('#'+pracmap[i]).val()});
+    				}
+    				else if(pracmap[i]=="indenrollmentdate")
+    				{
+    					if($('#'+pracmap[i]).val()!="")
+    					formdata.push({"name":"enrollmentdate","value":$('#'+pracmap[i]).val()});
+    				}
+    				else if(pracmap[i]=="assoenrollmentdate")
+    				{
+    					if($('#'+pracmap[i]).val()!="")
+    					formdata.push({"name":"enrollmentdate","value":$('#'+pracmap[i]).val()});
+    				}
+    				else if(pracmap[i]=="assoemployeraddress")
+    				{
+    					if($('#'+pracmap[i]).val()!="")
+    					formdata.push({"name":"employeraddress","value":$('#'+pracmap[i]).val()});
+    				}
+    				else
+    				{	if($('#'+pracmap[i]).val()!="")
+    						formdata.push({"name":pracmap[i],"value":$('#'+pracmap[i]).val()});	
+    				}
+        			
+        		}
+    			formdata.push({"name":"alumnijobtype","value":jobtype});
+    			formdata.push({"name":"practicetype","value":$('#practicetype').val()});
+    		}
+    		else
+    		{
+    			showMessage("Select Type of Practise");
+    		}
+    	}
+    	console.log(formdata);
+    	
+    	$.ajax(
+    	{
+    		"url":'/students/addAlumniDetails2',
+    		"method":"post",
+    		"data":formdata,
+    		success:function(data)
+    		{
+    			console.log("success");
+    			console.log(data);
+    			if(data)
+    			{
+    				if(data['studentalumnicode'])
+    				{
+    					$('#dialogAdd').modal('toggle');
+    					showMessage("Successfully updated");
+    				}
+    			}
+    		}
+    	});
+    });
+});
+</script>
+<div class="row">
+	<div class="col-md-8"></div>
+	<div class="col-md-4"><button class="btn btn-success form-control" id="btnAdd">Update Details</button></div>
+</div>
+<hr>
+<label>Data Update History</label>
+<div class="row">
+	<div class="col-md-12">
+		<div class="table-responsive">
+			<table class="table table-striped" id="gridTable">
+			
+			</table>
+		</div>
+	</div>	
+</div>
+
+<div class="modal fade" id="dialogAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Alumni Details</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<div class="form-group">
+				<label>Job Type</label>
+				<select class="form-control" id="alumnijobtype" name="alumnijobtype">
+				 <option value=''>Select</option>
+				  <option value='employed'>Employed</option>
+				  <option value='practising'>Practicing</option>
+				</select>
+			</div>
+			<div id="employeddiv" style="display:none">
+				<div class="form-group">
+					<label for="accPLHeadProfity">Employer Authority</label>
+					<select class="form-control" id="employerauthority" name="employerauthority">
+						
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="accPLHeadProfity">Employer Type</label>
+					<select class="form-control" id="employertype" name="employertype">
+					</select>
+				</div>
+				
+				<div class="form-group">
+					<label for="accountName">Position</label>
+					<input type="text" class="form-control" name="alumniposition1" id="empalumniposition" placeholder="Position" ></input>
+				</div>
+				
+				<div class="form-group">
+					<label>Date of Enrollment</label>
+					<input type="text" class="form-control dp" name="alumnienrollmentdate1"  id="empalumnienrollmentdate"></input>
+				</div>
+				
+				<div class="form-group">
+					<label>Date of Joining</label>
+					<input type="text" class="form-control dp" name="alumnijoiningdate1" id="empalumnijoiningdate" ></input>
+				</div>
+				<label for="accountName">Employer Name</label>
+				<input type="text" class="form-control" name="employername1" id="employername" aria-describedby="alumniemploymentaddress" ></input>		
+				<label for="accountName">Employer Name and Address with contact No:s</label>
+				<textarea class="form-control" name="employeraddress1" id="employeraddress" aria-describedby="alumniemploymentaddress" ></textarea>
+			</div>
+			<div id="practicingdiv" style="display:none">
+				<div class="form-group">
+					<label>Type</label>
+					<select class="form-control"  name="practicetype"  id="practicetype">
+						<option value="">Select</option>
+						<option value="independent">Independent</option>
+						<option value="associate">Associate</option>
+					</select>
+				</div>
+				<div id="indDiv" style="display:none">
+					<hr>
+					<div class="form-check">
+					  <input class="form-check-input ind1" name="supremecourt" type="checkbox" value="" id="indissupreme">
+					  <label class="form-check-label" for="flexCheckDefault"> Supreme Court </label>
+					  <div style="display:none" id="indsupremediv">
+					  	<div class="form-group">
+					  		<hr>
+							<label for="accountName">Position</label>
+							<input type="text" class="form-control" name="alumniposition2" id="indsupremeposition" placeholder="Position" ></input>
+							<label>Date of Joining</label>
+							<input type="text" class="form-control dp" name="alumnijoiningdate2" id="indsupremejoiningdate" ></input>
+							<label for="accountName">Court Name</label>
+							<input type="text" class="form-control" name="employername2" id="indsupremename" aria-describedby="alumniemploymentaddress" placeholder="Enter Employment Data" ></input>
+							<label for="accountName">Address</label>
+							<textarea class="form-control" name="employeraddress2" id="indsupremeadd" aria-describedby="alumniemploymentaddress" placeholder="Enter Employment Data" ></textarea>
+							<hr>
+						</div>		
+					  </div>
+					</div>
+					<div class="form-check">
+					  <input class="form-check-input ind2" name="highcourt" type="checkbox" value="" id="indishigh">
+					  <label class="form-check-label" for="flexCheckDefault">
+					    High Court
+					  </label>
+					  	<div style="display:none" id="indhighdiv">
+					  	<div class="form-group">
+					  		<hr>
+							<label for="accountName">Position</label>
+							<input type="text" class="form-control" name="alumniposition2" id="indhighposition" placeholder="Position" ></input>
+							<label>Date of Joining</label>
+							<input type="text" class="form-control dp" id="indhighjoiningdate" ></input>
+							
+							<label for="accountName">Court Name</label>
+							<input type="text" class="form-control" name="employername2" id="indhighname" aria-describedby="alumniemploymentaddress" placeholder="Enter Employment Data" ></input>
+							<label for="accountName">Address</label>
+							<textarea class="form-control" name="employeraddress2" id="indhighadd" aria-describedby="alumniemploymentaddress" placeholder="Enter Employment Data" ></textarea>
+							<hr>
+						</div>		
+					  </div>
+					</div>
+					<div class="form-check">
+					  <input class="form-check-input ind3" name="subordinatecourt" type="checkbox" value="" id="indissub">
+					  <label class="form-check-label" for="flexCheckDefault">
+					    Subordinate Court
+					  </label>
+					  	<div style="display:none" id="indsubdiv">
+						  	<div class="form-group">
+						  		<hr>
+								<label for="accountName">Position</label>
+								<input type="text" class="form-control" name="alumniposition2" id="indsubposition" placeholder="Position" ></input>
+								<label>Date of Joining</label>
+								<input type="text" class="form-control dp" id="indsubjoiningdate" ></input>
+								<label for="accountName">Court Name</label>
+								<input type="text" class="form-control" name="employername2" id="indsubname" aria-describedby="alumniemploymentaddress" placeholder="Enter Employment Data" ></input>
+								<label for="accountName">Address</label>
+								<textarea class="form-control" name="employeraddress2" id="indsubadd" aria-describedby="alumniemploymentaddress" placeholder="Enter Employment Data" ></textarea>
+								<hr>
+							</div>
+						</div>	
+					</div>
+					<hr>
+					<div class="form-group">
+						<label>Date of Enrollment</label>
+						<input type="text" class="form-control dp" id="indenrollmentdate"></input>
+					</div>
+
+					<hr>
+				</div>
+				
+				<div id="assodiv" style="display:none">
+					<hr>
+					<div class="form-check">
+					  <input class="form-check-input asso1" name="supremecourt" type="checkbox" value="" id="assoissupreme">
+					  <label class="form-check-label" for="flexCheckDefault"> Supreme Court </label>
+					  <div style="display:none" id="assosupremediv">
+					  	<div class="form-group">
+					  		<hr>
+							<label for="accountName">Position</label>
+							<input type="text" class="form-control" name="alumniposition2" id="assosupremeposition" placeholder="Position" ></input>
+							<label>Date of Joining</label>
+							<input type="text" class="form-control dp"  id="assosupremejoiningdate" name="assoalumnijoiningdate2" ></input>
+							<label for="accountName">Court Name</label>
+							<input type="text" class="form-control" name="employername2" id="assosupremename" aria-describedby="alumniemploymentaddress" placeholder="Enter Employment Data" ></input>
+							<label for="accountName">Address</label>
+							<textarea class="form-control" name="employeraddress2" id="assosupremeadd" aria-describedby="alumniemploymentaddress" placeholder="Enter Employment Data" ></textarea>
+							<hr>
+						</div>		
+					  </div>
+					</div>
+					<div class="form-check">
+					  <input class="form-check-input asso2" name="highcourt" type="checkbox" value="" id="assoishigh">
+					  <label class="form-check-label" for="flexCheckDefault">
+					    High Court
+					  </label>
+					  	<div style="display:none" id="assohighdiv">
+					  	<div class="form-group">
+					  		<hr>
+							<label for="accountName">Position</label>
+							<input type="text" class="form-control" name="alumniposition2" id="assohighposition" placeholder="Position" ></input>
+							<label>Date of Joining</label>
+							<input type="text" class="form-control dp"  id="assohighjoiningdate" name="assoalumnijoiningdate2" ></input>
+						
+							<label for="accountName">Court Name</label>
+							<input type="text" class="form-control" name="employername2" id="assohighname" aria-describedby="alumniemploymentaddress" placeholder="Enter Employment Data" ></input>
+							<label for="accountName">Address</label>
+							<textarea class="form-control" name="employeraddress2" id="assohighadd" aria-describedby="alumniemploymentaddress" placeholder="Enter Employment Data" ></textarea>
+							<hr>
+						</div>		
+					  </div>
+					</div>
+					<div class="form-check">
+					  <input class="form-check-input asso3" name="subordinatecourt" type="checkbox" value="" id="assoissub">
+					  <label class="form-check-label" for="flexCheckDefault">
+					    Subordinate Court
+					  </label>
+					  	<div style="display:none" id="assosubdiv">
+						  	<div class="form-group">
+						  		<hr>
+								<label for="accountName">Position</label>
+								<input type="text" class="form-control" name="alumniposition2" id="assosubposition" placeholder="Position" ></input>
+								<label>Date of Joining</label>
+							<input type="text" class="form-control dp"  id="assosubjoiningdate" name="assoalumnijoiningdate2" ></input>
+								<label for="accountName">Court Name</label>
+								<input type="text" class="form-control" name="employername2" id="assosubname" aria-describedby="alumniemploymentaddress" placeholder="Enter Employment Data" ></input>
+								<label for="accountName">Address</label>
+								<textarea class="form-control" name="employeraddress2" id="assosubadd" aria-describedby="alumniemploymentaddress" placeholder="Enter Employment Data" ></textarea>
+								<hr>
+							</div>
+						</div>	
+					</div>
+					<hr>
+					<div class="form-group">
+						<label>Date of Enrollment</label>
+						<input type="text" class="form-control dp" id="assoenrollmentdate"></input>
+					</div>
+					<label for="accountName">Employer/Senior Name</label>
+				<input type="text" class="form-control" name="employername1" id="assoemployername" aria-describedby="alumniemploymentaddress" ></input>		
+				<label for="accountName">Employer Name and Address </label>
+				<textarea class="form-control" name="employeraddress1" id="assoemployeraddress" aria-describedby="alumniemploymentaddress" ></textarea>
+					
+					<hr>
+				</div>
+			</div>
+			<input type="button" class="btn btn-success" id="btnsave" value="Submit"></input>
+		</div>
+		<div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>

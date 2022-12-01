@@ -1,0 +1,317 @@
+
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">          
+          <!-- /.col-md-12 -->
+          <div class="col-lg-12">           
+
+            <div class="card card-info card-outline">
+              <div class="card-header ">
+                <h5 class="m-0 card-title">Exam Timetable </h5>				
+              </div>
+               <div class="card-body ">
+                   <div class="row">
+	     <!--         <div class="col-md-3">
+							<div class="form-group">
+							   <label for="program">Program</label>
+							   <select class="form-control" id="selectProgram" name="program" required>
+									<option>Select Program</option>	
+								</select>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group">
+							   <label for="batch">Batch</label>
+							   <select class="form-control" id="selectBatch" name="batch" required>
+									  <option>Select Batch</option>							  
+								</select>
+							</div>
+						</div> -->
+						<div class="col-md-4">
+							<div class="form-group">
+							   <label for="semester">Semester</label>
+							   <select class="form-control" id="selectSemester" name="semester" required>
+									   <option>Select Semester</option>
+								</select>
+							</div>
+						</div>	
+				
+					
+					<div class="col-md-4">
+						<div class="form-group">
+						   <label for="course">Exam Name</label>
+						   <select class="form-control" id="selectExamNameTimetable" name="selectExamNameTimetable">
+								  <option>Select Exam Name</option>
+								
+							</select>
+						</div>
+					</div>
+									
+				
+				</div>
+				</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>	
+			
+			<div class="card" id="divExamTimetable">
+		  		<!-- <div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Time table</div> -->
+					<div class="table-responsive">
+					  <table id="tblExamTimetable" class="table table table-striped table-bordered  display" style="width:100%">
+						<thead>
+							<tr>
+							  <th>Date </th>
+							  
+							  <th>Course Id</th>
+							  <th>Course Name</th>
+							  
+							  <th> Day</th>
+							  <th>Start Time </th>			 
+							  <th>End Time</th>
+							 
+							</tr>
+							</thead>
+					  </table>				  
+					 
+					</div>
+					<!-- /.table-responsive -->
+				 
+				</div>
+				
+				
+	
+	
+	
+	
+<script>
+
+//global variables and fns
+
+/* base url for exam management */
+var BASE_URL = "/exam-management/api/v1/";
+var MARKS_CONFIG_URL = "/mark-config/api/v1/academics/marks-management/evaluation-types-program/program-id/";
+var ACADEMIC_YEAR_URL = "/academics/api/v1/academics/getDetailsByMasterId/masterId/83";
+
+	
+	/* fn to convert form data to json */
+	$.fn.serializeObject = function()
+	{
+	    var o = {};
+	    var a = this.serializeArray();
+	    $.each(a, function() {
+	        if (o[this.name] !== undefined) {
+	            if (!o[this.name].push) {
+	                o[this.name] = [o[this.name]];
+	            }
+	            o[this.name].push(this.value || '');
+	        } else {
+	            o[this.name] = this.value || '';
+	        }
+	    });
+	    return o;
+	 };
+
+ 
+ 	$('.datepicker').datepicker({
+	    //format: 'yyyy-mm-dd',	
+ 		//startDate : moment() , //0
+	    format: 'dd-mm-yyyy',
+		autoclose:true,
+		clearBtn:true,
+		pickerPosition: "bottom-left"
+		
+	});  
+	
+ 	
+	$('.datepicker-month-year').datepicker({
+	    format: 'M-yyyy',	
+	    startView: "months", 
+        minViewMode: "months",						   
+		autoclose:true,
+		clearBtn:true
+	});
+	
+
+    
+    
+    //getStudentInfo();
+   	function getStudentInfo()
+	{
+
+      $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		data:{"userCodes":$("#usercode").val()},
+	   		success: function(data)
+	   		{
+	   		  console.log(data);
+	   		  return data;
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+	 }
+    
+ $(document).ready(function() {
+
+	//getAllExamSchedule();
+    $("#divExamTimetable").hide();
+    var loggedStudentId = $("#usercode").val();
+    getStudentInfo();
+	  
+    /**
+ 	* To load loggedin student details
+ 	*/
+    function getStudentInfo()
+	{
+        $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		async:false,
+	   		data:{"userCodes":loggedStudentId},
+	   		success: function(data)
+	   		{
+	   		  studentData = data[loggedStudentId];
+	   		 
+	   		studentProgram = studentData.programCode;
+			 studentBatch = studentData.batchCode;
+			 getAllActiveSemesterOfBatch(studentBatch);
+               
+              },
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+        
+	}
+ 	 
+ 	 /**
+	  To get all semesters the given batchid
+	  */
+	 function getAllActiveSemesterOfBatch(batchId)
+	 {
+		//$("#selectSemester").prop( "disabled", false );
+		  $.ajax({
+					"url" : "/batch/getAllSemestersInABatch",
+					"method" : "GET",
+					data : {"batchId":batchId},
+					success :function(data) {
+					console.log(data);
+					    try{
+						   if(data && data.length >0){
+							   $('#selectSemester').empty();
+							   $('#selectSemester').append('<option>Select Semester</option>');
+							   for(var i=0;i< data.length;i++){
+							   	   $("#selectSemester").append('<option value='+data[i]['semesterIdentity']['semesterCode']+'>'+data[i]['semesterIdentity']['semesterCode']+'</option>');
+							   }
+						 }
+						}
+						catch(e){
+						    console.error(e);
+						    showMessage(" Error occurred while processing semester list"); 
+						}
+													
+						
+					},
+					error :function(e) {
+					     showMessage(err);
+					}
+				});
+		}
+ 	 
+    /* 
+      To list all scheduled exams
+	*/
+	
+	$('#selectSemester').unbind().bind('change',function(){
+	   
+	 //  var program = $( "#selectProgram option:selected" ).val();
+	 //  var batch = $( "#selectBatch option:selected" ).val();
+	  var program =studentProgram;
+	  var batch = studentBatch;
+	  var semester = $( "#selectSemester option:selected" ).val();
+	   $.ajax({
+	   	   	   "url": BASE_URL+"schedule/list",
+			   "type":"POST",
+			    "data":{"program":program,"batch":batch,"semester":semester},
+	   		success: function(data)
+	   		{
+	   		    var examDetails = data.data;
+	   		  	
+	   		   setUpDropDown("selectExamNameTimetable",examDetails,"id","name_exam");
+	   		   
+	   		   
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+	   
+	  }); 
+	   
+	   
+
+	
+    /**
+	 * Load time table on change of the exam name
+	 *
+	 **/
+	 
+	 $('#selectExamNameTimetable').unbind().bind('change',function()
+	 {
+	   		$("#divExamTimetable").show();
+	 	var statusDataTable =  $('#tblExamTimetable').DataTable({
+	 	/* dom: 'Bfrtip',
+	 	 buttons: [ 
+            { 
+                     extend: 'print',
+                title:'Time table - '+$("#selectExamNameTimetable option:selected").text(), 
+                     customize: function ( win ) {
+                        $(win.document.body).find('h1').css('text-align', 'center');
+                        $(win.document.body).css( 'font-size', '8px' );
+                        $(win.document.body).find( 'table' )
+                        .addClass( 'compact' )
+                        .css( 'font-size', 'inherit' );
+                }
+            },
+               { 
+                     extend: 'pdf',
+                      title:'Time table - '+$("#selectExamNameTimetable option:selected").text()
+                                
+                           
+          }  ],*/
+            "language": {
+                    "emptyTable": "No time table available for the selected exam name"
+                  },
+			"processing": true,
+			"bSort" : false,
+			"destroy": true,
+			"ajax": BASE_URL+"time-table/list-schedule-id/approved/"+$(this).val(),
+			"columns": [
+			{ "data": "examDate" , "render": function(data){return moment(data).format('DD/MM/YYYY')}},
+			{ "data": "courseId" },
+			{ "data": "courseName"},
+		
+			{ "data": "examDate" , "render": function(data){return  moment(data).format('dddd') }},
+			{ "data": "startDateTime" },//"render": function(data){return moment(data, ["HH.mm"]).format("hh:mm A") }},
+			{ "data": "endDateTime" },//"render": function(data){return moment(data, ["HH.mm"]).format("hh:mm A") }},
+		]
+		});
+		
+	  });
+});
+    
+
+</script>
+
+   
+

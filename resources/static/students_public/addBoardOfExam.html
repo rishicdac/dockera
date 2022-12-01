@@ -1,0 +1,204 @@
+<script>
+var booardoldName;
+function getAllBoardExamination()
+{
+	$.ajax(
+	{
+  		url:'/students/getAllBoardOfExaminationsforgrid',
+  	   	method:'GET',
+  	   	success:function(data)
+  	   	{
+  	   	var date1;
+		for (var i = 0; i < data.length; i++)
+		{ 
+			  	   				   
+			   var d=data[i].brdExamEnteredDate;
+			   var vd=data[i].brdExamForwardedDate;
+			   var appvd=data[i].brdExamVerifiedDate;
+			   if((d!=null))
+			   {
+					var date = new Date(d.replace(
+			    /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
+			    '$4:$5:$6 $2/$3/$1'
+			));
+					date1=convertDate(date);
+	
+					data[i].brdExamEnteredDate=date1;
+        }
+			   
+			   if(vd!==null)
+			   {
+		var vdate = new Date(vd.replace(
+			    /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
+			    '$4:$5:$6 $2/$3/$1'
+			));
+	var vdate1=convertDate(vdate);
+	
+	data[i].brdExamForwardedDate=vdate1;
+	
+           }
+			   
+			   
+			  if(appvd!==null)
+			   {
+		var appdate = new Date(appvd.replace(
+			    /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
+			    '$4:$5:$6 $2/$3/$1'
+			));
+	var appvddate1=convertDate(appdate);
+	
+	data[i].brdExamVerifiedDate=appvddate1;
+	
+	           }
+			  
+			   }  	   		
+    		
+  	   		setUpDataTable(data,[{"board_exam_name":"Board of Examination"},{"status":"status"},{"brdExamEnteredBy":"EnteredBy"},{"brdExamEnteredDate":"EnteredDate"},{"brdExamForwardedBy":"Forwarded By"},{"brdExamForwardedDate":"Forwarded Date"},{"brdExamVerifiedBy":"Verified BY"},{"brdExamVerifiedDate":"Verified date"}],'gridTableBoardExamination',null);
+  	   		onDataTableClick("gridTableBoardExamination",function()
+  	   		{
+  	   			booardoldName=selectedRowFromDataTable[0];
+  	   		   $('#editBoard_exam_name').val(selectedRowFromDataTable[0]);
+				//$('#editfeeProcessIdentifierType').val(selectedRowFromDataTable[1]);
+				$('#dialogEdit').modal({backdrop: 'static',
+  				     keyboard: false});
+  	   		})
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	});
+}
+
+function convertDate(inputFormat) {
+	  function pad(s) { return (s < 10) ? '0' + s : s; }
+	  var d = new Date(inputFormat)
+	  return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('/')
+	}
+
+$(document).ready(function()
+{
+	getAllBoardExamination();
+	$('#formBoardExamination').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+        $.ajax(
+   		{
+   			"url":"/students/saveBoardofExamination",
+   			"method":"POST",
+   			 data:formData,
+   			 success:function(data)
+   			{
+   				clearDataTable('gridTableBoardExamination');
+   				getAllBoardExamination();
+   				showMessage("Successfully added");
+   				$('#dialogeAddBoardofExamination').modal('toggle');
+   				
+   			}
+   		});	
+	});	
+	
+	
+	$('#editFormBoardExamination').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+	
+		var formData=$(this).serializeArray();
+		formData.push({"name":"booardoldName","value":booardoldName});
+	     $.ajax(
+   		{
+   			"url":"/students/saveBoardofExamination1",
+   			"method":"POST",
+   			 data:formData,
+   			 success:function(data)
+   			{
+   				console.log(data);
+   				showMessage("Changes Saved");
+   				$('#dialogEdit').modal('toggle');
+   				clearDataTable('gridTableBoardExamination');
+   				getAllBoardExamination();
+   			}
+   		});	
+	});	
+	
+	
+	$('#showAddModal').unbind().bind('click',function()
+	{
+		$('#dialogeAddBoardofExamination').modal({backdrop: 'static', keyboard: false});
+	});
+});
+</script>
+
+
+
+<div class="row">
+	<div class="col-md-8"></div>
+	<div class="col-md-4"><button type="button"  id="showAddModal" class="btn btn-primary">Add Board of Examination</button></div>
+</div>
+
+<div class="table-responsive">
+	<table class="table table-bordered" id="gridTableBoardExamination"></table>
+</div>
+
+
+
+<div class="modal fade" id="dialogeAddBoardofExamination" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">New Board of Examination</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+	  </div> 
+		<div class="modal-body">
+			
+			<form id="formBoardExamination">
+			
+					<div class="form-group">
+						<label for="Board Of Examination">Board Of Examination</label>
+						<input type="text" class="form-control" name="board_exam_name" id="board_exam_name" aria-describedby="accountHelp" placeholder="Enter Board of Examination" required>
+					</div>
+				
+					<button type="submit" class="btn btn-primary">Add</button>
+			</form>	
+		</div>
+		      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- -------------editing board of examination -->
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Details/Edit Board Of Examinations</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<p class="h3">Board of Examination Details(Get the entry verified after editing)</p>
+			
+			<form id="editFormBoardExamination">
+			<div class="form-group">
+						<label for="Board Of Examination">Board Of Examination</label>
+						<input type="text" class="form-control" name="board_exam_name" id="editBoard_exam_name" aria-describedby="accountHelp" placeholder="Enter Board of Examination" required>
+			</div>
+				
+		     <button type="submit" class="btn btn-primary">Save</button>
+			</form>	
+		</div>
+		
+		</div>
+		      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,293 @@
+<script>
+function makeFullCapableDataTable(tablename)
+{
+	$("#"+tablename).DataTable().destroy();
+    $('#'+tablename+ ' tfoot th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+    } );
+	
+    var dtable=$('#'+tablename).DataTable({
+        dom: 'Bfrtip',
+        buttons: 
+        [
+	              {
+ 		                extend: 'print',
+ 		                exportOptions: {
+ 		                	columns: ':visible'
+ 		                }
+ 		            }, 
+              {
+                extend: 'copyHtml5',
+                exportOptions: {
+                	columns: ':visible'
+                }
+            },
+            {
+                extend: 'excelHtml5',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                exportOptions: {
+                	columns: ':visible'
+                }
+            },
+            'colvis'
+        ], 
+        columnDefs: [ {
+            targets: -1,
+            visible: true
+        } ],
+        initComplete: function () {
+            // Apply the search
+            this.api().columns().every( function () {
+                var that = this;
+ 
+                $( 'input', this.footer() ).on( 'keyup change clear', function () {
+                    if ( that.search() !== this.value ) {
+                        that
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
+            } );
+        }
+    } );
+}
+$(document).ready(function()
+{
+	$('#btnGetFees').unbind().bind('click',function()
+	{
+		var fidentext="";
+		var batchId="";
+		var pgmId="";
+		if($('#selectProcess').val()=="all")
+		{
+			$("#selectProcess > option").each(function()
+			{
+				fidentext=fidentext+","+this.value;
+			});
+		}
+		else
+		{
+			fidentext=$('#selectProcess').val();
+		}
+		if($('#selectBatch').val()=="0")
+		{
+			$("#selectBatch > option").each(function()
+			{
+				if(this.value!="0")
+					batchId=batchId+","+this.value;
+			});
+		}
+		else
+		{
+			batchId=$('#selectBatch').val();
+		}
+		if($('#selectProgram').val()=="0")
+		{
+			batchId="0";
+			$("#selectProgram > option").each(function()
+			{
+				pgmId=pgmId+","+this.value;
+			});	
+		}
+		else
+		{
+			pgmId=$('#selectProgram').val();
+		}
+		if($('#feeProcessIdentifierType').val()=="all")
+		{
+			fidentext="all";
+		}
+		
+		$.ajax(
+		{
+				url:"/fees/getFeeReport1",
+				data:{"pgmId":$('#selectProgram').val(),"batchId":batchId,"feeIdentifier":fidentext},
+				success:function(data)
+				{
+					try
+					{
+						if(data.length>0)
+						{
+							for(let i=0;i<data.length;i++)
+							{
+								data[i]['serialno']=i+1;			
+							}
+						}
+						setUpDataTable(data,[{"serialno":"Sl.No"},{"rollno":"Roll No"},{"feecategory":"Fee Category"},{"demandedvalue":"Demanded value"},{"paidamount":"Paid Amount"},{"balance":"balance"},{"payemntmode":"payemntmode"},{"transactionref":"Bank Tran Reference"},{"nualsreference":"Nuals Tran Ref"},{"overduedays":"overduedays"},{"feeStatus":"Status"}],"gridTable",null);
+						makeFullCapableDataTable('gridTable');
+					}
+					catch(e)
+					{
+						console.log(e)
+						showMessage("Error processing Data from server. Contact Admin");
+					}
+				}
+			});
+	});
+	$('#selectProgram').unbind().bind('change',function()
+	{
+		getFeeProcess();
+	});
+
+	$('#feeProcessIdentifierType').unbind().bind('change',function()
+	{
+		if($(this).val()=="all")
+		{
+			$('#selectProcess').val("all");
+			$('#selectProcess').hide();
+		}
+		else
+		{
+			$('#selectProcess').show();
+			getFeeProcess();
+		}
+	});
+	getAllPrograms();
+});
+function getFeeProcess()
+{
+	var programId	=	$('#selectProgram').val();
+	var batchId		=	$('#selectBatch').val();
+	var feeType		=   $('#feeProcessIdentifierType').val();
+	if(programId!="" && batchId!=null && feeType!="")
+	{
+		$.ajax(
+		{
+			"url":"/fees/getAllFeeProcessByProgramBatchAndTypeForCollectionReport",
+			"data":{"programId":programId,"batchId":batchId,"feeType":feeType},
+			success:function(data)
+			{
+				console.log(data);
+				if(data.length>0)
+				{
+					$('#selectProcess').empty();
+					for(let i=0;i<data.length;i++)
+					{
+						$('#selectProcess').append('<option>'+data[i]['feeGenerationAcademicIdentity']['feeGenerationAcademicIdentitySemester']+'</option>');
+					}
+					$('#selectProcess').append('<option value="all">All</option>');
+				}
+			}
+		});
+	}
+	else if(batchId==null && feeType!="all")
+	{
+		$.ajax(
+		{
+			"url":"/fees/getAllFeeProcessByType",
+			"data":{"feeType":feeType},
+			success:function(data)
+			{
+				console.log(data);
+				if(data.length>0)
+				{
+					$('#selectProcess').empty();
+					for(let i=0;i<data.length;i++)
+					{
+						$('#selectProcess').append('<option>'+data[i]['feeProcessIdentifierName']+'</option>');
+					}
+					$('#selectProcess').append('<option value="all">All</option>');
+				}
+			}
+		});		
+	}
+}
+function getAllPrograms()
+{
+	$.ajax(
+	{
+   		url:'/course/getAllCourses',
+   		method:'GET',
+   		success:function(data)
+   		{
+   			setUpDropDown("selectProgram",data,"courseId","courseCode");
+   			$('#selectProgram').append('<option value="0">All</option>');
+   			$('#selectProgram').unbind().bind('change',function()
+   			{
+   				$('#selectBatch').val(0);
+   				if($(this).val()=="0")
+   				{
+   					$('#selectBatch').hide();
+   				}
+   				else
+   				{
+   					$('#selectBatch').show();
+   					getAllActiveBatchesOfProgram($(this).val());
+   				}
+   			});
+   		},
+   		error:function(err)
+   		{
+   			showMessage(err);
+   		}
+   	});
+}
+function getAllActiveBatchesOfProgram(programId)
+{
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatchesInAProgram',
+  	   	method:'GET',
+  	   	data:{"courseId":programId},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+  	   		$('#selectBatch').append('<option value="0">All</option>');
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+}
+</script>
+
+<div class="row well" id="selectionPanel">
+	<div class="col-md-4">
+	    <label for="accountName">Select Program</label>
+	    <select class="form-control grouping" id="selectProgram"></select>
+	</div>
+	<div class="col-md-4">
+	    <label for="accountName">Select Batch</label>
+	    <select class="form-control grouping" id="selectBatch"></select>
+	</div>
+    <div class="col-md-4">
+   		<label for="selectfeeProcessIdentifierType">Fee Type</label>
+   		<select class="form-control" id="feeProcessIdentifierType" name="feeProcessIdentifierType">
+   			<option value="">Select</option>
+		    <option value="Academic">Academic</option>
+		    <option value="Examination">Examination</option>
+		    <option value="Hostel">Hostel</option>
+		    <option value="Others">Others</option>
+		    <option value="all">All</option>
+		</select>
+   	</div>
+ </div>
+ <div class="row well">  	
+	<div class="col-md-12">
+	    <label for="accountName">Select Fee Process</label>
+	    <select class="form-control grouping" id="selectProcess"></select>
+	</div>
+ </div> 
+<hr>
+<div class="row">
+	<div class="col-md-4"></div>
+	<div class="col-md-4"><button id="btnGetFees" class="btn btn-primary form-control">Apply</button></div>
+	<div class="col-md-4"></div>
+</div>
+
+<hr>
+
+<div class="table-responsive cell-border well" id="gridTableDiv">
+	<table id="gridTable" class="table table-striped"></table>
+</div>
+
+ 
+ 

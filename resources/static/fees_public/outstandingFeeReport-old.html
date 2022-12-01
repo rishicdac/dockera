@@ -1,0 +1,231 @@
+<script>
+function makeFullCapableDataTable(tablename)
+{
+	$("#"+tablename).DataTable().destroy();
+    $('#'+tablename+ 'tfoot th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+    } );
+	
+    var dtable=$('#'+tablename).DataTable({
+        dom: 'Bfrtip',
+        buttons: 
+        [
+	              {
+ 		                extend: 'print',
+ 		                exportOptions: {
+ 		                	columns: ':visible'
+ 		                }
+ 		            }, 
+              {
+                extend: 'copyHtml5',
+                exportOptions: {
+                	columns: ':visible'
+                }
+            },
+            {
+                extend: 'excelHtml5',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                exportOptions: {
+                	columns: ':visible'
+                }
+            },
+            'colvis'
+        ], 
+        columnDefs: [ {
+            targets: -1,
+            visible: true
+        } ],
+        initComplete: function () {
+            // Apply the search
+            this.api().columns().every( function () {
+                var that = this;
+ 
+                $( 'input', this.footer() ).on( 'keyup change clear', function () {
+                    if ( that.search() !== this.value ) {
+                        that
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
+            } );
+        }
+    } );
+}
+$(document).ready(function()
+{
+	$('#btnGetFees').unbind().bind('click',function()
+	{
+		if($('#selectProcess').val()!='all')
+		{	
+			var fidentext;
+			if($('#feeProcessIdentifierType').val()=='Academic1')
+			{
+				 fidentext=$( "#selectProgram option:selected" ).text()+"-"+$( "#selectBatch option:selected" ).text()+"-"+$('#selectProcess').val();
+			}
+			else
+			{
+				 fidentext=$('#selectProcess').val();
+			}
+			$.ajax(
+			{
+				url:"/fees/getManyFeeOrderStatusByProgramBatchAndFeeIdentifier",
+				data:{"pgmId":$('#selectProgram').val(),"batchId":$('#selectBatch').val(),"feeIdentifier":fidentext},
+				success:function(data)
+				{
+					setUpDataTable(data,[{"studentName":"Name"},{"rollno":"Roll No"},{"feeCategoryName":"Fee Category"},{"amount":"amount"},{"feepaymentstatus":"Status"},{"admissionCode":"admissionCode"}],"gridTable",null);;
+					makeFullCapableDataTable('gridTable');
+				}
+			});
+		}
+		else
+		{
+			var feeIdenArray=new Array();
+			$("#selectProcess > option").each(function() {
+				if(this.value!="all")
+				{
+					var fidentext=$( "#selectProgram option:selected" ).text()+"-"+$( "#selectBatch option:selected" ).text()+"-";
+					fidentext=fidentext+this.value;
+					feeIdenArray.push(fidentext)
+				}
+			});
+			$.ajax(
+			{
+				url:"/fees/getManyFeeOrderStatusByProgramBatchAndFeeIdentifierList",
+				data:{"pgmId":$('#selectProgram').val(),"batchId":$('#selectBatch').val(),"feeIdentifierList":String(feeIdenArray)},
+				success:function(data)
+				{
+					setUpDataTable(data,[{"admissionCode":"admissionCode"},{"studentName":"Name"},{"rollno":"Roll No"},{"feeCategoryName":"Fee Category"},{"feepaymentstatus":"Status"},{"amount":"amount"},{"feeidenName":"Fee Name"}],"gridTable",null);;
+					makeFullCapableDataTable('gridTable');
+				}
+			});
+		}
+	});
+	$('#selectProgram').unbind().bind('change',function()
+	{
+		getFeeProcess();
+	});
+	$('#selectBatch').unbind().bind('change',function()
+	{
+		getFeeProcess();
+	});
+	$('#feeProcessIdentifierType').unbind().bind('change',function()
+	{
+		getFeeProcess();
+	});
+	
+	getAllPrograms();
+});
+function getFeeProcess()
+{
+	var programId	=	$('#selectProgram').val();
+	var batchId		=	$('#selectBatch').val();
+	var feeType		=   $('#feeProcessIdentifierType').val();
+	if(programId!="" && batchId!="" && feeType!="")
+	{
+		$.ajax(
+		{
+			"url":"/fees/getAllFeeProcessByProgramBatchAndTypeForCollectionReport",
+			"data":{"programId":programId,"batchId":batchId,"feeType":feeType},
+			success:function(data)
+			{
+				console.log(data);
+				if(data.length>0)
+				{
+					$('#selectProcess').empty();
+					for(let i=0;i<data.length;i++)
+					{
+						$('#selectProcess').append('<option>'+data[i]['feeGenerationAcademicIdentity']['feeGenerationAcademicIdentitySemester']+'</option>');
+					}
+					$('#selectProcess').append('<option value="all">All</option>');
+				}
+			}
+		});
+	}
+}
+function getAllPrograms()
+{
+	$.ajax(
+	{
+   		url:'/course/getAllCourses',
+   		method:'GET',
+   		success:function(data)
+   		{
+   			setUpDropDown("selectProgram",data,"courseId","courseCode");
+   			$('#selectProgram').unbind().bind('change',function()
+   			{
+   				getAllActiveBatchesOfProgram($(this).val());
+   			});
+   		},
+   		error:function(err)
+   		{
+   			showMessage(err);
+   		}
+   	});
+}
+function getAllActiveBatchesOfProgram(programId)
+{
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatchesInAProgram',
+  	   	method:'GET',
+  	   	data:{"courseId":programId},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+}
+</script>
+
+<div class="row well" id="selectionPanel">
+	<div class="col-md-4">
+	    <label for="accountName">Select Program</label>
+	    <select class="form-control grouping" id="selectProgram"></select>
+	</div>
+	<div class="col-md-4">
+	    <label for="accountName">Select Batch</label>
+	    <select class="form-control grouping" id="selectBatch"></select>
+	</div>
+    <div class="col-md-4">
+   		<label for="selectfeeProcessIdentifierType">Fee Type</label>
+   		<select class="form-control" id="feeProcessIdentifierType" name="feeProcessIdentifierType">
+   			<option value="">Select</option>
+		    <option value="Academic">Academic</option>
+		    <option value="Examination">Examination</option>
+		    <option value="Hostel">Hostel</option>
+		    <option value="Others">Others</option>
+		</select>
+   	</div>
+ </div>
+ <div class="row well">  	
+	<div class="col-md-12">
+	    <label for="accountName">Select Fee Process</label>
+	    <select class="form-control grouping" id="selectProcess"></select>
+	</div>
+ </div> 
+<hr>
+<div class="row">
+	<div class="col-md-4"></div>
+	<div class="col-md-4"><button id="btnGetFees" class="btn btn-primary form-control">Apply</button></div>
+	<div class="col-md-4"></div>
+</div>
+
+<hr>
+
+<div class="table-responsive cell-border well" id="gridTableDiv">
+	<table id="gridTable" class="table table-striped"></table>
+</div>
+
+ 
+ 

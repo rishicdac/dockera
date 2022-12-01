@@ -1,0 +1,587 @@
+  <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">          
+          <!-- /.col-md-12 -->
+          <div class="col-lg-12"> 	<!-- Main content -->
+				<div class="content">
+				  <div class="container-fluid">
+					<div class="row">          
+					  <!-- /.col-md-12 -->
+					  <div class="col-lg-12">           
+
+						<div class="card card-info card-outline">
+						  <div class="card-header ">
+							<h5 class="m-0 card-title">Generate Condonation list</h5>
+							
+						  </div>
+						  <div class="card-body ">
+						  <form id="formCondonationList">
+								<div class="row">
+								
+									<div class="col-md-3">
+											<div class="form-group">
+											   <label for="program">Program</label>
+											   <select class="form-control"  required id="selectProgram" name="program">
+													<option>Select Program</option>	
+												</select>
+											</div>
+										</div>
+										<div class="col-md-3">
+											<div class="form-group">
+											   <label for="batch">Batch</label>
+											   <select class="form-control" id="selectBatch" name="batch" required>
+													  <option>Select Batch</option>							  
+												</select>
+											</div>
+										</div>
+										<div class="col-md-3">
+											<div class="form-group">
+											   <label for="semester">Semester</label>
+											   <select class="form-control" id="selectSemester" name="semester" required>
+													   <option>Select Semester</option>
+												</select>
+											</div>
+										</div>	
+											<!-- 	<div class="col-md-3">
+											<div class="form-group">
+											   <label for="division">Division</label>
+											   <select class="form-control" id="selectDivision" name="division">
+													   <option>Select Division</option>
+												</select>
+											</div>
+										</div>	 -->
+								<!-- 	</div>
+									<div class="row"> -->
+									<div class="col-md-2">
+										<div class="form-group">
+										   <label for="attendance">Min.Attendance(%)</label>
+										   <input type="text" class="form-control" placeholder="In Percentage"  id="minAttendence" name="minAttendence" required/>
+										</div>
+									</div>
+									<div class="col-md-1 pt-4 mt-1">
+										<button type="submit" class="btn btn-sm btn-info" id="generateListBtn">List</button>	
+									</div>
+							
+								
+								
+						  </div>
+						  </form>
+						</div>
+					  </div>
+					  <!-- /.col-md-12 -->
+					</div>
+					<!-- /.row -->
+				  </div><!-- /.container-fluid -->
+				</div>
+				<!-- /.main content -->
+
+
+				<!--Condonation list view -->
+				<div class="row" id="condonationList">
+					<div class="col-md-12">
+					
+							<div class="card">
+									<div class="table-responsive">
+									   <table id="tblCondonationList" class="table table-striped table-bordered  display" style="width:100%">
+										<thead>
+											<tr>
+											  <th>Student Id</th>	
+											  <th>Student Name</th>						  
+											  <th>Program / Batch / Semester</th>
+											  <th>Attendance (%)</th>
+											  
+											  
+											 </tr>
+											</thead>
+										  </table>
+									</div>
+									<div class="col-md-6">	
+								       <button id="btnGenerateList" class="btn btn-info">Generate Condonation List </button>
+								   </div>
+						</div>
+					</div>
+				</div>
+				<!--Condonation list view -->
+			
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	
+<script>
+//global variables and fns
+
+/* base url for exam management */
+var BASE_URL = "/exam-management/api/v1/";
+var MARKS_CONFIG_URL = "/mark-config/api/v1/academics/marks-management/evaluation-types-program/program-id/";
+var ACADEMIC_YEAR_URL = "/academics/api/v1/academics/getDetailsByMasterId/masterId/83";
+
+	
+	/* fn to convert form data to json */
+	$.fn.serializeObject = function()
+	{
+	    var o = {};
+	    var a = this.serializeArray();
+	    $.each(a, function() {
+	        if (o[this.name] !== undefined) {
+	            if (!o[this.name].push) {
+	                o[this.name] = [o[this.name]];
+	            }
+	            o[this.name].push(this.value || '');
+	        } else {
+	            o[this.name] = this.value || '';
+	        }
+	    });
+	    return o;
+	 };
+
+ 
+ 	$('.datepicker').datepicker({
+	    //format: 'yyyy-mm-dd',	
+ 		//startDate : moment() , //0
+	    format: 'dd-mm-yyyy',
+		autoclose:true,
+		clearBtn:true,
+		pickerPosition: "bottom-left"
+		
+	});  
+	
+ 	
+	$('.datepicker-month-year').datepicker({
+	    format: 'M-yyyy',	
+	    startView: "months", 
+        minViewMode: "months",						   
+		autoclose:true,
+		clearBtn:true
+	});
+	
+
+    
+    
+    //getStudentInfo();
+   	function getStudentInfo()
+	{
+
+      $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		data:{"userCodes":$("#usercode").val()},
+	   		success: function(data)
+	   		{
+	   		  console.log(data);
+	   		  return data;
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+	 }
+    
+ var selectedConfigArray=new Array();
+//$(document).ready(function() {
+	function getAllPrograms()
+	{
+	
+		$.ajax({
+	   		url:'/course/getAllCourses',
+	   		method:'GET',
+	   		success:function(data)
+	   		{
+	   		    setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   			$('#selectProgram').unbind().bind('change',function()
+	   			{
+	   				getAllActiveBatchesOfProgram($(this).val());
+	   				loadEvaluationypes($(this).val());
+	   			    if($("#displayTable").length){
+	   				   $('#displayTable').empty();
+	   			    }
+	   			   if($(".configList").length){
+	   				 
+	   			    $('.configList').prop('checked', false);
+	   			   }
+	   			selectedConfigArray =[];
+	   			
+	   			});
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+	}
+	getAllPrograms();
+	
+    /* 
+      To list the programs
+	*/
+	
+
+	
+	/**
+	  To get all batches for the given programid
+	*/
+	 function getAllActiveBatchesOfProgram(programId)
+	 {
+	// $("#selectBatch").prop( "disabled", false );
+		$.ajax(
+		{
+	  		url:'/batch/getAllActiveBatchesInAProgram',
+	  	   	method:'GET',
+	  	   	data:{"courseId":programId},
+	  	   	success:function(data)
+	  	   	{
+	  	   	
+	  	        setUpDropDown("selectBatch",data,"batchId","batchCode");
+	  	   		$('#selectBatch').unbind().bind('change',function()
+	   			{
+	   				getAllActiveSemesterOfBatch($(this).val());
+	   				
+	   				
+	   			});
+	  	   		
+	  	   	},
+	  	   	error:function(err)
+	  	   	{
+	  	   		showMessage(err);
+	  	   	}
+	  	 });	  
+	  }
+	  
+	  /**
+	  To get all semesters the given batchid
+	  */
+	 function getAllActiveSemesterOfBatch(batchId)
+	 {
+		//$("#selectSemester").prop( "disabled", false );
+		  $.ajax({
+					"url" : "/batch/getAllSemestersInABatch",
+					"method" : "GET",
+					data : {"batchId":batchId},
+					success :function(data) {
+					console.log(data);
+					    try{
+						   if(data && data.length >0){
+							   $('#selectSemester').empty();
+							   $('#selectSemester').append('<option>Select Semester</option>');
+							   for(var i=0;i< data.length;i++){
+							   	   $("#selectSemester").append('<option value='+data[i]['semesterIdentity']['semesterCode']+'>'+data[i]['semesterIdentity']['semesterCode']+'</option>');
+							   }
+						 }
+						}
+						catch(e){
+						    console.error(e);
+						    showMessage(" Error occurred while processing semester list"); 
+						}
+													
+						
+					},
+					error :function(e) {
+					     showMessage(err);
+					}
+				});
+		}
+	 
+	 function loadEvaluationypes(programId){
+			$.ajax(
+			{
+				"url":MARKS_CONFIG_URL+programId,
+				success:function(data)
+				{
+					types= data.data; 
+					setUpDropDown("selectRevaluationType",types,"id","evaluationType");
+				}
+			});
+		
+		}
+		
+		/* load exam types */
+		function loadExamTypes(){
+			$.ajax(
+			{
+				"url":BASE_URL+"exam-management/exam-types",
+				success:function(data)
+				{
+					types= data.data; 
+					setUpDropDown("selectExamType",types,"id","type");
+				}
+			});
+		
+		}
+		
+		/* load academic year from look  up */
+		function loadAcademicYear(){
+			$.ajax(
+			{
+				"url": ACADEMIC_YEAR_URL ,//"/academics/api/v1/academics/getDetailsByMasterId/masterId/83",
+			//	"url":"/nualsTest/api/v1/academics/getDetailsByMasterId/masterId/83",
+				success:function(data)
+				{
+					 
+					setUpDropDown("selectAcademicYear",data,"id","detailName");
+				}
+			});
+		
+		}
+	 
+		
+//});
+$(document).ready(function() {
+ 
+   $("#condonationList").hide();
+ 
+   
+  /*
+  * load condoantion list
+  */ 
+  $('#formCondonationList').submit(function (event) {
+         event.preventDefault();
+          $("#condonationList").show();
+          loadCondonationList();
+   });
+    
+  
+   
+   
+   var condonationList = {};
+   
+   /*
+   *  Function to load the condonation list which satisfies the criteria 
+   */
+   function loadCondonationList(){ 
+      var condonationListDataTable =  $('#tblCondonationList').DataTable({
+            "language": {
+                    "emptyTable": "No students found satisfying your criteria"
+                  },
+			"processing": true,
+			"destroy": true,
+			"ajax":{ 
+			   "url":"/academic/getSemesterwiseCondonationList", 
+			   "data":{"program":$('#selectProgram').val(),"batch":$('#selectBatch').val(),"sem":$('#selectSemester').val(),"minAttendence":$('#minAttendence').val()},
+			   "dataSrc":function (data) {
+			   
+			       if(data == null){
+			         data = [];
+			         }
+			         condonationList = data;
+			        return data; 
+			        
+			     }  
+			  
+			    },
+			"columns": [
+			{ "data": "studentId"},
+			{ "data": "studentName" },
+			{ "data": "null",
+	            "render": function (data, type, full, meta) {
+	            
+	                    return (full.programName + " / " + full.batchName + " / " + full.semester)   
+	            
+	            }
+			          		            
+			  },   
+			{ "data": "attendancePercentage" }
+							
+		]
+				
+		});
+    }
+    
+    
+    
+    /**
+	 Generate condonation list 
+	**/
+	
+    $("#btnGenerateList").click(function(){
+            
+          var msg = {
+					 title : "Save",
+					 msg : " Do you want to generate condonation list?"
+				}
+		  ConfirmDialog(msg, "SAVE").then(function(response) {
+							
+					saveCondonationList();
+									
+			}, function(error) {
+					
+				toastr.error("Condonation list generation cancelled !!");
+					
+			});
+							
+  
+       });
+       
+    	/**
+		 * store  condonation list 
+  		**/
+      
+      function saveCondonationList()
+      {
+           var condonationArr = [];
+           var jsonData = condonationList;
+         
+		   for (var i = 0; i < jsonData.length; i++) {
+		      var list = jsonData[i];
+			  condonationArr.push({
+			        studentId:list.studentId ,
+			        studentName: list.studentName,
+			        percentage: list.attendancePercentage ,
+			        programId:list.programId ,
+			        program:list.programName ,
+			        batchId:list.batchId ,
+			        batch:list.batchName ,
+			        semester:list.semester 
+       	       
+			    });
+			}
+			                   
+           var condonationJson = JSON.stringify(condonationArr); 
+            $.ajax({
+	   		url: BASE_URL+"condonation/generate",
+	   		method: 'POST',
+	   		async:false,
+	   		data:condonationJson,
+	   		contentType: "application/json",
+	   		success: function(data)
+	   		{
+	   		   // showMessage("Generated Condonation list Successfully");
+	   		   	toastr.success("Condonation list generated Successfully");
+	   		   	  $("#condonationList").hide();
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   			//showMessage(err);
+	   			toastr.error("Condonation list generation failed !!");
+	   			 			
+	   		},
+	   		statusCode: {
+                409: function() {
+                   // alert('Resource Conflict');
+                    //TO-DO
+                    replaceCondonation(condonationJson);
+                    
+                   }
+               }
+	   	});	  
+          
+        }    
+  
+
+   /**
+   * function to confirm for replace the existing program/batch/semester
+   */
+   
+   function replaceCondonation(condonationJson){
+          var msg = {
+					 title : "Update",
+					 msg : " Condonation list already exists !! Do you want to overwrite the list?"
+				}
+		  ConfirmDialog(msg, "SAVE").then(function(response) {
+							
+					replaceCondonationList(condonationJson);
+									
+			}, function(error) {
+					
+				toastr.error("Condonation list generation cancelled !!");
+					
+			});
+   
+   
+   
+   }
+   
+  /**
+   * function to replace the existing program/batch/semester
+   */
+   
+   function replaceCondonationList(condonationJson){
+   
+     $.ajax({
+	   		url: BASE_URL+"condonation/replace",
+	   		method: 'POST',
+	   		async:false,
+	   		data:condonationJson,
+	   		contentType: "application/json",
+	   		success: function(data)
+	   		{
+	   		   // showMessage("Generated Condonation list Successfully");
+	   		   	toastr.success("Condonation list generated Successfully");
+	   		   	  $("#condonationList").hide();
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   			//showMessage(err);
+	   			toastr.error("Condonation list generation failed !!");
+	   			 			
+	   		}
+	   	});	  
+          
+        }    
+ 
+
+
+
+
+ });               
+    var ConfirmDialog = function (data,type){
+
+ var TYPE;
+ var ICON ;
+ var BTN_CLASS;
+
+	 if ( type == 'SAVE'){
+		 TYPE = 'green';
+		 ICON =  'fa fa-save';
+		 BTN_CLASS = 'btn-success';
+	 }
+	 else if ( type == 'DELETE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-trash';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else if ( type == 'APPROVE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-thumbs-up';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else
+	 {
+		 TYPE = 'red';
+		 ICON =  'fa fa-warning';
+		 BTN_CLASS = 'btn-warning';	
+	 }
+	 var DialogPromise = function (resolve, reject) {
+	    
+	     $.confirm({
+	        title: data.title,
+	        content:data.msg,
+	        closeIcon : true,
+	        type: TYPE,
+	        icon: ICON,
+	        offsetTop: 40,	      
+	        bgOpacity :'0.7',
+	        buttons: {  
+	            ok: {
+	                text: "<b> Yes </b>",	            
+	                keys: ['enter'],
+	                action: function(){	                    
+	                     resolve(true); 	                    
+	                }
+	            },
+	            no: function(){
+	              text: "<b> No </b>",	                  
+	                    reject(false); 
+	            }
+	        }
+     });    
+    
+   };    
+    return  new  Promise (DialogPromise);
+ } 
+</script>  

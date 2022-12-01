@@ -1,0 +1,715 @@
+   <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">          
+          <!-- /.col-md-12 -->
+          <div class="col-lg-12"> 			
+			<div class="card card-info card-outline">
+				  <div class="card-header ui-sortable-handle" style="cursor: move;">
+					<h3 class="card-title">	 
+					  Verify Certificates
+					</h3>
+
+					
+				  </div>
+				  <div class="card-body">
+					<div class="table-responsive">
+					  <table id="certificateVerificationTbl" class="table table table-striped table-bordered  display" style="width:100%">
+						<thead>
+							<tr>
+						
+							  <th>Date of Request</th>	
+							  <th>Submitted By</th>
+							  <th>Student ID</th>
+							  <th>Certificate Type</th>
+							  <th>Certificate </th>	
+							  <th>Payment Status</th>														  
+							  <th>Approval Status</th>
+							  <th>Action</th>
+							</tr>
+							</thead>
+					  </table>		
+					</div>
+					<!-- /.table-responsive -->
+				  </div> 
+				</div>
+
+				<!--More Info-->
+				<div class="row">
+					<div class="col-md-12">
+						  <div class="collapse" id="collapseExample">
+							  <!-- /Preview Certificate -->
+								<div class="row" id="previewCertificate">
+								  <div class="col-lg-12"> 
+									<!-- /Certificate block -->
+									<div class="invoice p-3 mb-3">
+										<div class="tab-content">
+										  <div class="tab-pane active" id="activity">		
+											<div class="post">
+												<div class="user-block text-center">
+													<img class="img-circle img-bordered-sm" src="certificate-management_proxy/certificates/images/nuals.jpg" alt="user image" style="width:70px;height:70px;">
+													<span class="username text-center">
+													  <h3>The National University of Advanced Legal Studies</h3>
+													</span>
+													<h6 id="applnType" style="font-weight:600"></h6>
+													
+													<hr/>
+												</div>			  
+												<!--<div class="tools float-right">
+												  <i class="fas fa-edit"></i>
+												</div>-->
+												  <dl class="row pl-5">
+													   <dt class="col-sm-4" >Name</dt>
+													  <dd class="col-sm-8" id="student_name"></dd>
+													  <dt class="col-sm-4">Gender</dt>
+													  <dd class="col-sm-8" id="student_gender"></dd>	
+													   <dt class="col-sm-4">Register No.</dt>
+													  <dd class="col-sm-8" id="student_reg_no"></dd>	
+													  <dt class="col-sm-4">Roll No</dt>
+													  <dd class="col-sm-8" id="student_roll_no"></dd>									 
+													  <dt class="col-sm-4">Program</dt>
+													  <dd class="col-sm-8" id="program_name"></dd>	
+													  <dt class="col-sm-4">Batch</dt>
+													  <dd class="col-sm-8" id="batch_name"> </dd>	
+													  <dt class="col-sm-4">Semester</dt>
+													  <dd class="col-sm-8" id="semester"></dd>	
+													  <dt class="col-sm-4">Division</dt>
+													  <dd class="col-sm-8" id="division"></dd>
+													  <!-- Duplicate -->									  	
+													  <dt class="col-sm-4" id="label_duplicate_org_no" >Original Certificate No</dt>
+													  <dd class="col-sm-8" id="duplicate_org_no">N.A</dd>	
+													  <dt class="col-sm-4" id="label_isAffidavit"> Affidavit attached</dt>
+													  <dd class="col-sm-8" id="isAffidavit">N.A</dd>
+													  <!-- Transcript-->
+													  <dt class="col-sm-4" id="label_transcript_copy">No. of copies required</dt>
+													  <dd class="col-sm-8" id="transcript_copy">N.A</dd>
+													  <!-- Migration-->
+													  <dt class="col-sm-4"  id="label_noduenumber">No Due Certificate Number</dt>
+													  <dd class="col-sm-8" id="noduenumber">N.A</dd>
+													  	
+													  <dt class="col-sm-4" id="label_interuniversity">Details of interuniversity transfer</dt>
+													  <dd class="col-sm-8" id="interuniversity">N.A</dd>	
+													  <!-- Common -->
+													  <dt class="col-sm-4" id="label_purpose_certificate">Purpose of certificate request</dt>
+													  <dd class="col-sm-8" id="purpose_certificate">N.A</dd>	
+													  <dt class="col-sm-4">Fee Amount</dt>
+													  <dd class="col-sm-8" > <span class="right badge badge-danger" id="fee"></span></dd>
+													  <dt class="col-sm-4 AffidavitLink">Affidavit Certificate</dt>
+													  <dd class="col-sm-8 AffidavitLink user-block" >
+														<a href="#"  id="affidavitUrl"><img class=" img-bordered-sm" src="certificate-management_proxy/certificates/images/pdf.png" alt="user image"></a>
+													  </dd>								  
+												</dl>
+												<form id="verifyForm">
+													<div class="form-group row pl-5">
+														<div class="col-sm-10" >													  
+														  <span id="createBtn"></span>
+														  <label  class="small-box-footer text-danger" id="feeStatusText">Payment Pending </label>
+														</div>
+													 </div>
+												</form>
+											</div>                  
+										  </div>                
+										</div> 
+									</div>
+									<!-- /Certificate block -->
+								  </div>
+								</div>
+							 <!-- /Preview Certificate -->
+						  </div>
+					</div>
+				</div>
+				<!-- More Info-->
+			</div>
+		</div>
+	</div>
+</div>
+	
+	
+	
+<script>
+//global variables and fns
+	
+	/* base url for exam management */
+	//var BASE_URL = "certificate-management/certificate-management/api/v1/academics/certificate-management/";
+	var BASE_URL = "/certificate-management/api/v1/academics/certificate-management/";
+	var BASE_MINIO = "/filerepo_public/minioFiles/nuals"; 
+	loadCertMappings();
+	/* CERTIFICATE TYPES */
+	var ORIGINAL_TYPE = 1388;
+	var DUPLICATE_TYPE = 1389;
+	var MIGRATION = 1400;
+	var TRANSCRIPT = 1399;
+	var DEGREE = 1397;
+	var PROVISIONAL = 1398;
+	var NO_DUES = 1655;
+	var TRANSFER = 1401;
+	var CONDUCT = 2166; //need to check
+	var ATTENDANCE = 2168 ; //need to check
+	var CONSOLIDATED_MARK_SHEET = 2170;//need to check
+	var studentAdmissionDateTime;
+	
+	var certMap = new Map();
+	
+	/* fn to convert form data to json */
+	$.fn.serializeObject = function()
+	{
+	    var o = {};
+	    var a = this.serializeArray();
+	    $.each(a, function() {
+	        if (o[this.name] !== undefined) {
+	            if (!o[this.name].push) {
+	                o[this.name] = [o[this.name]];
+	            }
+	            o[this.name].push(this.value || '');
+	        } else {
+	            o[this.name] = this.value || '';
+	        }
+	    });
+	    return o;
+	 };
+
+ 
+ 	$('.datepicker').datepicker({
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true,
+		pickerPosition: "bottom-left"
+	});  
+	
+	$('.datepicker-month-year').datepicker({
+	    format: 'M-yyyy',	
+	    startView: "months", 
+        minViewMode: "months",						   
+		autoclose:true,
+		clearBtn:true
+	});
+	
+	
+	function loadCertMappings()
+	{
+		$.ajax({
+			   type: "GET",
+			   url:  BASE_URL + "getCertificateMapping",
+			   headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			   },		   
+			   success: function(result)
+			   {
+				  var data = result.data;
+				  
+				  data.forEach(element => {
+					  console.log(element);
+					  if(element.mappedId == null){
+						  toastr.error("Failed to Map "+element.certName +" certificates.Kindly contact Admin");
+						  }
+					  else 
+				    certMap.set(element.certName,element.mappedId);
+				  });
+				 //  console.log(certMap.get('ORIGINAL_TYPE'));
+				 // for (const [key, value] of certMap.entries()) {
+				 //	  console.log(key, value);
+				 //	}
+			   }
+			 });
+		
+	}
+	function openCertificates(certificateurl){
+		  window.open(BASE_MINIO+"/"+certificateurl, '_blank');
+			/*$.ajax({
+				   type: "GET",
+				   url:  BASE_URL + "getAffidavitCertificate/"+certificateId,
+				   headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				   },		   
+				   success: function(result)
+				   {
+					  console.log(result);
+					  window.open(result.DownloadLink, '_blank');
+					// $('#affidavitUrl').attr("href",result.DownloadLink);
+					 
+				   }
+				 });*/
+		
+	}
+	
+	
+	
+	/*$('.datetimepicker').datetimepicker({
+      language: 'en'
+    //  pick12HourFormat: true
+    });*/
+    
+     /**
+    *  Get the logged in student details
+    **/
+         
+   function getStudentInfo(studentId)
+	{
+       var studentData = {};       
+	    $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		async:false,
+	   		data:{"userCodes":studentId},
+	   		success: function(data)
+	   		{
+	   		  studentData = data;
+	   		  console.log(data);	   		
+	   		  setStudentInfo(data,studentId);	   		  
+	   		  return data;
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   		 toastr.error("Failed to load student details");
+	   		}
+	   	});
+	   	
+	   	return studentData; 
+	 }
+	 
+	 
+	 /**
+    *  set the student details
+    **/
+         
+   function setStudentInfo(data,studentId)
+	{
+	  var studentDetails = data[studentId];
+	  console.log( studentDetails);
+	  loggedStudentProgramId = studentDetails.programCode;
+ 		//alert(programId);
+ 		
+	  $("#student_reg_no").text(studentDetails.regNo ? studentDetails.regNo : "----");
+      $("#student_name").text(studentDetails.studentName);
+      $("#student_gender").text(studentDetails.studentPersonalGender);
+      $("#student_code").text(studentDetails.studentCode);
+      $("#program_name").text(studentDetails.programName);
+      $("#batch_name").text(studentDetails.batchName);
+      $("#semester").text(studentDetails.semester);
+      $("#division").text(studentDetails.division ? studentDetails.division: "-----")
+      $("#student_roll_no").text(studentDetails.rollNo ? studentDetails.rollNo:"-----");
+     
+	}
+
+   
+   function loadDataOnPreview(data)
+	{
+		console.log("Data :: "+JSON.stringify(data));
+		console.log(data.purpose);
+		
+		
+	   if(data.originalNo)
+		   {
+		   $('#duplicate_org_no').show();
+		   $('#label_duplicate_org_no').show();
+		   $('#duplicate_org_no').text(data.originalNo);
+		   }
+	   else{
+		   $('#duplicate_org_no').hide();
+		   $('#label_duplicate_org_no').hide();
+	   }
+	 
+	   if(data.isAffidavit==true && data.affidavit!=null)
+		   {
+		   $('#isAffidavit').text('Yes');
+		   $('#isAffidavit').show();
+		   $('#label_isAffidavit').show();
+		   $('.AffidavitLink').show();
+		   }
+		 
+	   else{
+		 
+		   $('#isAffidavit').hide();
+		   $('#label_isAffidavit').hide();
+		   $('.AffidavitLink').hide();
+	   }
+	  
+	   if(parseInt(data.noCopies)>0)
+		   {
+			  $('#transcript_copy').show();
+			  $('#label_transcript_copy').show();
+			  $('#transcript_copy').text(data.noCopies);
+		   }
+	   else{
+		  $('#transcript_copy').hide();
+		  $('#label_transcript_copy').hide();
+	   }
+	  
+	   if(data.remarks)
+		   {
+		   $('#noduenumber').text(data.remarks);
+		   $('#noduenumber').show();
+		   $('#label_noduenumber').show();
+		   }		
+	   else{
+		   $('#noduenumber').hide();
+		   $('#label_noduenumber').hide();
+	   }
+	  
+	   if(data.nameId == TRANSFER || data.nameId == MIGRATION)
+		   {
+		   loadInterUniversityData(data.studentId);
+		   $('#interuniversity').show();
+		   $('#label_interuniversity').show();
+		   
+		   }
+	   else
+		   {
+		   $('#interuniversity').hide();
+		   $('#label_interuniversity').hide();
+		   
+		   }
+	  
+	   if(data.purpose)
+		   {
+		   $('#purpose_certificate').text(data.purpose);
+		   $('#purpose_certificate').show();
+		   $('#label_purpose_certificate').show();
+		   }
+		
+	   else{
+		   $('#purpose_certificate').hide();
+		   $('#label_purpose_certificate').hide();
+	   }
+		//$('#fee').text(data.paymentsAmount?data.paymentsAmount:0);//TODO Add Fee details
+		$('#fee').text(data.paymentsAmount?data.paymentsAmount+" Rs/-":"0 Rs/-");
+		$('#applnType').text(data.name+"("+data.type+")");
+		$('#collapseExample').show();
+		$('html, body').animate({
+		        scrollTop: $("#previewCertificate").offset().top
+		}, 1000);
+		
+	}
+	/**
+	* To load inter university details of loggedin student
+	*/
+	 function loadInterUniversityData(loggedInStudentId)
+	 {
+	    
+	      $.ajax({
+		         url: "/students/getStudentDetails",
+		         data:{"studentAdmissionUserCode":loggedInStudentId },
+				 success: function(data)
+		           {
+					 console.log(data);
+					studentAdmissionDateTime = data.sa.studentAdmissionDateTime;
+					if(data.sa.studentAdmissionInterUniversity){
+						
+						$('#interuniversity').text(
+						 	"  Inter-University Admission No -- "+data.sa.studentAdmissionInterUniversityAdmissionNo +
+						    "  , ProgramName -- "+data.sa.studentAdmissionInterUniversityOldProgramName +
+							"  , RollNo -- " +data.sa.studentAdmissionInterUniversityOldRollNo +
+							"  , University -- " + data.sa.studentAdmissionInterUniversityOldUniversity +
+							"  , Semesters completed -- " + data.sa.studentAdmissionInterUniversitySemestersCompleted 					
+						);
+						
+						
+					  
+						
+					}
+					else{
+						
+						$('#interuniversity').text("NO");
+					}
+					
+		           }
+		         });
+	 }
+	 
+   
+    /**
+   * Fee Settings
+   */
+   
+   var studentListWithData=new Array();
+   var studentCodeList=new Array();
+   
+   
+	function loadData(url)
+	{
+		let dataWithPayment=[];
+		$.ajax(
+		{
+			url:url,
+			async:false,
+			success:function(data)
+			{
+			studentListWithData=data.data;
+			console.log(studentListWithData);
+			if(studentListWithData.length>0){
+			  var studfeeidmapArray=generateFeeIdenMapArray(studentListWithData);
+			  console.log(studfeeidmapArray);
+			  dataWithPayment = getFeeOrderStatus(studfeeidmapArray);
+			}
+		}
+	})
+	
+	return dataWithPayment;
+  }
+	
+ function generateFeeIdenMapArray(data)
+	{
+		var mapArray=new Array();
+		for(let i=0;i<data.length;i++)
+		{
+			var map={};
+			var studCode=data[i]['studentId'];
+			map['feeOrderStudent']=studCode;//maintain the same key feeOrderStudent in map
+			map['feeOrderIdentity']=data[i]['orderId'];//maintain the same key feeOrderIdentity in map
+			mapArray.push(map);
+			}
+			return mapArray;
+	}
+
+ function addTostudentListWithData(data)
+	{
+	 console.log("Inside addtistudentlistwithdaTA");
+	 	console.log(data);
+		for(let i=0;i<studentListWithData.length;i++)
+		{
+		for(let j=0;j<data.length;j++)
+		{
+		//if(String(studentListWithData[i]['studentId'])==data[j]['feeOrderStudentCode'])
+		if(String(studentListWithData[i]['orderId'])==data[j]['feeOrderId'])
+		{
+		studentListWithData[i]['feeOrderStatusValue']=data[j]['feeOrderStatusValue'];
+		}
+		if(studentListWithData[i]['orderId'] == null)
+		{
+			studentListWithData[i]['feeOrderStatusValue'] = "-";  
+		}
+		
+		}
+	}
+	
+	}
+	
+	
+ function getFeeOrderStatus(datatosend)
+	{
+		console.log("calling getFeeOrderStatus function")
+		$.ajax(
+		{
+			   url:'/fees/getManyFeeOrderStatusByFeeIdentifierAndAccount',
+			   data:{'feeOrderStudents':datatosend},
+			   method:"post",
+			   async:false,
+			   success:function(data)
+			   {
+					console.log(data); 
+					if(data.length>0)
+					{
+					addTostudentListWithData(data);
+					//loadDatatable(studentListWithData);
+					//return studentListWithData;
+					}
+	           },
+		    error:function(err)
+				{
+				showMessage(err);
+				}
+		});
+		return studentListWithData;
+}
+
+
+ var ConfirmDialog = function (data,type){
+
+ var TYPE;
+ var ICON ;
+ var BTN_CLASS;
+
+	 if ( type == 'SAVE'){
+		 TYPE = 'green';
+		 ICON =  'fa fa-save';
+		 BTN_CLASS = 'btn-success';
+	 }
+	 else if ( type == 'DELETE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-trash';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else
+	 {
+		 TYPE = 'orange';
+		 ICON =  'fa fa-warning';
+		 BTN_CLASS = 'btn-warning';	
+	 }
+	 var DialogPromise = function (resolve, reject) {
+	    
+	     $.confirm({
+	        title: data.title,
+	        content:data.msg,
+	        closeIcon : true,
+	        type: TYPE,
+	        icon: ICON,
+	        offsetTop: 40,	      
+	        bgOpacity :'0.7',
+	        buttons: {  
+	            ok: {
+	                text: "<b> Yes </b>",	            
+	                keys: ['enter'],
+	                action: function(){	                    
+	                     resolve(true); 	                    
+	                }
+	            },
+	            no: function(){
+	              text: "<b> No </b>",	                  
+	                    reject(false); 
+	            }
+	        }
+     });    
+    
+   };    
+    return  new  Promise (DialogPromise);
+ }
+$( document ).ready(function() {
+    $('#collapseExample').hide();
+	
+	var certificateId = 0;
+    var verificationDataTable,affidavit; 
+    
+	loadDatatableWithPayment();
+	   
+function loadDatatable(data){
+	
+	
+	 verificationDataTable =  $('#certificateVerificationTbl').DataTable({
+         "language": {
+                    "emptyTable": "No data available for the verification"
+                  },
+			//"processing": true,
+			"destroy": true,
+		
+			"data":data,
+			"columns": [
+				
+			//	{"data":"id"},
+			{ "data": "createdTime" , "render": function(data){return moment(data).format('D/MM/YYYY')}},	
+			{ "data":"createdBy"},
+			{ "data": "studentId"},
+			{ "data": "type" },
+			{ "data": "name" },
+			{"data":"feeOrderStatusValue"},
+			{ "data": "approvalStatus"},
+			{
+				"data": null,
+				"defaultContent":
+					'<a data-toggle="collapse" href="#"  class="small-box-footer text-danger" id="detailsButton">More info <i class="fas fa-arrow-circle-down"></i></a>' 
+			}]
+		});
+		
+		$('#certificateVerificationTbl tbody').off().on('click', '#detailsButton', function () {
+			var data = verificationDataTable.row($(this).parents('tr')).data();
+			//CHECKING FOR DOM REMOVAL
+			//$('#verifyBtn').hide();
+			//console.log($('#verifyBtn'));
+			$('#verifyBtn').detach();
+			$('#feeStatusText').hide();
+			certificateId = data.id;
+			
+			$.ajax({
+				   type: "GET",
+				   url:  BASE_URL + "getCertificateDetailsById/"+data.id,
+				   headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				   },		   
+				   success: function(result)
+				   {
+					   if(data.feeOrderStatusValue==="settled")
+					   {
+						  // $('#verifyBtn').show();
+						   $('#createBtn').after('<button type="submit" class="btn btn-danger" id="verifyBtn">Verify Request</button>');
+					   }else
+						   {
+						  
+							$('#feeStatusText').show();
+						   	
+						   }
+					   affidavit = result.data.affidavit;
+					   loadDataOnPreview(result.data);
+					   getStudentInfo(data.studentId);
+					// if(result.data.approvalStatus!="SUBMITTED"){
+					//	  $("#verifyBtn").hide();
+					// }
+                    					 
+					// $('#collapseExample').show();
+					 
+				   },
+			   		error:function(err)
+			   		{
+			   		  toastr.error("Failed to load Certificate details");
+			   		}
+				 });
+			});
+}
+		
+	
+		/**
+		*Verify Form Submit
+		*
+		**/
+		$('#verifyForm').submit(function(e){
+			e.preventDefault();
+			var data = {"appType":"VERIFIED","certificatesId":certificateId};
+			var msg  = {
+					title : "Save",
+					msg : " Are you sure to verify?"
+					}
+			ConfirmDialog(msg,"SAVE").then( function(response){
+				$.ajax({
+					   type: "POST",
+					   url:  BASE_URL +"changeApprovalStatus",
+					   data:JSON.stringify(data),
+					   headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					   },		   
+					   success: function(data)
+					   {
+						   $("html, body").animate({ scrollTop: 0 }, "slow");
+						   $('#collapseExample').hide();	
+						  // $('#certificateVerificationTbl').DataTable().ajax.reload();
+						   loadDatatableWithPayment();
+						   toastr.success(data.message);
+					   },
+					   error: function(data)
+					   {
+						   toastr.error(data.message);
+					   }
+					 });
+
+				},function(error){
+
+			});
+		
+		});
+		
+		
+		function loadDatatableWithPayment()
+		{
+			$('#certificateVerificationTbl').DataTable().destroy();
+			var url = BASE_URL +"getAllCertificateRequests/SUBMITTED";
+			 var datawithPayment =  loadData(url);			    
+			 loadDatatable(datawithPayment);
+		}
+	
+		$("#affidavitUrl").on('click',function(){
+			console.log(affidavit)
+			openCertificates(affidavit);
+		})
+});
+
+
+</script>
+
+
+
+
+
+
+ 

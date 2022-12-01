@@ -1,0 +1,332 @@
+<script>
+var selectedProgram;
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},//certificate-fee-mapping
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Fee Head-Id"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTable0",null);
+				$( "#accordion0" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function getExistingCertficationAmountMapping()
+{
+	$.ajax(
+	{
+		"url":"fees/getExistingAmountMappingByStatusAndProgram",
+		"data":{"groupType":"certificate","status":"valid","programid":$('#course_id').val()},
+		success:function(data)
+		{
+			if(data)
+			{
+				setUpDataTable(data,[{"courseCode":"courseCode"},{"exmfeeMapOrderNo":"Order"},{"sfsFeeHeadName":"Fee Head"},{"feeAmount":"Amount Mapped"}],"gridTable",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	})
+}
+function getAllCourses()
+{
+	//get All Courses
+	$.ajax({
+		url:'/course/getAllCourses',
+		method:'GET',
+		success:function(data)
+		{
+			courseMap=data;	
+			setUpDropDown("course_id",data,"courseId","courseCode");
+			
+		},
+		error:function(err)
+		{
+			showMessage(err);
+		}
+		});
+}
+function getAllFeeHeadGroup()
+{
+	var groupType="certificate";
+	 
+	 $.ajax({
+ 		url:'/fees/getAllFeeHeadGroupsByType',//dont need
+ 		data:{"groupType":groupType},
+ 		method:'GET',
+ 		success:function(data)
+ 		{
+ 			courseMap=data;	
+ 			setUpDropDown("feeGroup",data,"sfsFeeHeadGroupId","sfsFeeHeadGroupName");
+ 			
+ 		},
+ 		error:function(err)
+ 		{
+ 			showMessage(err);
+ 		}
+ 		});
+	
+	}
+	
+$(document).ready(function()
+{
+	
+	getAllCourses();
+	   $('#course_id').change(function()
+	   {
+		   if($(this).val())
+		   {
+			    getRecordTimeLines($(this).val(),"certificate-fee-mapping");
+		    	getExistingCertficationAmountMapping();
+  	    		getAllFeeHeadGroup();
+  				$('#feeMapTableBody2').empty();
+			}
+  	    });
+	    $('#feeGroup').change(function(){
+   	    	
+   	    	var freeGroupId=$(this).val();
+   	    
+				
+   	    $('#divGridTable2').show(); 
+   	 $('.dp').datepicker({
+		    format: 'yyyy-mm-dd',							   
+			autoclose:true,
+			clearBtn:true
+	  });
+   	    	$.ajax(
+   	    			{
+   	    				url:'/fees/getAllExaminationFeeHead',
+   	    				data:{"feeGroupid":freeGroupId},
+   	    				 success:function(data)
+   	    				 {
+   	    					try
+   	    					{
+   	    					
+   	    						if(data.length>0)
+   	    						{	
+   	    							
+   	    							
+   	    						$('#divGridTable2').show();
+   	    						$('#feeMapTableBody2').empty();
+   	    						$('#detailsDiv2').show();
+   	    						$('#detailsDiv3').show();
+   	    						$('#detailsDiv4').show();
+   	    						$('#detailsDiv5').show();
+   	    						
+   	    							for(var i=0;i<data.length;i++)
+   	    							{
+   	    								
+   	    								//alert(data[i]);
+   	    								//var tr=$('<tr><td>'+data[i]["sfs_fee_head_name"]+'</td><td><input class="feeHeads form-control" id="'+data[i]["sfs_fee_head_id"]+'" type="text"></input>
+   	    							var tr=$('<tr><td>'+data[i]["sfsFeeHeadName"]+'</td><td><input class="feeHeads form-control" id="'+data[i]["sfsFeeHeadId"]+'" type="number" name="sfsFeeHead" value="" required="required"></input></td></tr>');
+   	    								$('#feeMapTableBody2').append(tr);
+   	    							}
+   	    						}
+   	    						else
+   	    							{
+   	    							showMessage("no fee heads are found under the selected group");
+   	    							$('#feeMapTableBody2').empty();
+   	    							}
+   	    					}
+   	    					catch(e)
+   	    					{
+   	    						showError("Error in processing information.contact Admin");
+   	    					}	 
+   	    				 }
+   	    			});
+   	         console.log("HJHJ")
+   	    });
+	    	
+   	    	//after clicking submit button
+ $('#feemapform').unbind().bind('submit',function()
+ {
+  	event.preventDefault();
+    selectedProgram=parseInt($('#course_id').val());
+   		     //   alert(selectedProgram);
+   				var formData=new Array();
+   				
+   				var negative="false";
+   				$('.feeHeads').each(function()
+   				{
+   					var feeId=$(this).attr('id');
+   					
+   					
+   					//alert(feeId);
+   					var amnt=$(this).val();
+   					if(amnt<0)
+   						{
+   						negative="true";
+   						}
+   					
+   					
+   					//alert(amnt);
+   					var map={};
+   					map['sfsFeeHead']=feeId;
+   					map['courseforExamFeeMap']=selectedProgram;
+   					map['orderNo']=$('#orderno').val()
+   				    map['feeAmount']=amnt;
+   				    map['validFrom']=$('#collectionStartDate').val()
+   				    map['validto']=$('#collectionEndDate').val()
+   					map['remarks']=$('#remarks').val();
+   					map['status']="invalid";
+   				    formData.push(map);
+   				});
+   				
+   				if(negative=="false")
+					{
+   				$.ajax(
+   				{
+   					"url":"/fees/addCertificationFeeMapping",
+   					"method":"POST",
+   					data:{"examinationFeeHeadAmountMapWrappers":formData},
+   					success:function(data)
+   					{
+   						try
+   						{
+   							console.log("data--------"+data.length);
+   							if(data.length>0)
+   							{
+   								showMessage("Successfully Entered Fee Group to Amounts. Kindly make this entry verified");
+   								$('#feeMapTableBody').empty();
+   								refreshContent();
+   							}
+   							else
+   								{
+   								showMessage("Something went wrong. Try again or contact Admin");
+   								}
+   						}
+   						catch(e)
+   						{
+   							showError("Error in processing information.contact Admin");
+   						}
+   					}
+   					
+   				});
+   			}
+   				
+   				else
+   					{
+   					
+   					showMessage("fee amount must not be negative value");
+   					}
+   			});
+   	 	
+   	});
+</script>
+<hr>
+ 	<div id="accordion0">
+		<h3>Record Flow history</h3>
+	 	<div>
+	  	 	<p>
+	  		 	<div class="table-responsive">
+	   				<table class="table table-striped" id="gridTable0"></table>
+	   			</div>
+	   		</p>
+		</div>
+	</div>
+ 	<div id="accordion">
+		<h3>Existing Mapping</h3>
+	 	<div>
+	  	 	<p>
+	  		 	<div class="table-responsive">
+	   				<table class="table table-striped" id="gridTable"></table>
+	   			</div>
+	   		</p>
+		</div>
+	</div>
+<hr>
+<form id="feemapform">
+<div class="row" id="minify">
+	<div class="col-md-12">
+	    <label for="selectProgram">Select Program</label>
+	  <select  class="form-control" id="course_id"  name="course_id" required="required">	
+	  </select>
+	</div>
+  </div> 
+  
+  <div class="row" id="minify">
+	<div class="col-md-12">
+	    <label for="selectProgram" >Select Fee Group</label>
+	  <select  class="form-control" id="feeGroup"  required="required">	
+	  </select>
+	</div>
+  </div> 
+<hr>
+
+<div id="divGridTable2" class="row" style="display: none">
+	<div class="col-md-12">
+		<div class="table-responsive cell-border">
+			<label><h2>Fill the below details to set up Exam Fee Mapping</h2></label>
+			<table id="gridTableMapper" class="table table-striped">
+			  <thead>
+			    <tr>
+			      <th scope="col">Fee Head</th>
+			      <th scope="col">Amount</th>
+			    </tr>
+			  </thead>
+			  <tbody id="feeMapTableBody2">
+			  
+			  </tbody>
+			</table>
+		</div>	
+	</div>
+</div>
+
+<div id="detailsDiv2" class="row well"  style="display: none;">
+	<div class="col-md-12">
+	 <label for="comment">Order No:</label>
+ 	 <textarea class="form-control" rows="5" id="orderno" required="required"></textarea>
+	</div>
+</div>
+<div id="detailsDiv3" class="row well"  style="display: none;">
+	<div class="col-md-12">
+	 <label for="comment">Remarks:</label>
+ 	 <textarea class="form-control" rows="5" id="remarks"></textarea>
+	</div>
+</div>
+
+<div id="detailsDiv4" class="row well"  style="display: none;">
+	<div class="col-md-6">
+		<label>Effective from</label>
+		<input type="text" id="collectionStartDate" class="dp form-control"></input>
+	</div>
+</div>
+
+<div class="row" id="detailsDiv5" style="display: none;">
+	<div class="col-md-12"></div>
+	<div class="col-md-4">
+	<button class="btn btn-primary" id="btnSubmit" value="submit">Submit</button>
+	</div>
+	<div class="col-md-4"></div>
+</div>
+
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

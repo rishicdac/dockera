@@ -1,0 +1,151 @@
+<script>
+$(document).ready(function()
+{
+	function loadAllQualifications()
+	{
+		
+		$.ajax(
+		{
+			"url":"/students/getAllEducationalQualificationsValidInvalid",
+			"method":"GET",
+			success:function(data)
+			{
+				console.log(data);
+				setUpDataTable(data,[{"qualificationId":"Qualification ID"},{"qualificationName":"Name"},{"qualificationType":"Type"},{"qualificationStatus":"Status"}],'gridTableQualification',null);
+   				onDataTableClick('gridTableQualification',function()
+   				{
+   					$('#editqualificationId').val(selectedRowFromDataTable[0]);
+   					$('#editqualificationName').val(selectedRowFromDataTable[1]);
+   					$('#editqualificationType').val(selectedRowFromDataTable[2]);
+   	     			$('#dialogEdit').modal({backdrop: 'static',
+   	   				     keyboard: false});
+   				});
+			}
+		});	
+	}
+	loadAllQualifications();
+	//view setups
+	$('#buttonAddQualification').unbind().bind('click',function()
+	{
+		   $('#dialogAdd').modal({backdrop: 'static', keyboard: false});
+	});
+	$('#formQualificationAdd').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"qualificationStatus","value":"invalid"});
+		$.ajax({
+   	   		url:'/students/addEducationalQualifications',
+   	   		method:'POST',
+   	   		data:formData,
+   	   		success:function(data)
+   	   		{
+  				$('#dialogAdd').modal('toggle');
+  				$('#formQualificationAdd input[type="text"]').val('');
+  				clearDataTable('gridTableQualification');
+  				loadAllQualifications();	
+   	   		}
+		});
+	});
+	$('#formQualificationEdit').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"qualificationStatus","value":"invalid"});
+		$.ajax({
+   	   		url:'/students/addEducationalQualifications',
+   	   		method:'POST',
+   	   		data:formData,
+   	   		success:function(data)
+   	   		{
+  				$('#dialogEdit').modal('toggle');
+  				clearDataTable('gridTableQualification');
+  				loadAllQualifications();	
+   	   		}
+		});
+	})
+});
+
+</script>
+
+<div class="row" >
+	<div class="col-xs-8"></div>
+	<div class="col-xs-4">
+		<button type="button"  id="buttonAddQualification" class="btn btn-primary">Add Qualification</button>
+	</div>
+</div>
+	<br>
+<div class="table-responsive cell-border">
+	<table id="gridTableQualification" class="table table-striped"></table>
+</div>
+
+<div class="modal fade" id="dialogAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">New Qualification Details</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<p class="h3">Qualification Setup</p>
+			<form id="formQualificationAdd" >
+		   	<div class="form-group">
+		   		<label for="qualificationName">Qualification Name</label>
+		   		<input type="text" class="form-control" id="qualificationName"  name="qualificationName" placeholder="Enter Qualification Name" required>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="selectQualificationType">Qualification Type</label>
+		   		<select class="form-control" id="selectQualificationType"  name="qualificationType">
+					<option value="desirable">desirable</option>
+					<option value="necessary">necessary</option>
+				</select>
+		   	</div>
+		   	<hr>
+		   	<button type="submit" class="btn btn-primary">Add</button>
+		   	</form>
+		</div>
+		      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">View/Edit Qualification Details</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<p class="h3">Qualification Setup</p>
+			<form id="formQualificationEdit" >
+				<div class="form-group">
+		   		<label for="editqualificationId">Qualification Id</label>
+		   		<input type="text" class="form-control" id="editqualificationId"  name="qualificationId" placeholder="Enter Qualification Name" readonly>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="qualificationName">Qualification Name</label>
+		   		<input type="text" class="form-control" id="editqualificationName"  name="qualificationName" placeholder="Enter Qualification Name" required>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="selectQualificationType">Qualification Type</label>
+		   		<select class="form-control" id="editQualificationType"  name="qualificationType">
+					<option value="desirable">Desirable</option>
+					<option value="necessary">Necessary</option>
+				</select>
+		   	</div>
+			<hr>
+		   	<button type="submit" class="btn btn-primary">save</button>
+		   	</form>
+		</div>
+		      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>

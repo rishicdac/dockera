@@ -1,0 +1,229 @@
+
+<script>
+var feeIdentifierArray=new Array();
+var paidIdentifierArray=new Array();
+var toBePaidArray=new Array();
+var fullTranArray=new Array();
+var feeIdenToAmoutMap={};
+var feeHeadsToIdenMap={};
+var fineDateDetailsToFeeIden={};
+var today;
+var fineDetailsMap={};
+var selectedStudentCode="";
+
+function getConversionData(feeIden)
+{
+	$.ajax(
+	{
+		"url":'/fees/getOwnFeeHeadAmountMaps',
+		"data":{'feeIden':feeIden},
+		 success:function(data)
+		 {
+			if(data)
+			{
+				try
+				{
+					if(data[0]['fee_amount_mapconversion_applicable'])
+					{
+						if(data[0]['fee_amount_mapconversion_applicable']==true)
+						{
+							var totFees=$('#totFees').text();
+							totFees=parseFloat(totFees);
+							var conRate=parseFloat(data[0]['fee_amount_map_conversion_amount']);
+							var conUnit=data[0]['fee_amount_map_conversion_unit'];
+							var converted=totFees/conRate;
+							$('#totFees').text(totFees+" INR ("+converted +" " +conUnit+ ")"); 
+						}
+					}
+				}
+				catch(e)
+				{
+					console.log("Error checking conversion data  "+e);
+				}
+			}
+		 }
+	})
+}
+
+function generateFeeList(d)
+{
+	$('#accordion').empty();
+	for (let i=0;i<d.length;i++) 
+	{
+		var html1=$('<h3 id="iden-'+d[i].replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')+' iden="'+d[i]+'"">'+d[i]+' </h3><div id="div-'+d[i].replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/\//g)+'"></div>');
+	    $('#accordion').append(html1);
+	}
+    $( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true,
+	   beforeActivate: function( event, ui ) 
+	   {
+	   		console.log("before activating")
+	    	console.log(ui.newHeader.text());
+	    	console.log(ui.newHeader.text().split(':')[0]);
+		    var iden=ui.newHeader.text().split(':')[0];//$(this).attr('id');
+		    //iden=iden.trim();
+		    if(iden!="")
+			{	 
+		    	$('#div-'+String(iden).replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'').replace(/\//g)).height('auto');
+				fillFeeDetails(iden); 	
+			}
+	    }
+	   });
+}
+
+function dateDiffInDays(diffTime)
+{
+	var diffDays =Math.abs(Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+	return diffDays;
+}
+
+function getPaymentDetailsForReceipt(feeidenoriginal)
+{
+	$.ajax(
+	{
+		"url":'/fees/getPaymentDetailsForReceipt',
+		"type":"get",
+		"data":{"iden":feeidenoriginal},
+		success:function(data)
+		{
+			if(data)
+			{
+				fillFeeDetailsForPrint(feeidenoriginal);
+				for(let k in data)
+				{
+					$('#'+k).text("");
+				}
+				for(let k in data)
+				{
+					$('#'+k).text(data[k]);
+				}
+				$.ajax(
+				{
+					url:"/fees/dataForFeeFilingPaidFee",
+					data:{"iden":feeidenoriginal},
+					success:function(data)
+					{
+						$('#particularsTab').empty();
+						$('#particularsTab').append(String(data));
+						$('#dialogEdit').modal({backdrop: 'static',
+		 				     keyboard: false});
+						$('.pr').unbind().bind('click',function()
+						{
+							$(this).hide();
+							$('.tohide').hide();
+							printReport2("dialogEdit");
+							$('.tohide').show();
+							$('#dialogEdit').modal('toggle');
+						});
+					},
+				});
+
+			}
+		}
+	});
+}
+function fillFeeDetailsForPrint(iden)
+{
+
+
+}
+function fillFeeDetails(iden)
+{
+	$.ajax(
+	{
+		url:"/fees/dataForFeeFilingPaidFee",
+		data:{"iden":iden},
+		success:function(data)
+		{
+			console.log(iden)
+			$('#div-'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'').replace(/\//g)).empty();
+			$('#div-'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'').replace(/\//g)).html(data);
+			$(".acc" ).accordion({collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			$('.printReceipt').unbind().bind('click',function()
+			{
+				getPaymentDetailsForReceipt($(this).attr('iden'));
+			});
+		
+		},
+	});
+
+}
+function fillFeeDetailsForPrint(iden)
+{
+	$.ajax(
+	{
+		url:"/fees/dataForFeeFilingPaidFee",
+		data:{"iden":iden},
+		success:function(data)
+		{
+		
+		},
+	});
+
+}
+$(document).ready(function()
+{
+	$.ajax(
+	{
+		url:"/fees/getPaidFeeOwn",
+		success:function(data)
+		{
+			if(data)
+			{
+					generateFeeList(data);
+			}
+		}
+	});
+	$('#accordionFine').hide();
+
+});
+
+
+</script>
+<hr>
+
+<div class="table-responsive cell-border well" id="gridTableDiv">
+	<table id="gridTable" class="table table-striped"></table>
+</div>
+<u><h4 id="head"></h4></u>
+<div id="accordion">
+ </div>
+ <hr>
+
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+        <img src="../images/logo.jpg" style="width: 40px;">
+        <hr>
+        </div>
+		<div class="modal-header">
+			<h5 class="modal-title" id="exampleModalLabel">Fee Receipt</h5>
+			 <button type="button" class="close tohide" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+	    </div>
+	    <div class="modal-body">
+			<div class="table-responsive">
+			<table class="table table-striped">
+				<tr><td>Receipt No:</td><td id="feereceiptno"></td> <td>Due Date:</td><td id="feeduedate"></td></tr>
+				<tr><td>Student Name:</td><td id="feeStudentName"></td> <td>Payment Date:</td><td id="feepaymentdate"></td></tr>
+				<tr><td>Roll No:</td><td id="feerollno"></td> <td>Late Fee:</td><td id="feelatefee"></td></tr>
+				<tr><td>Program Code:</td><td id="feeprogramcode"></td> <td>Mode of payment:</td><td id="feemodeofpayment"></td></tr>
+				<tr><td>Batch Code:</td><td id="feebatchcode"></td> <td>Name of the Bank:</td><td id="feebankname"></td></tr>
+				<tr><td>Academic Year:</td><td id="feeacademicyear"></td> <td>Nuals Ref No:</td><td id="feenualsrefno"></td></tr>
+				<tr><td>Fee Description:</td><td id="feefeedescription"></td> <td>Bank Tran Ref</td><td id="feebanktran"></td></tr>
+				<tr><td colspan="4">Particulars</td></tr>
+				<tr><td colspan="4" id="particularsTab">
+
+				</td></tr>
+			</table>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<p>* This is a computer generated receipt, signature not required. Payee is required to verify the details and if any discrepancy is found, please contact fo@nuals.ac.in</p>
+        </div>
+    </div>
+  </div>
+</div>
+ 

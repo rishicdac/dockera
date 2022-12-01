@@ -1,0 +1,1909 @@
+
+<!-- Main content -->
+<div class="content">
+	<div class="container-fluid">
+		<div class="row">
+			<!-- /.col-md-12 -->
+			<div class="col-lg-12">
+				<div class="card card-info card-outline">
+					<div class="card-header ">
+						<h5 class="m-0 card-title">Assessment Mark Entry</h5>
+						<a href="mark-management/marks/files/Book1.xlsx" download class="float-right excelMarkSheet"><i class="fa fa-book"> Sample File Format</i></a>
+					</div>
+					<div class="card-body ">
+						
+						<form id="markForm">
+							<div class="row">
+								<div class="col-md-3">
+									<div class="form-group">
+										<label>Academic Year</label> 
+										<select class="form-control"
+										   name="academicYear"
+											id="selectAcademicYear" required>
+											<option>Select</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label>Program</label> 
+										<select class="form-control"
+											name="programId"
+											id="selectProgram" required>
+											<option>Select</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label>Batch</label> 
+										<select class="form-control" 
+											name="batchId"
+											id="selectBatch" required>
+											<option>Select</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label>Semester</label> 
+										<select class="form-control" 
+											name="semesterId"
+											id="selectSemester" required>
+											<option>Select</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-3">
+									<div class="form-group">
+										<label>Viva Type</label> 
+										<select class="form-control" 
+											name="courseCode"
+											id="selectVivatype" required>
+											<option>Select</option>
+										</select>
+									</div>
+								</div>
+				
+							</div>
+							<button id='json_to_table_btn' type="submit" class="btn btn-info">Submit</button>
+						</form>
+					</div>
+				</div>
+			</div>
+			<!-- /.col-md-12 -->
+		</div>
+		<!-- /.row -->
+		<!-- Mark Entry -->
+		<div class="row" id="markTable" style="display:none;">
+			<div class="col-md-12">
+				<div class="info-box">
+					<div class="card-body">
+						<div class="alert alert-warning alert-dismissible fade show" role="alert" id="err_alert">
+						  <strong id="err_title">Warning !</strong> <span id="err_message"></span>
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						  </button>
+						</div>
+						
+							<form id="markTblForm">
+							 <div class = "container"> 
+							 	<div class="row">
+				                  <div class="col-6">			                   
+				                  </div>
+				                  <div class="col-6">
+				                  	<div class="row text-red">
+				                  	 <div class="col-6 ">
+				                    <div class="description-block ">
+				                   	   <span class="description-text">Report Max Mark: </span>
+				                      <h5 class="description-header"  id="maxMarkRecords"></h5>				                     
+				                    </div>
+				                    <!-- /.description-block -->
+				                  </div>
+				                  <!-- /.col -->
+				                  <div class="col-6">
+				                    <div class="description-block ">	
+				                      <span class="description-text">Viva Max Mark: </span>			                     
+				                      <h5 class="description-header" id="maxMarkViva"></h5>				                      
+				                    </div>
+				                    <!-- /.description-block -->
+				                  </div>
+				                  	</div>
+				                  </div>
+				               
+				                </div>
+								<div class="row mt-3">
+									<div class="table-responsive">
+									  <table id="studentMarksTbl" class="table table-bordered  display" style="width:100%">
+										<thead>
+											<tr>
+											  <th  style="display:none;">Student Code</th>
+											  <th>Student ID</th>
+											  <th>Student Name</th>
+											  <th>Report Mark</th>
+											  <th>Viva Mark</th>
+											  <th>Attendance</th>
+											  <th>Action</th>
+											</tr>
+											</thead>
+									  </table>		
+									</div>
+								</div>
+																	
+								<div class="row">									
+									<div id='button_container' class='col-md-3'>
+										<button id='table_to_json_btn' type="submit" class="btn btn-info btn-md">
+										 Save Marks
+										</button>											
+									</div>
+								</div>
+
+								<div class="row mt-3">
+									<div id='result_container' class='col-md-12'></div>
+								</div>        
+							</div>
+							</form>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Mark Entry -->
+
+	</div>
+	<!-- /.container-fluid -->
+</div>
+<!-- /.main content -->
+
+<!-- Toastr -->
+
+<style>
+.highlight {
+  
+    border:1px solid red;
+    box-shadow: 0 0 10px #719ECE;
+}
+</style>
+
+<script>
+$( document ).ready(function() {
+	
+	$('#internalMarksEntry').hide();
+	$('.excelMarkSheet').hide();
+	//$('#markTable').hide();
+	$('#err_alert').hide();
+	var studentsMarkDataTable =null;
+	var markConfig = null;
+	var configSetting;
+	
+	
+	$("input[data-bootstrap-switch]").each(function(){
+      $(this).bootstrapSwitch('state', $(this).prop('checked'));	  
+    });	
+	
+	bsCustomFileInput.init();
+    
+	/**
+	 * Internal Button click event to show table for internal mark enry.
+	 */
+    $('#add-new-internals').on('click',function(){
+    	$('#internalMarksEntry').show();
+    })
+    /** 	  
+	change event of no due certificate switch
+	**/
+	$("input[data-bootstrap-switch]").on('switchChange.bootstrapSwitch', function (event, state) {
+	
+		if(state===true)
+		{
+			$('.excelMarkSheet').hide();
+		}else{
+			$('.excelMarkSheet').show();			
+		}
+		$('#markTable').hide();		
+	});
+    /** 	  
+	Submit Button Action 
+	**/
+    $('#markForm').submit(function(e){
+		 
+		   e.preventDefault();	
+		   $('#studentMarksTbl').DataTable().clear().destroy();
+		   var isValid = false;
+		   var isMarkEntered = checkFacultyMarkEntered();//CHECK WHETHER THE FACULTY ALREADY UPLOADED MARKS
+		   
+		   if(!isMarkEntered){
+			    
+				if($('#methodOfEntry').bootstrapSwitch('state')=== false)
+				{
+					var xlsreading = ExportToTable("markSheetFileUpload",callBack);
+				    //console.log("Excel file JSON Data : "+xlsreading);
+				    
+				}else{
+					$('#err_alert').hide();
+					var studentsMarks = getStudentList();
+					//console.log(studentsMarks);					
+					populateDataTable(studentsMarks);					
+					if(studentsMarks)
+						isValid = true;
+					
+				}
+				if(isValid)
+					{
+						//$('#markTable').show();
+					}
+		   }else
+			{
+			   	  
+				  var studentMarksByFaculty = getMarkEnteredByFaculty();
+				
+				  console.log(studentMarksByFaculty);
+				  $('#err_message').text("Already Marks entered by this faculty, You can modify.");
+	    		  $('#err_alert').show();
+	    		  var studentList = getStudentList();
+		   		  var studentListWithregNo = AddStudentRegNo(studentMarksByFaculty,studentList);
+				  populateDataTable(studentListWithregNo);
+				 // $('#markTable').show();
+			}
+		})
+ 
+    /** 	  
+	Table Data Submit Action 
+	**/
+    $('#markTblForm').submit(function(e){
+    	e.preventDefault();
+    	//var tableData = makeJsonData(); 
+    	  var cells =  $("#studentMarksTbl tr td").filter(function() {
+    	        return $(this).hasClass('text-red');
+    	  }).parent('tr');
+    	  //console.log(cells)
+    	  
+    	  if(cells.length>0)//Validation Error
+    		 {
+    		    
+    			 
+		    		  var studentName="";
+		    		  var studentlist="";
+		    		  $.each(cells, function(i, el) {
+		    			  var studentRow = $("#studentMarksTbl").DataTable().row( this ).data();
+		    			  studentName+=studentRow.studentName+',';
+		    			  studentlist = removeLastComma(studentName);
+		    		  });
+		    		
+		    		  $('#err_message').text("Kindly check marks of following students : "+studentlist);
+		    		  $('#err_alert').show();
+    			 
+    		 }else
+			 { 	
+    			 /*
+     			 * To check already any row of the datatable is in edited state
+     			 */
+     			  var isEditing = checkIsEditingCells();
+    			  if(!isEditing){
+					  $('#err_alert').hide();
+					  postMarks();
+				 	}else
+				 	{
+				 		toastr.error("Kindly check and save mark details that you are editing.");
+				 	}
+			 }
+    })
+    /** 	  
+	Hide Mark Entry table on Form change
+	**/
+    $('#markForm').on('change',function(){
+    	$('#markTable').hide();
+    })
+
+});
+
+function removeLastComma(strng){        
+    var n=strng.lastIndexOf(",");
+    var a=strng.substring(0,n) 
+    return a;
+}
+function postMarks()
+{
+	var tableData = $('#studentMarksTbl').DataTable().rows().data().toArray();
+	console.log(tableData); 
+	var approvalids = getApprovalIds();
+    var assessmentMark = createMarkJSON(tableData,approvalids);
+    //console.log(assessmentMark);
+  
+ 
+        var msg  = {
+				title : "Save",
+				msg : " Are you sure to save marks?"
+				}
+				ConfirmDialog(msg,"SAVE").then( function(response){	
+					addAssessmentMarks(JSON.stringify(assessmentMark));						
+				},function(error){
+
+				});
+}
+
+function createMarkJSON(tableData,approvalids)
+{
+	 var assessmentMark = {};
+	 //TODO AFTER PANEL ASSIGNMENT
+     //assessmentMark.programId = ;
+     //assessmentMark.programName = ;
+	 var assessmentMark =  $("#markForm").serializeObject();	
+	 assessmentMark.batchName = $("#selectBatch option:selected").text();
+     assessmentMark.courseName =  $("#selectVivatype option:selected").text();
+     assessmentMark.programName = $("#selectProgram option:selected").text();
+     assessmentMark.semesterName = $("#selectSemester option:selected").text();
+     assessmentMark.approvalIds = approvalids;
+     assessmentMark.isNormalCourse = false;
+     //console.log(tableData)  
+     assessmentMark.studentVivaVocesDTO = tableData;
+     
+     return assessmentMark;
+	
+}
+
+
+function addAssessmentMarks(marksdetails)
+{
+	 $.ajax({
+	   		url:BASE_URL+"addVivaVoce",
+	   		method:'POST',
+	   		data:marksdetails,
+	   		contentType: "application/json",
+	   		success:function(data)
+	   		{
+	   			//console.log(data);	   			
+	   			toastr.success(data.message);
+	   		
+	   			
+	   			resetMarkForm();
+	   		},
+	   		error:function(data)
+	   		{
+	   			toastr.error(data.message);
+	   		}
+	   	});
+}
+
+function resetMarkForm()
+{
+	$("#markForm")[0].reset();
+	$('#markTable').hide();		
+}
+function populateDataTable(studentMarkData)
+{
+	 configSetting = getMarkConfig();//GET MARK CONFIGURATION DETAILS
+	 console.log(configSetting);
+	 if(configSetting && studentMarkData.length>0){
+		 
+		 $("#markTable").show();
+		 
+	 	 studentsMarkDataTable = $('#studentMarksTbl').DataTable({
+		 	"language": {
+                   "emptyTable": "No data available for the verification"
+            },
+			//"processing": true,
+            "retrieve": true,
+			"destroy": true,		
+			"data":studentMarkData,
+			"responsive": true,
+			"columns": [
+			{ "data": "studentId","render":function(data){ return $.trim(data)}},	
+			{ "data": "studentCode"},
+			{ "data": "studentName","render":function(data){ return $.trim(data)}},
+			{ "data": "report"},
+			{ "data": "viva" },		
+			{ "data": "isPresent" },	
+			{ "data": null	}],
+			fnPreDrawCallback:function(){			
+				   $('#maxMarkRecords').text(configSetting.reportFaculty);
+				   $('#maxMarkViva').text(configSetting.vivaFaculty);				
+			},
+			createdRow: function ( row, data, index ) {
+				//console.log(data);
+				if(configSetting){
+		            if(data.report>configSetting.reportFaculty) {	    
+		            	 $('td', row).eq(2).addClass('text-red  text-bold');  
+		            }
+		            if(data.viva>configSetting.vivaFaculty)
+	            	{
+		            	$('td', row).eq(3).addClass('text-red  text-bold');            	
+	            	}
+		            if(!data.isPresent)
+	            	{
+		            	$('td', row).eq(2).text(0); 
+		            	$('td', row).eq(3).text(0);  
+	            	}
+				}
+	        },
+			columnDefs: [
+			 {				
+					targets: [-1], render: function (a, b, data, d) {
+						return '<i class="fas fa-edit" id="editIcon"></i>' 
+					}
+			 },
+			 {  	
+					 targets: [-2], render: function (a, b, data, d ) {					
+					 data.isPresent = jQuery.type(data.isPresent) === "string"?Boolean($.parseJSON(data.isPresent.toLowerCase())): data.isPresent ;// Boolean(data.isPresent);
+					 return '<input type="checkbox" disabled class="editor-active"  id="'+d.row+'" '+(data.isPresent? 'checked' : '')+'>';
+					}
+			 },
+			 {
+				"targets": [ 0 ],
+                "visible": false
+			 }]
+		});
+
+	 }else
+	 {
+		 $("#markTable").hide();
+		 if(configSetting===null)
+			 toastr.error("Mark Configuration against the selected program is not added!!");
+		 if(studentMarkData.length===0)
+			 toastr.error("No student list available for the selected program!!");
+		 
+	 }
+$('#studentMarksTbl tbody').off().on('click', '#editIcon', function (e) {
+	e.stopPropagation(); 
+	/*
+	 * To check already any row of the datatable is in edited state
+	 */
+	var isEditing = checkIsEditingCells();
+	//console.log(isEditing)
+	/*
+	 * If datatable is not in edited state the allow to edit
+	 */
+	 if(!isEditing)
+    	{
+		 	var data = studentsMarkDataTable.row($(this).parents('tr')).data();
+		    //console.log(configSetting);
+		    $(this).removeClass().addClass("fa fa-save").attr("id","saveIcon");	
+	        var $row = $(this).closest("tr");
+	        $row.addClass('editing');
+	        //console.log($row)
+	        var $tds = $row.find("td").not(':first').not(':last').not(':nth-child(2)');
+	       
+	        $.each($tds, function(i, el) {
+	        	
+	          var txt = $(this).text();	
+	          
+	          //console.log(txt);
+	          if(i!=2)
+	        	  $(this).html("").append("<input type='number' value='"+txt+"'>");
+	          else
+	        	 {	        	 
+	        	  $(this).html("").append('<input type="checkbox" '+(data.isPresent? 'checked' : '')+'>');
+	        	 }
+	        });
+    	}	
+		/*
+		 * If datatable is in edited state then show msg to user
+		 */
+		else
+		{
+			toastr.error("Kindly check and save mark details that you are editing.");
+		}	        
+})
+
+$("#studentMarksTbl tbody").on('click', "#saveIcon", function(e) {
+	e.stopPropagation();
+    $(this).removeClass().addClass("fas fa-edit").attr("id","editIcon");
+    var $row = $(this).closest("tr");
+    $row.removeClass('editing');
+    var $tds = $row.find("td").not(':first').not(':last').not(':nth-child(2)');
+    var chk = true;
+    $.each($tds, function(i, el) {
+    	
+      var txt = $(this).find("input[type='number']").val();    
+   
+      switch(i)
+      	{
+      	case 0:	      	
+      		$('#studentMarksTbl').dataTable().fnUpdate(parseFloat(txt), [$row], $(this), false);
+      		if((parseInt(txt)<=configSetting.reportFaculty) && $(this).hasClass('text-red'))
+      			$(this).removeClass('text-red  text-bold');
+      		else if((parseInt(txt)>configSetting.reportFaculty))
+      			$(this).addClass('text-red  text-bold');
+      		break;
+      	case 1:
+      		$('#studentMarksTbl').dataTable().fnUpdate(parseFloat(txt), [$row], $(this), false);
+      		if((parseInt(txt)<=configSetting.vivaFaculty) && $(this).hasClass('text-red'))
+      			$(this).removeClass('text-red  text-bold');
+      		else if((parseInt(txt)>configSetting.vivaFaculty))
+      			$(this).addClass('text-red  text-bold'); 
+      		break;
+      	case 2:	 
+      		chk = $(this).find("input[type='checkbox']").is(':checked');
+      		$('#studentMarksTbl').dataTable().fnUpdate(chk , [$row], $(this), false);
+      		break;
+      	}
+       if(chk==false){
+        $('#studentMarksTbl').DataTable().cell($row, 3).data(0).draw();           
+        $('#studentMarksTbl').DataTable().cell($row, 4).data(0).draw();           
+        if($tds.hasClass('text-red'))
+        	$tds.removeClass('text-red  text-bold');
+       }
+       
+	});
+  });	
+
+}
+/*
+ * Method to check whether the table cells are in editable mode or not
+ */
+function checkIsEditingCells()
+{
+	var isEditing = false;
+	studentsMarkDataTable.rows().every(function(rowIdx, tableLoop, rowLoop){
+    	if($(this.node()).hasClass('editing'))
+	    {
+    		isEditing = true; 
+    		return false;
+    	}	
+	}) 
+	return isEditing;
+}
+function checkFacultyMarkEntered()
+{
+	var isEntered=false;
+	var formData =  {
+			  "batchId": $('#selectBatch').val(),
+			  "courseCode":$('#selectVivatype').val(),
+			  "programId": $('#selectProgram').val(),
+			  "semesterId": $('#selectSemester').val()
+			}
+		 $.ajax({
+		   		url:BASE_URL+'checkIsFacultyMarksEntered',
+		   		method:'POST',
+		   		data:JSON.stringify(formData),
+		   		async: false,
+		   		contentType: "application/json",
+		   		success:function(result)
+		   		{
+		   			isEntered = result.data;
+		   		},
+		   		error:function(err)
+		   		{
+		   			showMessage(err);
+		   		}
+		   	});
+	return isEntered;
+}
+
+function getMarkConfig()
+{
+	
+	var markConfigData = null;
+	$.ajax({
+   		//url:BASE_URL+'getMarkConfigByPgmId/'+ $('#selectProgram').val()+"/coursecode/"+$('#selectVivatype').val(),
+		url:MARKS_CONFIG_viva +$('#selectProgram').val()+"/coursecode/"+$('#selectVivatype').val(),
+   		method:'GET',
+   		async: false,
+   		contentType: "application/json",
+   		success:function(result)
+   		{   			
+   			markConfigData = result.data;   			
+   		},
+   		error:function(err)
+   		{
+   			showMessage(err);
+   		}
+   	});
+	
+	return markConfigData;
+}
+function getMarkEnteredByFaculty()
+{
+	var studentMarks = null;
+	$.ajax({
+   		url:BASE_URL+'getMarksEnteredByFaculty',
+   		method:'POST',
+   		async: false,
+   		data:JSON.stringify(createAcademicInfo()),
+   		contentType: "application/json",
+   		success:function(result)
+   		{
+   			
+   			studentMarks = result.data;
+   		    
+   		    
+   		},
+   		error:function(err)
+   		{
+   			showMessage(err);
+   		}
+   	});
+	
+	return studentMarks;
+}
+
+function getApprovalIds()
+{
+	var approvalIds;
+	$.ajax({
+   		url:BASE_URL+'getVivaVoceForApprovals',
+   		method:'POST',
+   		data:JSON.stringify(createAcademicInfo()),
+   		async: false,
+   		contentType: "application/json",
+   		success:function(result)
+   		{
+   			console.log(result)
+   			//toastr.success(result.message);
+   			approvalIds = result.data;
+   			
+   		},
+   		error:function(err)
+   		{
+   			showMessage(err);
+   		}
+   	});
+	return approvalIds;
+}
+function createAcademicInfo()
+{
+	var academicInfo = {};
+	academicInfo.programId = $('#selectProgram').val();
+	academicInfo.batchId = $('#selectBatch').val();
+	academicInfo.semesterId = $('#selectSemester').val();
+	academicInfo.courseCode = $('#selectVivatype').val();
+	
+	return academicInfo;
+}
+
+var types;
+
+$(document).ready(function() {
+
+	getAllPrograms();
+	getAllAcademicYear();
+	
+	 /* 
+    	To Evaluation Types
+	*/
+	function loadEvaluationypes(programId){
+		
+        $.ajax(
+        {
+              "url":MARKS_CONFIG_URL+programId,
+              success:function(data)
+              {
+                     types= data.data;
+                     setUpDropDown("selectRevaluationType",types,"id","evaluationType");
+              }
+        });
+	}
+
+    /* 
+      To list the programs
+	*/
+	
+	function getAllPrograms()
+	{
+	
+		$.ajax({
+	   		url:'/course/getAllCourses',
+	   		method:'GET',
+	   		success:function(data)
+	   		{
+	   		    setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   			$('#selectProgram').unbind().bind('change',function()
+	   			{
+	   			
+	   				getAllActiveBatchesOfProgram($(this).val());
+	   				loadEvaluationypes($(this).val());
+	   				
+	   			});
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+		
+	}
+	
+	/**
+	  To get all batches for the given programid
+	*/
+	 function getAllActiveBatchesOfProgram(programId)
+	 {
+	// $("#selectBatch").prop( "disabled", false );
+		$.ajax(
+		{
+	  		url:'/batch/getAllActiveBatchesInAProgram',
+	  	   	method:'GET',
+	  	   	data:{"courseId":programId},
+	  	   	success:function(data)
+	  	   	{	  	   	
+	  	        setUpDropDown("selectBatch",data,"batchId","batchCode");
+	  	   		$('#selectBatch').unbind().bind('change',function()
+	   			{	  	   			
+	  	   			getAllActiveSemesterOfBatch($(this).val());	  
+	  	   			getStudentList();
+	   			});	  	   		
+	  	   	},
+	  	   	error:function(err)
+	  	   	{
+	  	   		showMessage(err);
+	  	   	}
+	  	 });	  
+	  }
+	  
+	  /**
+	  To get all semesters the given batchid
+	  */
+	 function getAllActiveSemesterOfBatch(batchId)
+	 {
+		//$("#selectSemester").prop( "disabled", false );
+		  $.ajax({
+					"url" : "/batch/getAllSemestersInABatch",
+					"method" : "GET",
+					data : {"batchId":batchId},
+					success :function(data) {
+					console.log(data);
+					
+					    try{
+						   if(data && data.length >0){
+							   $('#selectSemester').empty();
+							   $('#selectSemester').append('<option selected disabled>Select</option>');
+							   for(var i=0;i< data.length;i++){
+							   	   $("#selectSemester").append('<option value='+data[i]['semesterIdentity']['semesterCode']+'>'+data[i]['semesterIdentity']['semesterCode']+'</option>');
+							   }
+						      }  		
+						   		
+							}
+							catch(e){
+							    console.error(e);
+							    showMessage(" Error occurred while processing semester list"); 
+							}
+							$('#selectSemester').unbind().bind('change',function()
+						   	{	
+								var program = $( "#selectProgram option:selected" ).val();
+								getCourses();	
+								getVivaType();
+								getExamTypes(program,batchId,$(this).val());
+						   	});
+							
+					},
+					error :function(e) {
+					     showMessage(err);
+					}
+				});
+		} 
+	 /**
+	  * To get Exam Names
+	  */
+	 function getExamTypes(program,batch,semester)
+	 {
+		 $.ajax({
+             "url": EXAM_NAME_URL+"schedule/list",
+             "type":"POST",
+             "data":{"program":program,"batch":batch,"semester":semester},
+             success: function(data)
+             {
+              var examDetails = data.data;    
+             setUpDropDown("selectExamType",examDetails,"id","name_exam");
+             },
+             error:function(err)
+             {
+            	 showMessage(err);
+             }
+		 });
+	 }
+	 
+	  /**
+	  To get Courses under program
+	  */
+	 function getCourses()
+	 {
+
+		 var program = $('#selectProgram').val();
+		 var batch = $('#selectBatch').val();
+		 var semester = $('#selectSemester').val();
+		
+		 console.log(semester)
+		 $.ajax({
+			 url: "/academic/getValidCourseSemMappingsV2",
+			 method: 'GET',
+			 data:{"program":program,"batch":batch,"sem":semester},
+			 async:false,
+			 success: function(data)
+			 {
+			 setUpDropDown("selectCourse",data,"course_code","course_name");		
+			 },
+			 error:function(err)
+			 {
+			 showMessage(err);
+			 }
+		 });
+	 }
+	  /**
+	  To get Academic Year
+	  */
+	 function getAllAcademicYear()
+		{
+		
+			$.ajax({
+		   		url:'/academics/api/v1/academics/getDetailsByMasterId/masterId/83',
+		   		//url:'nualsTest/api/v1/academics/getDetailsByMasterId/masterId/83',
+		   		method:'GET',
+		   		success:function(data)
+		   		{
+		   		    setUpDropDown("selectAcademicYear",data,"detailName","detailName");
+		   			
+		   		},
+		   		error:function(err)
+		   		{
+		   			showMessage(err);
+		   		}
+		   	});
+		}
+	
+	 /**
+	  To get Viva Type
+	  */
+	 function getVivaType()
+		{
+		  
+			$.ajax({
+		   		url:'/academic/getValidCourseSemMappingsWithOtherCourses',
+		   		method:'GET',
+		   		data:{"program":$('#selectProgram').val(),"batch":$('#selectBatch').val(),"sem":$('#selectSemester').val()},
+		   		success:function(data)
+		   		{
+		   			console.log(data);
+		   		    setUpDropDown("selectVivatype",data[1],"other_course_code","other_course_name");
+		   			
+		   		},
+		   		error:function(err)
+		   		{
+		   			showMessage(err);
+		   		}
+		   	});
+		}
+
+});
+/**
+To get Student List
+*/
+function getStudentList()
+{
+	 var studentList;
+	 $.ajax({
+	   		url:'/students/getStudentsDetailsByProgramAndBatch-V2',
+	   		method:'GET',
+	   		data:{"programId":$('#selectProgram').val(),"batchId":$('#selectBatch').val()},
+	   		async: false,
+	   		success:function(data)
+	   		{
+	   			//console.log(data);	   			
+	   			studentList = jQuery.map(data, function(val, index) { 
+	                return { 
+	                    "studentId":val.studentCode,
+	                    "studentCode":val.regNo,
+	                    "studentName": val.studentName,
+	                    "report":0,
+	                    "viva":0,
+	                    "isPresent":true
+	                }; 
+	            }) 
+	            setUpDropDown("selectStudent",studentList,"studentId","studentCode");
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+	return studentList;
+}
+
+/**
+ * Add Student 
+ * 
+ */
+
+function AddStudentRegNo(studentList,studentDetails)
+{	
+	console.log(studentList);
+	console.log(studentDetails);
+	 $.each(studentList, function(i, el) {		 
+		 $.each(studentDetails, function(i, sd) {
+			 //console.log(el);
+			// console.log(sd);
+			 //console.log(el.student_id+"---"+sd.studentCode);
+			// console.log(el.studentId+"---"+sd.studentCode);
+			if(parseInt(el.student_id) === parseInt(sd.studentId) || parseInt(el.studentId) === parseInt(sd.studentId) )
+				{
+					el.studentCode = sd.studentCode;//Register Number
+				}
+		 })
+	 })
+	 console.log(studentList);
+	 return studentList;
+}
+//global variables and fns
+	
+	/* base url for exam management */
+	//var BASE_URL = "certificate-management/certificate-management/api/v1/academics/certificate-management/";
+	var BASE_URL = "/certificate-management/api/v1/academics/certificate-management/";
+	var BASE_MINIO = "/filerepo_public/minioFiles/nuals"; 
+	loadCertMappings();
+	/* CERTIFICATE TYPES */
+	var ORIGINAL_TYPE = 1388;
+	var DUPLICATE_TYPE = 1389;
+	var MIGRATION = 1400;
+	var TRANSCRIPT = 1399;
+	var DEGREE = 1397;
+	var PROVISIONAL = 1398;
+	var NO_DUES = 1655;
+	var TRANSFER = 1401;
+	var CONDUCT = 2166; //need to check
+	var ATTENDANCE = 2168 ; //need to check
+	var CONSOLIDATED_MARK_SHEET = 2170;//need to check
+	var studentAdmissionDateTime;
+	
+	var certMap = new Map();
+	
+	/* fn to convert form data to json */
+	$.fn.serializeObject = function()
+	{
+	    var o = {};
+	    var a = this.serializeArray();
+	    $.each(a, function() {
+	        if (o[this.name] !== undefined) {
+	            if (!o[this.name].push) {
+	                o[this.name] = [o[this.name]];
+	            }
+	            o[this.name].push(this.value || '');
+	        } else {
+	            o[this.name] = this.value || '';
+	        }
+	    });
+	    return o;
+	 };
+
+ 
+ 	$('.datepicker').datepicker({
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true,
+		pickerPosition: "bottom-left"
+	});  
+	
+	$('.datepicker-month-year').datepicker({
+	    format: 'M-yyyy',	
+	    startView: "months", 
+        minViewMode: "months",						   
+		autoclose:true,
+		clearBtn:true
+	});
+	
+	
+	function loadCertMappings()
+	{
+		$.ajax({
+			   type: "GET",
+			   url:  BASE_URL + "getCertificateMapping",
+			   headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			   },		   
+			   success: function(result)
+			   {
+				  var data = result.data;
+				  
+				  data.forEach(element => {
+					  console.log(element);
+					  if(element.mappedId == null){
+						  toastr.error("Failed to Map "+element.certName +" certificates.Kindly contact Admin");
+						  }
+					  else 
+				    certMap.set(element.certName,element.mappedId);
+				  });
+				 //  console.log(certMap.get('ORIGINAL_TYPE'));
+				 // for (const [key, value] of certMap.entries()) {
+				 //	  console.log(key, value);
+				 //	}
+			   }
+			 });
+		
+	}
+	function openCertificates(certificateurl){
+		  window.open(BASE_MINIO+"/"+certificateurl, '_blank');
+			/*$.ajax({
+				   type: "GET",
+				   url:  BASE_URL + "getAffidavitCertificate/"+certificateId,
+				   headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				   },		   
+				   success: function(result)
+				   {
+					  console.log(result);
+					  window.open(result.DownloadLink, '_blank');
+					// $('#affidavitUrl').attr("href",result.DownloadLink);
+					 
+				   }
+				 });*/
+		
+	}
+	
+	
+	
+	/*$('.datetimepicker').datetimepicker({
+      language: 'en'
+    //  pick12HourFormat: true
+    });*/
+    
+     /**
+    *  Get the logged in student details
+    **/
+         
+   function getStudentInfo(studentId)
+	{
+       var studentData = {};       
+	    $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		async:false,
+	   		data:{"userCodes":studentId},
+	   		success: function(data)
+	   		{
+	   		  studentData = data;
+	   		  console.log(data);	   		
+	   		  setStudentInfo(data,studentId);	   		  
+	   		  return data;
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   		 toastr.error("Failed to load student details");
+	   		}
+	   	});
+	   	
+	   	return studentData; 
+	 }
+	 
+	 
+	 /**
+    *  set the student details
+    **/
+         
+   function setStudentInfo(data,studentId)
+	{
+	  var studentDetails = data[studentId];
+	  console.log( studentDetails);
+	  loggedStudentProgramId = studentDetails.programCode;
+ 		//alert(programId);
+ 		
+	  $("#student_reg_no").text(studentDetails.regNo ? studentDetails.regNo : "----");
+      $("#student_name").text(studentDetails.studentName);
+      $("#student_gender").text(studentDetails.studentPersonalGender);
+      $("#student_code").text(studentDetails.studentCode);
+      $("#program_name").text(studentDetails.programName);
+      $("#batch_name").text(studentDetails.batchName);
+      $("#semester").text(studentDetails.semester);
+      $("#division").text(studentDetails.division ? studentDetails.division: "-----")
+      $("#student_roll_no").text(studentDetails.rollNo ? studentDetails.rollNo:"-----");
+     
+	}
+
+   
+   function loadDataOnPreview(data)
+	{
+		console.log("Data :: "+JSON.stringify(data));
+		console.log(data.purpose);
+		
+		
+	   if(data.originalNo)
+		   {
+		   $('#duplicate_org_no').show();
+		   $('#label_duplicate_org_no').show();
+		   $('#duplicate_org_no').text(data.originalNo);
+		   }
+	   else{
+		   $('#duplicate_org_no').hide();
+		   $('#label_duplicate_org_no').hide();
+	   }
+	 
+	   if(data.isAffidavit==true && data.affidavit!=null)
+		   {
+		   $('#isAffidavit').text('Yes');
+		   $('#isAffidavit').show();
+		   $('#label_isAffidavit').show();
+		   $('.AffidavitLink').show();
+		   }
+		 
+	   else{
+		 
+		   $('#isAffidavit').hide();
+		   $('#label_isAffidavit').hide();
+		   $('.AffidavitLink').hide();
+	   }
+	  
+	   if(parseInt(data.noCopies)>0)
+		   {
+			  $('#transcript_copy').show();
+			  $('#label_transcript_copy').show();
+			  $('#transcript_copy').text(data.noCopies);
+		   }
+	   else{
+		  $('#transcript_copy').hide();
+		  $('#label_transcript_copy').hide();
+	   }
+	  
+	   if(data.remarks)
+		   {
+		   $('#noduenumber').text(data.remarks);
+		   $('#noduenumber').show();
+		   $('#label_noduenumber').show();
+		   }		
+	   else{
+		   $('#noduenumber').hide();
+		   $('#label_noduenumber').hide();
+	   }
+	  
+	   if(data.nameId == TRANSFER || data.nameId == MIGRATION)
+		   {
+		   loadInterUniversityData(data.studentId);
+		   $('#interuniversity').show();
+		   $('#label_interuniversity').show();
+		   
+		   }
+	   else
+		   {
+		   $('#interuniversity').hide();
+		   $('#label_interuniversity').hide();
+		   
+		   }
+	  
+	   if(data.purpose)
+		   {
+		   $('#purpose_certificate').text(data.purpose);
+		   $('#purpose_certificate').show();
+		   $('#label_purpose_certificate').show();
+		   }
+		
+	   else{
+		   $('#purpose_certificate').hide();
+		   $('#label_purpose_certificate').hide();
+	   }
+		//$('#fee').text(data.paymentsAmount?data.paymentsAmount:0);//TODO Add Fee details
+		$('#fee').text(data.paymentsAmount?data.paymentsAmount+" Rs/-":"0 Rs/-");
+		$('#applnType').text(data.name+"("+data.type+")");
+		$('#collapseExample').show();
+		$('html, body').animate({
+		        scrollTop: $("#previewCertificate").offset().top
+		}, 1000);
+		
+	}
+	/**
+	* To load inter university details of loggedin student
+	*/
+	 function loadInterUniversityData(loggedInStudentId)
+	 {
+	    
+	      $.ajax({
+		         url: "/students/getStudentDetails",
+		         data:{"studentAdmissionUserCode":loggedInStudentId },
+				 success: function(data)
+		           {
+					 console.log(data);
+					studentAdmissionDateTime = data.sa.studentAdmissionDateTime;
+					if(data.sa.studentAdmissionInterUniversity){
+						
+						$('#interuniversity').text(
+						 	"  Inter-University Admission No -- "+data.sa.studentAdmissionInterUniversityAdmissionNo +
+						    "  , ProgramName -- "+data.sa.studentAdmissionInterUniversityOldProgramName +
+							"  , RollNo -- " +data.sa.studentAdmissionInterUniversityOldRollNo +
+							"  , University -- " + data.sa.studentAdmissionInterUniversityOldUniversity +
+							"  , Semesters completed -- " + data.sa.studentAdmissionInterUniversitySemestersCompleted 					
+						);
+						
+						
+					  
+						
+					}
+					else{
+						
+						$('#interuniversity').text("NO");
+					}
+					
+		           }
+		         });
+	 }
+	 
+   
+    /**
+   * Fee Settings
+   */
+   
+   var studentListWithData=new Array();
+   var studentCodeList=new Array();
+   
+   
+	function loadData(url)
+	{
+		let dataWithPayment=[];
+		$.ajax(
+		{
+			url:url,
+			async:false,
+			success:function(data)
+			{
+			studentListWithData=data.data;
+			console.log(studentListWithData);
+			if(studentListWithData.length>0){
+			  var studfeeidmapArray=generateFeeIdenMapArray(studentListWithData);
+			  console.log(studfeeidmapArray);
+			  dataWithPayment = getFeeOrderStatus(studfeeidmapArray);
+			}
+		}
+	})
+	
+	return dataWithPayment;
+  }
+	
+ function generateFeeIdenMapArray(data)
+	{
+		var mapArray=new Array();
+		for(let i=0;i<data.length;i++)
+		{
+			var map={};
+			var studCode=data[i]['studentId'];
+			map['feeOrderStudent']=studCode;//maintain the same key feeOrderStudent in map
+			map['feeOrderIdentity']=data[i]['orderId'];//maintain the same key feeOrderIdentity in map
+			mapArray.push(map);
+			}
+			return mapArray;
+	}
+
+ function addTostudentListWithData(data)
+	{
+	 console.log("Inside addtistudentlistwithdaTA");
+	 	console.log(data);
+		for(let i=0;i<studentListWithData.length;i++)
+		{
+		for(let j=0;j<data.length;j++)
+		{
+		//if(String(studentListWithData[i]['studentId'])==data[j]['feeOrderStudentCode'])
+		if(String(studentListWithData[i]['orderId'])==data[j]['feeOrderId'])
+		{
+		studentListWithData[i]['feeOrderStatusValue']=data[j]['feeOrderStatusValue'];
+		}
+		if(studentListWithData[i]['orderId'] == null)
+		{
+			studentListWithData[i]['feeOrderStatusValue'] = "-";  
+		}
+		
+		}
+	}
+	
+	}
+	
+	
+ function getFeeOrderStatus(datatosend)
+	{
+		console.log("calling getFeeOrderStatus function")
+		$.ajax(
+		{
+			   url:'/fees/getManyFeeOrderStatusByFeeIdentifierAndAccount',
+			   data:{'feeOrderStudents':datatosend},
+			   method:"post",
+			   async:false,
+			   success:function(data)
+			   {
+					console.log(data); 
+					if(data.length>0)
+					{
+					addTostudentListWithData(data);
+					//loadDatatable(studentListWithData);
+					//return studentListWithData;
+					}
+	           },
+		    error:function(err)
+				{
+				showMessage(err);
+				}
+		});
+		return studentListWithData;
+}
+
+
+ var ConfirmDialog = function (data,type){
+
+ var TYPE;
+ var ICON ;
+ var BTN_CLASS;
+
+	 if ( type == 'SAVE'){
+		 TYPE = 'green';
+		 ICON =  'fa fa-save';
+		 BTN_CLASS = 'btn-success';
+	 }
+	 else if ( type == 'DELETE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-trash';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else
+	 {
+		 TYPE = 'orange';
+		 ICON =  'fa fa-warning';
+		 BTN_CLASS = 'btn-warning';	
+	 }
+	 var DialogPromise = function (resolve, reject) {
+	    
+	     $.confirm({
+	        title: data.title,
+	        content:data.msg,
+	        closeIcon : true,
+	        type: TYPE,
+	        icon: ICON,
+	        offsetTop: 40,	      
+	        bgOpacity :'0.7',
+	        buttons: {  
+	            ok: {
+	                text: "<b> Yes </b>",	            
+	                keys: ['enter'],
+	                action: function(){	                    
+	                     resolve(true); 	                    
+	                }
+	            },
+	            no: function(){
+	              text: "<b> No </b>",	                  
+	                    reject(false); 
+	            }
+	        }
+     });    
+    
+   };    
+    return  new  Promise (DialogPromise);
+ }
+
+	
+	
+	/** 	  
+		Parse Excel File Content
+	**/
+	function ExportToTable(excelfile,callback) {  
+	
+		var xlsJsonData;
+		
+		 var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xlsx|.xls)$/;  
+		 /*Checks whether the file is a valid excel file*/  
+		 if (regex.test($("#"+excelfile).val().toLowerCase())) {  
+			 var xlsxflag = false; /*Flag for checking whether excel is .xls format or .xlsx format*/  
+			 if ($("#"+excelfile).val().toLowerCase().indexOf(".xlsx") > 0) {  
+				 xlsxflag = true;  
+			 }  
+			 /*Checks whether the browser supports HTML5*/  
+			 if (typeof (FileReader) != "undefined") {  
+				 var reader = new FileReader();  
+				 reader.onload = function (e) {  
+					 var data = e.target.result;  
+					 /*Converts the excel data in to object*/  
+					 if (xlsxflag) {  
+						 var workbook = XLSX.read(data, { type: 'binary' });  
+					 }  
+					 else {  
+						 var workbook = XLS.read(data, { type: 'binary' });  
+					 }  
+					 /*Gets all the sheetnames of excel in to a variable*/  
+					 var sheet_name_list = workbook.SheetNames;  
+	  
+					 var cnt = 0; /*This is used for restricting the script to consider only first sheet of excel*/  
+					 sheet_name_list.forEach(function (y) { /*Iterate through all sheets*/  
+						 /*Convert the cell value to Json*/  
+						 if (xlsxflag) { 
+							var  exceljson = XLSX.utils.sheet_to_json(workbook.Sheets[y]);  
+						 }  
+						 else {  
+							var  exceljson = XLS.utils.sheet_to_row_object_array(workbook.Sheets[y]); 
+						 }  
+						
+						 if (exceljson.length > 0 && cnt == 0) { 
+							 
+							 xlsJsonData  = exceljson;
+							 console.log(xlsJsonData);
+							 callback(exceljson);                                              
+							 cnt++; 
+							 /*if(compareJson(exceljson))
+								 {
+									 xlsJsonData  = exceljson;
+									 console.log(xlsJsonData);
+									 callback(exceljson);                                              
+									 cnt++; 
+								 }else
+								 {
+									 $('#err_message').text("Sorry! Your File content was not in specified format!");
+									 $('#err_alert').show();
+								 }*/
+							  
+						 } 
+					 });  
+					
+				 }  
+				 if (xlsxflag) {
+					 /*If excel file is .xlsx extension than creates a Array Buffer from excel*/  
+					 reader.readAsArrayBuffer($("#"+excelfile)[0].files[0]);  
+				 }  
+				 else {  
+					 reader.readAsBinaryString($("#"+excelfile)[0].files[0]);  
+				 }  
+			 }  
+			 else {  
+				 toastr.error("Sorry! Your browser does not support HTML5!");
+				
+				
+			 }  
+		 }  
+		 else { 
+			 toastr.error("Please upload a valid Excel file!");
+			
+		 }  
+		 console.log("At End: "+xlsJsonData);
+	 }  
+
+	 function callBack(d)
+	 {	
+		
+		xlsData = d;
+		console.log("callback data : "+xlsData);
+		xlsData.forEach( obj =>   obj.__proto__=null);		
+		populateTable(xlsData);
+		populateDataTable(xlsData);
+		$('#totalRecords').text(Object.keys( xlsData ).length );
+		if(xlsData)
+			$('#markTable').show();
+	 }
+	 
+	 function compareJson(remoteJSON)
+	 {	
+		
+		 return  _.isEqual(remoteJSON, localJSON);
+	 }
+	 
+var counter_id;
+
+var parent_clicked_row;
+var parent_clicked_col;
+var parent_counter_id;
+
+var gbl_table_container_id;
+var gbl_json_input_container_id;
+var gbl_json_output_container_id;
+var gbl_json_to_table_btn_id;
+var gbl_table_to_json_btn_id;
+var gbl_output_json;
+var gbl_input_json;
+
+var copied_row;
+var copied_column;
+
+var max_counter = 0
+
+var obj_clicked_row = {};
+ $(document).ready(function () {
+   //jsonEditorInit('table_container', 'Textarea1', 'result_container', 'json_to_table_btn', 'table_to_json_btn');
+   
+    gbl_table_container_id = 'table_container';
+    gbl_json_input_container_id = 'Textarea1';
+    gbl_json_output_container_id = 'result_container';
+    gbl_json_to_table_btn_id = 'json_to_table_btn';
+    gbl_table_to_json_btn_id  = 'table_to_json_btn';
+	
+	
+    /*$('#' + gbl_table_to_json_btn_id).on('click', function(){
+	     
+       
+    });
+   
+   
+
+  $('#' + gbl_json_to_table_btn_id).on('click', function(){
+		
+        try {
+            var value = $('#' + gbl_json_input_container_id).val().trim();
+            json_arr = JSON.parse(value != "" ? value : "[{\" \":\" \"}]");
+		  
+			json_arr = JSON.parse(gbl_input_json != "" ? gbl_input_json : "[{\" \":\" \"}]");
+        } catch(e) {
+            alert(e);
+            return;
+        }
+
+        $('#' + gbl_table_container_id ).html(makeTable(json_arr));
+        $('.json_table').addClass('table table-bordered table-striped table-hover table-sm');
+        $('.json_table thead').addClass('thead-dark');
+		showTable();//CDAC
+    });*/
+	
+	
+	
+});
+
+
+/*
+CDAC
+*/
+function populateTable(input_json)
+{
+	 try {
+           
+			json_arr = input_json;
+			
+        } catch(e) {
+            alert(e);
+            return;
+        }
+
+        $('#' + gbl_table_container_id ).html(makeTable(json_arr));
+        $('.json_table').addClass('table table-bordered table-striped table-hover table-sm');
+        $('.json_table thead').addClass('thead-dark');
+		
+}
+
+function makeJsonData()
+{
+	 if ( $('#' + gbl_json_output_container_id ).is( "input" ) ) {	
+		    gbl_output_json = JSON.stringify(makeJson());
+        
+     }
+     else{
+			  gbl_output_json = JSON.stringify(makeJson());
+			
+     }
+		 console.log(gbl_output_json);
+		 return gbl_output_json;
+}
+/*
+CDAC
+*/
+var obj_clicked_col = {};
+
+/*
+$(function() {
+    $.contextMenu({
+        selector: '#json_table_1', 
+        callback: function(key, options) {
+
+            clicked_col = obj_clicked_col[counter_id];
+            clicked_row = obj_clicked_row[counter_id];
+
+        switch(key){   
+
+            case 'insertCR':
+
+                var col_heading = prompt("Enter the heading of the new column");
+                $(`#json_table_${counter_id} tr[counter-id=${counter_id}]`).each(function(){
+                    
+                    new_th = `<th counter-id=${counter_id}><div contenteditable=true>`+ col_heading +'</div></th>'
+                    new_td = `<td counter-id=${counter_id} td_attr="value"><div contenteditable="true"></div></td>`; 
+
+                    $(this).find(`th[counter-id=${counter_id}]`).eq(clicked_col).after(new_th);
+                    $(this).find(`td[counter-id=${counter_id}]`).eq(clicked_col).after(new_td);
+
+                });
+            break;
+
+            case 'insertCL':
+                var col_heading = prompt("Enter the heading of the new column");
+                $(`#json_table_${counter_id} tr[counter-id=${counter_id}]`).each(function(){
+                    new_th = `<th counter-id=${counter_id}><div contenteditable=true>`+ col_heading +'</div></th>'
+                    new_td = `<td counter-id=${counter_id} td_attr="value"><div contenteditable="true"></div></td>`; 
+
+                    $(this).find(`th[counter-id=${counter_id}]`).eq(clicked_col).before(new_th);
+                    $(this).find(`td[counter-id=${counter_id}]`).eq(clicked_col).before(new_td);
+                });
+                break;
+
+            case 'deleteC':
+                $(`#json_table_${counter_id} tr[counter-id=${counter_id}]`).each(function(){
+                    $(this).find(`th[counter-id=${counter_id}]`).eq(clicked_col).remove();
+                    $(this).find(`td[counter-id=${counter_id}]`).eq(clicked_col).remove();
+                });
+                break;
+
+            case 'insertRD':
+                td_length = $(`#json_table_${counter_id} tr[counter-id=${counter_id}] th[counter-id=${counter_id}]`).length;
+                new_tr = `<tr counter-id=${counter_id}>` + `<td counter-id=${counter_id} td_attr="value"><div contenteditable="true"></div></td>`.repeat(td_length) + "</tr>" ;     
+                $(`#json_table_${counter_id} tr[counter-id=${counter_id}]`).eq(clicked_row+1).after(new_tr);
+                break;
+
+            case 'insertRU':
+                td_length = $(`#json_table_${counter_id} tr[counter-id=${counter_id}] th[counter-id=${counter_id}]`).length;
+                new_tr = `<tr counter-id=${counter_id}>` + `<td counter-id=${counter_id} td_attr="value"><div contenteditable="true"></div></td>`.repeat(td_length) + "</tr>" ;     
+                $(`#json_table_${counter_id} tr[counter-id=${counter_id}]`).eq(clicked_row+1).before(new_tr);
+                break;
+
+            case 'deleteR':
+                $(`#json_table_${counter_id} tr[counter-id=${counter_id}]`).eq(clicked_row+1).remove();
+                break;
+
+            case 'deleteT':
+                $(`#json_table_${counter_id}`).remove();
+                cell = $(`#json_table_${parent_counter_id} tr[counter-id=${parent_counter_id}]`).eq(parent_clicked_row+1).find(`td[counter-id=${parent_counter_id}]`).eq(parent_clicked_col)
+                $(cell).html('<div contenteditable="true"></div>');
+                $(cell).attr('td_attr','value');
+                break;
+
+            case 'copyRow':
+                copied_row = $(`#json_table_${counter_id} tr[counter-id=${counter_id}]`).eq(clicked_row+1).clone();
+                break;
+
+            case 'pasteRow':
+                var inner_tables = $(copied_row).find('td table');
+                var inner_table_count = $(inner_tables).length;
+                var  i = 0;
+                for(i=0;i<inner_table_count; i++){
+                    var t = inner_tables[i].outerHTML;
+                    updated_table = update_table_id(t, max_counter++);
+                    $(inner_tables[i].parentNode).html(updated_table);
+                }
+                //use $().each(function(){}); here
+
+                $(`#json_table_${counter_id} tr[counter-id=${counter_id}]`).eq(clicked_row+1).after(copied_row[0].outerHTML);
+                break;
+
+            case 'addT':
+                addTable();
+                break;
+        }  
+
+        },
+        items: {
+            "insertCR": {name: "Insert column at right side", icon: "fas fa-arrow-right"},
+            "insertCL": {name: "Insert column at left side", icon: "fas fa-arrow-left"},
+            "deleteC": {name: "Delete this column", icon: "fas fa-trash-alt"},
+            "sep1": "---------",
+            "insertRD": {name: "Insert Row under this cell", icon: "fas fa-arrow-down"},
+            "insertRU": {name: "Insert Row above this cell", icon: "fas fa-arrow-up"},
+            "deleteR": {name: "Delete this row", icon: "fas fa-trash-alt"},
+            "sep2": "---------",
+            "addT": {name: "Add a new table in this cell", icon: "fas fa-plus"},
+            "deleteT": {name: "Delete parent table of selected cell", icon: "fas fa-trash-alt"},
+            "sep3": "---------",
+            "copyRow": {name: "Copy current row", icon: "fas fa-arrows-alt-h"},
+            "pasteRow": {name: "Insert copied row", icon: "fas fa-arrows-alt-h"},
+        }
+    });
+
+    $(document).on('contextmenu', "#json_table_1 td,th", function(e){
+
+            counter_id = $(e.target).closest("tr").attr("counter-id");
+            current_counter_id = $(e.currentTarget).attr("counter-id")
+            obj_clicked_col[current_counter_id] = $(this).index();
+            obj_clicked_row[current_counter_id] = $(this).closest('tr').index();
+
+            console.log('target:', e.target);
+            
+            console.log('Col: ' + obj_clicked_col[current_counter_id]);
+            console.log('Row: ' + obj_clicked_row[current_counter_id]);
+            console.log('Counter id: '+counter_id);
+            console.log("table depth: " + $(this).parents('table').length);
+
+    }); 
+    
+});*/
+
+function update_table_id(table_string, max_counter){
+
+    var pos1, pos2;
+    var id;
+    var new_table_string;
+
+    pos1 = table_string.indexOf('counter-id="');
+    pos2 = table_string.indexOf('id="json_table');
+
+    id_string = table_string.substring(pos1, pos2-1)
+
+    pos1 = id_string.indexOf('"');
+    pos2 = id_string.lastIndexOf('"');
+
+    id = id_string.substring(pos1+1,pos2)
+
+    new_table_string = table_string.replace(new RegExp(id_string, 'g'), `counter-id="${max_counter+1}"`)
+    new_table_string = new_table_string.replace(new RegExp('"json_table_header_' + id + '"', 'g'), `"json_table_header_${max_counter+1}"`)
+    new_table_string = new_table_string.replace(new RegExp('"json_table_body_' + id + '"', 'g'), `"json_table_body_${max_counter+1}"`)
+    new_table_string = new_table_string.replace(new RegExp('"json_table_' + id + '"', 'g'), `"json_table_${max_counter+1}"`)
+
+    return new_table_string;
+
+}
+
+function addTable(){
+
+    clicked_col = obj_clicked_col[counter_id];
+    clicked_row = obj_clicked_row[counter_id];
+
+    max_counter++;
+    
+    table_template =`<table class = "json_table" counter-id="${max_counter}" id="json_table_${max_counter}">
+                        <thead counter-id="${max_counter}" id="json_table_header_${max_counter}">
+                            <tr counter-id="${max_counter}">
+                                <th counter-id="${max_counter}"> <div contenteditable=true> id </div> </th>
+                            </tr>
+                        </thead>
+                        <tbody counter-id="${max_counter}" id="json_table_body_${max_counter}">
+                            <tr counter-id="${max_counter}">
+                                <td counter-id="${max_counter}" td_attr="value">
+                                    <div contenteditable="true">1</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>`;
+
+    cell = $(`#json_table_${counter_id} tr[counter-id=${counter_id}]`).eq(clicked_row+1).find(`td[counter-id=${counter_id}]`).eq(clicked_col)
+    $(cell).html(table_template);
+    $(cell).attr('td_attr','array');
+
+    $(`#json_table_${max_counter}`).addClass('table table-bordered table-striped table-hover table-sm');
+    $(`#json_table_${max_counter} thead[counter-id=${max_counter}]`).addClass('thead-dark');
+
+}
+
+
+//Function takes a json object as input containing the string to be converted to the table and returns the converted string formatted as an html table.
+function makeTable(obj_for_table, counter = 1){
+
+    var table_html = jQuery.parseHTML( `<table class = "json_table" counter-id = ${counter} id = "json_table_${counter}"></table>` );
+    var i= 0;
+    var header_names = {};
+    var local_counter = counter;
+    var td_attr;
+
+    $.each(obj_for_table, function(level1_k, level1_v){
+		   
+        $.each(level1_v, function(k, v){
+           
+            if(jQuery.type(v) == 'object'){
+                
+                value = makeTable( JSON.parse(  "[" + JSON.stringify(v) + "]" ), counter+1 );
+                counter++;
+                max_counter = counter;
+                td_attr = 'obj';
+            }
+            else if(jQuery.type(v) == 'array'){
+				
+                value = makeTable( v, counter+1 );
+                counter++;
+                max_counter = counter;
+                td_attr = 'array';
+            }
+            else
+            {
+				
+                value = "<div contenteditable=true>" + v + "</div>";
+                td_attr = 'value';
+				
+            }
+            //console.log(v,jQuery.type(v));
+
+            if(typeof(header_names[k]) == "undefined" ){
+                header_names[k] = i;
+                insertColumn(table_html, k, local_counter);
+                i++;
+            }
+
+            var cell = $(table_html).find('tr[counter-id="' + local_counter + '"]').last().find('td[counter-id="' + local_counter + '"]').eq(header_names[k]);
+            $(cell).attr('td_attr',td_attr);
+            $(cell).attr('counter-id',local_counter);  //counter id at cell level
+            $(cell).html(value);  
+
+        });
+
+            //td_list = '<td><div contenteditable=true></div></td>'.repeat(i);
+            td_list = `<td counter-id = ${local_counter} ><div contenteditable=true></div></td>`.repeat(i); //counter id at cell level
+            $(table_html).append( `<tr counter-id = ${local_counter}>' ${td_list} '</tr>`);
+    });
+
+    $(table_html).find('tr').last().remove();
+	
+    
+    $(table_html).find('td').each(function(td_i,td_v){
+        if($(td_v).attr('td_attr') == undefined){
+            $(td_v).attr('td_attr','value');
+        }
+		
+    });
+     
+    return table_html;
+
+}   
+
+//If the code finds any new column in JSON string, the below function will be used to insert the column in the table
+function insertColumn(table_ref, header_name, counter) {
+
+    if( !$(table_ref).find('tr[counter-id="' + counter + '"]').first().length ){
+        //var thead = `<thead  counter-id = ${counter} id = "json_table_header_${counter}"><tr counter-id = ${counter}><th><div contenteditable=true> ${header_name} </div></th></tr></thead>`;
+        //var tbody = `<tbody  counter-id = ${counter} id = "json_table_body_${counter}"><tr counter-id = ${counter}><td><div contenteditable=true></div></td></tr></tbody>`;
+        var thead = `<thead  counter-id = ${counter} id = "json_table_header_${counter}"><tr counter-id = ${counter}><th counter-id = ${counter} > <div contenteditable=true> ${header_name} </div> </th></tr></thead>`; //counter id at cell level
+        var tbody = `<tbody  counter-id = ${counter} id = "json_table_body_${counter}"><tr counter-id = ${counter}><td counter-id = ${counter} ><div contenteditable=true></div></td></tr></tbody>` //counter id at cell level
+        
+        
+        $(table_ref).append(thead);
+        $(table_ref).append(tbody);
+    }
+
+    else
+    {
+        $(table_ref).find('tr[counter-id="' + counter + '"]').each(function(){
+            //$(this).append('<td><div contenteditable=true></div></td>');
+            $(this).append(`<td counter-id = ${counter} ><div contenteditable=true></div></td>`); //counter id at cell level
+        })
+    }
+    var inserted_td = $(table_ref).find('tr[counter-id="' + counter + '"]').first().find('td[counter-id="' + counter + '"]').last();
+
+    $(inserted_td).html(header_name);
+    //$(inserted_td).replaceWith('<th>' + $(inserted_td).html() + '</th>');
+    $(inserted_td).replaceWith(`<th counter-id = ${counter}><div contenteditable=true>` + $(inserted_td).html() + `</div></th>`); //counter id at cell level
+
+}
+
+
+function makeJson(counter=1){
+
+    var header = [];
+    var data = [];
+
+    
+    $('#json_table_header_'+ counter + ' th').each(function(i, v){
+        header[i] = $(this).text().trim();
+    });
+    //console.log('header: ', header, counter);
+    var row_finder = `#json_table_body_${counter} tr[counter-id=${counter}]`;
+    $(row_finder).each(function(row_i, row_v){
+
+        var obj = {};
+        //console.log('Outer loop id, value: ', row_i, row_v);
+
+        $(header).each(function(header_i, header_value){
+
+            var cell = $(row_v).children('td').eq(header_i);
+            var td_attr = $(cell).attr('td_attr');
+            var inner_text = $(cell).children('div').text().trim();
+            var inner_table = $(cell).find('table');
+
+            switch(td_attr){
+                case 'value':
+                    if(inner_text != "" && inner_text != null )
+                        obj[header_value] = inner_text;
+                    //else                              //Uncomment it if the null values to be treated as blanks (while converting the table to json)
+                    //    obj[header_value] = '';  
+                break;
+
+                case 'obj':
+                case 'array':
+                obj[header_value] = makeJson( $(inner_table).attr('counter-id') );
+                break;
+
+                case null:
+                case '':
+                case undefined:
+
+                break;
+
+                default:
+                obj[header_value] = "unknown value";
+                break;
+            }
+            //console.log('value of td_attr: ', td_attr);
+            
+        });
+        //console.log('data value: ', data);
+        data.push(obj);
+    });
+
+    //return JSON.stringify(data);
+    return data;
+}
+
+
+</script>
+
+<script src="mark-management/marks/js/xlsx.core.min.js"></script>
+<script src="mark-management/marks/js/lodash.min.js"></script>

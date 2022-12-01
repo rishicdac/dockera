@@ -1,0 +1,258 @@
+<script>
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Id"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTable2",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function clearForm(formId)
+{
+	$('#'+formId+' input').val('');
+	$('#'+formId+' textarea').val('');
+	$('#'+formId+' select').val('');
+}
+function disableForm(formId)
+{
+	$('#'+formId+' input').attr('readonly','readonly');
+	$('#'+formId+' textarea').attr('readonly','readonly');
+	$('#'+formId+' select').attr('disabled',true);
+	$(':input[type="submit"]').prop('disabled', true);
+	$(':input[type="submit"]').attr('disabled', true);
+}
+function enableForm(formId)
+{
+	$('#'+formId+' input').attr('readonly',false);
+	$('#'+formId+' textarea').attr('readonly',false);
+	$('#'+formId+' select').attr('disabled',false);
+	$(':input[type="submit"]').prop('disabled', false);
+	$(':input[type="submit"]').attr('disabled', false);
+}
+$(document).ready(function()
+{
+	function loadFeeHeadGroups()
+	{
+	    $.ajax(
+   		{
+   			"url":"/fees/getAllFeeHeadGroups",
+   			"method":"GET",
+   			 success:function(data)
+   			{
+   				console.log(data);
+   				setUpDataTable(data,[{"sfsFeeHeadGroupId":"Group ID"},{"sfsFeeHeadGroupName":"Group Name"},{"sfsFeeHeadGroupDescription":"Description"},{"sfsFeeHeadGroupType":"FeeHeadGroupType"},{"sfsFeeHeadGroupStatus":"Status"}],"gridTableFeeHeadGroup",null);
+   				onDataTableClick('gridTableFeeHeadGroup',function()
+   				{
+   				 $('#editsfsFeeHeadGroupId').val(selectedRowFromDataTable[0]);
+					$('#editsfsFeeHeadGroupName').val(selectedRowFromDataTable[1]);
+					$('#editsfsFeeHeadGroupDescription').val(selectedRowFromDataTable[2]);
+					$('#editsfsFeeHeadGroupType').val(selectedRowFromDataTable[3]);
+   					var status=selectedRowFromDataTable[4];
+   					if(status!="invalid")
+   					{
+   						disableForm('formFeeHeadGroupEdit');
+   					}
+   					else
+   					{
+   						enableForm('formFeeHeadGroupEdit');
+   						$('#editsfsFeeHeadGroupId').attr('readonly','readonly');
+   					}
+   					$('#dialogEdit').modal({backdrop: 'static',
+   	   				     keyboard: false});
+   					getRecordTimeLines(selectedRowFromDataTable[0],"Fee-Groups")
+   				});
+   			}
+   		});
+	    
+	}
+	
+	loadFeeHeadGroups();
+	$('#buttonAddFeeHeadGroup').unbind().bind('click',function()
+	{
+		//clearForm('formFeeHeadGroupAdd');
+		$('#formFeeHeadGroupAdd input[type="text"]').val('');
+		 $('#dialogAdd').modal({backdrop: 'static',
+		 keyboard: false});
+		$(':input[type="submit"]').prop('disabled', false);
+		$(':input[type="submit"]').attr('disabled', false);
+	});
+	$('#formFeeHeadGroupAdd').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"sfsFeeHeadGroupStatus","value":"invalid"});
+	    $.ajax(
+   		{
+	    	"url":"/fees/addFeeHeadGroup",
+			"method":"POST",
+  			 data:formData,
+  			 success:function(data)
+  			{
+  				console.log(data);
+  				$('#dialogAdd').modal('toggle');
+  				clearDataTable('gridTableFeeHeadGroup');
+  				loadFeeHeadGroups();
+  				showMessage("Fee Head Group Added");
+  			},
+  			error:function(e)
+  			{
+  				showMessage("Error in adding Category. Contact Admin");
+  			}
+   		});
+
+	});	
+	
+	
+	$('#formFeeHeadGroupEdit').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"sfsFeeHeadGroupStatus","value":"invalid"});
+		$.ajax(
+		{
+			"url":"/fees/addFeeHeadGroup",
+		   	"method":"POST",
+		   	data:formData,
+		   	success:function(data)
+		   	{
+		   		console.log(data);
+		   		showMessage("Changes Saved");
+		   		$('#dialogEdit').modal('toggle');
+		   		clearDataTable('gridTableFeeHeadGroup');
+		   		loadFeeHeadGroups();	
+		   	}
+		 });	
+	});
+	
+});
+</script>
+<div class="row" >
+	<div class="col-xs-8"></div>
+	<div class="col-xs-4">
+		<button type="button"  id="buttonAddFeeHeadGroup" class="btn btn-primary">Add Group</button>
+	</div>
+</div>
+	<br>
+<div class="table-responsive cell-border">
+	<table id="gridTableFeeHeadGroup" class="table table-striped"></table>
+</div>
+<div class="modal fade" id="dialogAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Fee Head Group</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<p class="h3">Fee Head Group Details</p>
+			<form id="formFeeHeadGroupAdd" >
+		   	<div class="form-group">
+		   		<label for="sfsFeeHeadGroupName">Group Name</label>
+		   		<input type="text" class="form-control" id="sfsFeeHeadGroupName"  name="sfsFeeHeadGroupName" required>
+		   	</div>
+			
+			<div class="form-group">
+		   		<label for="sfsFeeHeadGroupDescription">Description</label>
+		   		<input type="text" class="form-control" id="sfsFeeHeadGroupDescription"  name="sfsFeeHeadGroupDescription" placeholder="Description">
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="sfsFeeHeadGroupType">Group Type</label>
+		   		<select  class="form-control" id="sfsFeeHeadGroupType"  name="sfsFeeHeadGroupType">
+		   			<option value="academic">Academic Fees</option>
+		   			<option value="examination">Examination Fees</option>
+		   			<option value="hostel">Hostel Fees</option>
+		   			<option value="certificate">Certificate</option>
+		   			<option value="others">Other Fees</option>
+		   		</select>
+		   	</div>
+		   	<label>User Remarks</label>
+		   	<div class="form-group">
+		   		<textarea class="form-control" id="sfsFeeHeadGroupUserRemarks" name="sfsFeeHeadGroupUserRemarks">
+		   		</textarea>
+		   	</div>
+		   	<button type="submit" class="btn btn-primary">Add</button>
+		   	</form>
+		</div>
+		      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Fee Head Group Details</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+		<form id="formFeeHeadGroupEdit" >
+            <div class="form-group">
+			
+			<label for="editsfsFeeHeadGroupName">Group ID</label>
+		   		<input type="text" class="form-control" id="editsfsFeeHeadGroupId"  name="sfsFeeHeadGroupId">
+		   	</div>
+			<div class="form-group">
+			
+			<label for="sfsFeeHeadGroupName">Group Name</label>
+		   		<input type="text" class="form-control" id="editsfsFeeHeadGroupName"  name="sfsFeeHeadGroupName" placeholder="Enter Group Name">
+		   		
+		   	</div>
+		   	
+		   	
+		   	<div class="form-group">
+		   		<label for="sfsFeeHeadGroupDescription">Description</label>
+		   		<input type="text" class="form-control" id="editsfsFeeHeadGroupDescription"  name="sfsFeeHeadGroupDescription" placeholder="Description">
+		   	</div>
+		   	
+		   	
+		   	<div class="form-group">
+		   		<label for="sfsFeeHeadGroupType">Group Type</label>
+		   		<select  class="form-control" id="editsfsFeeHeadGroupType"  name="sfsFeeHeadGroupType">
+		   			<option value="academic">Academic Fees</option>
+		   			<option value="examination">Examination Fees</option>
+		   			<option value="hostel">Hostel Fees</option>
+		   			<option value="certificate">Certificate</option>
+		   			<option value="others">Others</option>
+		   		</select>
+		   	</div>
+		   	<label>User Remarks</label>
+		   	<div class="form-group">
+		   		<textarea class="form-control" id="sfsFeeHeadGroupUserRemarks1" name="sfsFeeHeadGroupUserRemarks">
+		   		</textarea>
+		   	</div>
+			<button type="submit" class="btn btn-primary">Save</button>
+		   	</form>
+		   			 <div id="accordion">
+ 		 <h3>Record Flow History</h3>
+	  		<div>
+	   		 <p>
+	   			 <div class="table-responsive">
+	    			<table class="table table-striped" id="gridTable2"></table>
+	    		</div>
+	    	</p>
+	  		</div>
+	   </div>
+		</div>
+		<div class="modal-footer"> </div>
+    </div>
+  </div>
+</div>

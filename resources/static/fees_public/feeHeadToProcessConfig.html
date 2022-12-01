@@ -1,0 +1,155 @@
+<script>
+var selectedProcess="";
+function getAllFeeGroups()
+{
+	$.ajax(
+	{
+		"url":"/fees/getAllFeeHeadGroups",
+		"method":"GET",
+		success:function(data)
+		{
+			try
+			{
+				console.log(data);
+				setUpDropDown('selectFeeGroup',data,'sfsFeeHeadGroupId','sfsFeeHeadGroupName');
+			}
+			catch(e)
+			{
+				showMesage("Error in processing information.contact Admin");
+			}
+		}
+		
+	});
+}
+function loadConfig(process)
+{ 
+	$.ajax(
+	{
+		"url":"/fees/getConfig",
+		"method":"GET",
+		data:{"key":process},
+		success:function(data)
+		{
+			$('#selectFeeGroup').val(data['sfsFeeHeadProcessConfigMappedFeeGroup']['sfsFeeHeadGroupId']);
+			//$('#mappedAccount').val(data['sfsFeeHeadProcessConfigMappedAccount']['accountId']);
+		}
+	});
+}
+
+$(document).ready(function()
+{
+	getAllFeeGroups();
+	$('#button1').unbind().bind('click',function()
+	{
+		var process=$('#feeHeadConfigProcess').val();
+		if(process!="")
+		{
+			$('#formfeeHeadConfig').show();	
+			$(this).prop('disabled',true);
+			selectedProcess=$('#feeHeadConfigProcess').val();
+			$('#feeHeadConfigProcess').prop('disabled',true);
+		/*	if(process!="course_to_fee_head_group")
+			{
+				$('#accountMapDiv').hide();
+				$('#mappedAccount').prop('disabled',true);
+				$('#accountLedgerType').prop('disabled',true);
+			}*/
+			loadConfig(process);
+		}
+				
+	});
+	/*$('#accountLedgerType').unbind().bind('change',function()
+	{
+		$.ajax(
+		{
+			"url":"/accounts/getAllAccountsByType",
+			"method":"GET",
+			data:{"accountLedgerType": $(this).val()},
+			success:function(data)
+			{
+				try
+				{
+					console.log(data);
+					setUpDropDown('mappedAccount',data,'accountId','accountName');
+				}
+				catch(e)
+				{
+					showMesage("Error in processing information.contact Admin");
+				}
+			}
+			
+		});
+	});*/
+	
+	$('#formfeeHeadConfig').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"sfsFeeHeadProcessConfigKey","value":selectedProcess});
+		$.ajax(
+		{
+			"url":"/fees/saveConfig",
+			"method":"POST",
+			data:formData,
+			success:function(data)
+			{
+				refreshContent();
+				showMessage("Configuration Saved");
+			}
+			
+		});
+				
+	});
+})
+
+</script>
+<div class="row well">
+	<div class="col-md-8">
+		<select id="feeHeadConfigProcess" name="feeHeadConfigProcess" class="form-control">
+			<option value="">Select</option>
+			<!-- <option value="course_to_fee_head_group">Course to Fee Head Group Mapping</option> -->
+			<option value="original_certifcate_to_fee_head_group"> Original Certificate to Fee Head Group Mapping</option>
+			<option value="duplicate_certifcate_to_fee_head_group"> Duplicate Certificate to Fee Head Group Mapping</option>
+			<!--<option value="academic_fee_to fee_head_group">Academic Fee to Fee Group Mapping</option> -->
+			<!-- <option value="exam_fee_to fee_head_group">Exam Fee to Fee Group Mapping</option> -->
+			<option value="hostel_fee_to fee_head_group">Hostel Fee to Fee Group Mapping</option>
+		</select>
+	</div>
+	<div class="col-md-4">
+		<button class="form-control btn btn-warning" id="button1">Submit</button>
+	</div>
+</div>
+<hr>
+
+<form id="formfeeHeadConfig" style="display:none">
+	<div class="form-group">
+	<div class="col-md-12">
+		<label for="selectFeeGroup">Select Fee Group to be mapped</label>
+		<select class="form-control" id="selectFeeGroup" name="sfsFeeHeadProcessConfigMappedFeeGroup" required>
+		  <option>Select Account</option>
+		</select>
+		</div>
+	</div>
+	<!-- <div class="form-group" id="accountMapDiv">
+		<div class="col-md-7">
+			<label for="mappedAccount">Select Account to be Mapped</label>
+			<select class="form-control" id="mappedAccount" name="sfsFeeHeadProcessConfigMappedAccount" required>
+			  <option>Select Account</option>
+			</select>
+		</div>
+		<div class="col-md-5">
+		        <label for="accCategory">Type(Account Selection Filter)</label>
+			    <select class="form-control" id="accountLedgerType">
+			      <option value="income">income</option>
+			      <option value="expenditure">expenditure</option>
+			      <option value="asset">asset</option>
+			      <option value="tax">Tax</option>
+			      <option value="liability">liability</option>
+			    </select>
+		</div>
+	</div> -->
+	<br>
+	<div class="form-group">
+		<button type="submit" class="form-control btn btn-success">Submit</button>
+	</div>
+</form>

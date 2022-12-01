@@ -1,0 +1,166 @@
+<script>
+var feeConfigMap={};// in case nuals need dynamic addition of fee config, we can set the values from an //api
+var selectedConfigArray=new Array();
+var pgmId=200;// set this from ur code
+var examScheduleId="abc";//set this from ur code
+/*feeConfigMap["regularExamFee"]="Regular Exam Fee";
+feeConfigMap["supplementaryExamFee"]="Supplementary Exam Fee";
+feeConfigMap["specialSupplementaryExamFee"]="Special Supplementary Exam Fee";
+feeConfigMap["applicationFee"]="Application Fee";
+feeConfigMap["regularMarkSheetFee"]="Regular Mark Sheet Fee";
+feeConfigMap["supplementaryMarkSheetFee"]="Supplementary Mark Sheet Fee";*/
+
+function addToArray(stud)
+{
+   if(selectedConfigArray.indexOf(String(stud)) !== -1)
+   {
+   }
+   else
+   {
+	   selectedConfigArray.push(String(stud));  
+   }
+}
+function removeFromArray(stud)
+{
+   if(selectedConfigArray.indexOf(String(stud)) !== -1)
+   {
+	   stud=String(stud)
+	   selectedConfigArray = jQuery.grep(selectedConfigArray,function(value) 
+	   {
+		   return value != stud;
+	   }); 
+   }
+}
+function displayInfo(data)
+{
+	$('#displayTable').empty();
+	for(let i=0;i<data.length;i++)
+	{
+		var tr=$('<tr><td>'+feeConfigMap[data[i]['configKey']]+'</td><td>'+data[i]['feeAmount']+'</td></tr>');
+		$('#displayTable').append(tr);
+	}
+}
+function getAmountDetails()
+{
+	if(selectedConfigArray.length>0)
+	{
+		$.ajax(
+		{
+			"url":"/fees/getManyFeeHeadAmountMap",
+			"data":{"pgmId":pgmId,"feeIdentifierList":String(selectedConfigArray)},
+			success:function(data)
+			{
+				console.log(data);
+				displayInfo(data);
+			},
+			error:function(e)
+			{
+				console.log("Error in calling ajax "+e);
+			}
+		});
+	}
+	else
+	{
+		$('#displayTable').empty();
+	}	
+}
+function setUpCheckBox(maparray,tableId)
+{
+	selectedConfigArray=[];
+	for (let key in maparray) 
+	{
+		if (maparray.hasOwnProperty(key)) 
+		{
+			var tr=$('<tr><td>'+maparray[key]+'</td><td><input  configkey="'+key+'"  id="'+key+'" type="checkbox" class="configList" style:"margin-right: 20px"></td></tr>');
+			$('#'+tableId).append(tr);
+			
+		}
+	}
+	$('.configList').unbind().bind('change',function()
+	{
+		var configKey=$(this).attr('id');
+		if(this.checked)
+		{
+			addToArray(configKey);
+		}
+		else
+		{
+			removeFromArray(configKey);
+		}
+		getAmountDetails();		
+	});
+	
+}
+$(document).ready(function()
+{
+	$.ajax(
+	{
+		"url":"/fees/getAllConfigByType",
+		"data":{"configType":"Examination"},
+		success:function(data)
+		{
+			console.log(data);
+			if(data)
+			{
+				for(let i=0;i<data.length;i++)
+				{
+					feeConfigMap[data[i]['processName']]=data[i]['processName'];
+				}
+				setUpCheckBox(feeConfigMap,'checkBoxTable');
+			}
+		}
+	});
+	$('#btnSave').unbind().bind('click',function()
+	{
+		if(selectedConfigArray.length>0)
+		{
+			$.ajax(
+			{
+				"url":"/fees/saveExamFeeHeadSettings-v2",
+				"data":{"examScheduleId":examScheduleId,"configList":String(selectedConfigArray)},
+				"type":"POST",
+				success:function(data)
+				{
+					if(data=="success")
+						showMessage("Saved successfully");
+					else
+						showMessage("Failed to save. Contact Admin");	
+					
+				}
+			});		
+		}
+		else
+		{
+			showMessage("No Mapping Selected");
+		}
+	});
+	
+});
+
+
+
+
+</script>
+<div class="row">
+	<div class="col-md-6">
+		<div class="table-responsive">
+			<table class="table" id="checkBoxTable">
+				
+			</table>
+		</div>	
+	</div>
+	<div class="col-md-6 well" id="displayDiv">
+		<div class="table-responsive">
+			<table class="table" id="displayTable">
+				
+			</table>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-4"></div>
+	<div class="col-md-4">
+		<button id="btnSave" class="btn btn-success">Save Settings</button>
+	</div>
+	<div class="col-md-4"></div>
+</div>

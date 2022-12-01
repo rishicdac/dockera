@@ -1,0 +1,275 @@
+<style>
+thead input {
+        width: 100%;
+        padding: 0px;
+        box-sizing: border-box;
+    }
+table, th, td {
+  border: 1px solid black;
+}
+    
+</style>
+<script>
+function exportHTML(divid){
+   var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
+        "xmlns:w='urn:schemas-microsoft-com:office:word' "+
+        "xmlns='http://www.w3.org/TR/REC-html40'>"+
+        "<head><meta charset='utf-8'><title>Export HTML to Word Document with JavaScript</title></head><body>";
+   var footer = "</body></html>";
+   var sourceHTML = header+document.getElementById(divid).innerHTML+footer;
+   
+   var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+   var fileDownload = document.createElement("a");
+   document.body.appendChild(fileDownload);
+   fileDownload.href = source;
+   fileDownload.download = 'document.doc';
+   fileDownload.click();
+   document.body.removeChild(fileDownload);
+}
+</script>
+
+<script>
+var sgd={};//student guardian details
+function setUpStudentGuardianData(data)
+{
+	for(let i=0;i<data.length;i++)
+	{
+		if(sgd[data[i]['student_adm_code']])
+		{
+			sgd[data[i]['student_adm_code']].push(data[i]);
+		}
+		else
+		{
+			sgd[data[i]['student_adm_code']]=new Array();
+			sgd[data[i]['student_adm_code']].push(data[i]);
+		}
+	}
+	$('#studentList').empty();
+	$('#studentList').append('<option value="">Select</option>');
+	for (var key in sgd) 
+	{
+		$('#studentList').append('<option value="'+key+'">'+key+'</option>');	
+	}
+	
+}
+function appendAll(d)
+{
+	for(let i=0;i<d.length;i++)
+		 $('#mainTableContent').append(d[i]);	
+}
+function prepReport(sgd1)
+{	
+	$('#mainTableContent').empty();	
+	for (var key in sgd1) 
+	{
+	    if (sgd1.hasOwnProperty(key)) 
+	    {
+	        var dat=sgd1[key];
+	        var str=new Array();
+	        str.push('<thead><tr><th scope="col" colspan="2">Student Contact Details</th></tr></thead>');
+	     	str.push($('<tr><td><b>Student Name</b></td><td><b>'+dat[0]['student_personal_student_name']+'('+dat[0]['student_adm_code']+')</b></td></tr>'));
+    	 	str.push($('<tr><td>Email</td><td>'+dat[0]['student_email']+'</td></tr>'));
+    	 	str.push($('<tr><td>Mobile</td><td>'+dat[0]['student_mobile']+'</td></tr>'));
+    	 	str.push($('<tr><td>Communication Address</td><td>'+dat[0]['student_communication_address']+'</td></tr>'));
+    	 	str.push($('<tr><td>Permanent Address</td><td>'+dat[0]['student_personal_permanent_address']+'</td></tr>'));
+    	    for(let i=0;i<dat.length;i++)
+	        {
+    	      str.push($('<tr><td colspan="2"><b>'+dat[i]['guardian_relation']+'</b></td></tr>'));
+        	  str.push($('<tr><td>Name</td><td>'+dat[i]['guardian_name']+'</td></tr>'));
+        	  str.push($('<tr><td>Residential Address</td><td>'+dat[i]['guardian_residential_address']+'</td></tr>'));
+        	  str.push($('<tr><td>Occupation</td><td>'+dat[i]['guardian_occupation']+'</td></tr>'));
+        	  str.push($('<tr><td>Official Address</td><td>'+dat[i]['guardian_official_address']+'</td></tr>'));
+        	  str.push($('<tr><td>Email</td><td>'+dat[i]['guardian_email']+'</td></tr>'));
+        	  str.push($('<tr><td>Mobile</td><td>'+dat[i]['guardian_mobile']+'</td></tr>'));
+        	  str.push($('<tr><td>Land Line</td><td>'+dat[i]['guardian_land_line']+'</td></tr>'));
+        	  str.push($('<tr><td>Is Local Guardian</td><td>'+dat[i]['guardian_is_local']+'</td></tr>'));
+        	  str.push($('<tr><td>Sponsor</td><td>'+dat[i]['is_guardian_sponsor']+'</td></tr>'));
+	        }
+           str.push($('<tr><td colspan="2"><hr></td></tr>')); 
+	    }
+	    appendAll(str);
+	}	
+}
+$(document).ready(function()
+{
+	getAllPrograms();
+	$('#printrep').on('click',function()
+	{
+		printReport2('mainTableContent');
+	});
+	$('#printrep2').on('click',function()
+	{
+		exportHTML('mainTableContent');
+	});
+	$('#studentList').unbind().bind('change',function()
+	{
+		var studentId=$(this).val();
+		var map={};
+		map[studentId]=sgd[studentId];
+		prepReport(map);	
+	});
+	$('#selectionPanel1').hide();
+	$('#selectionPanel2').hide();
+	$('#selectionPanel3').hide();
+	
+	$('.dp').datepicker({
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true
+	});
+	
+	$('#reportFilter').unbind().bind('change',function()
+	{
+		reportFilter=$(this).val();
+		if($(this).val()=="bydate")
+		{
+			$('#selectionPanel1').hide();
+			$('#selectionPanel2').show();
+			showMessage("Restrict the duration to maximum 5 years.")
+		}
+		else
+		{
+			$('#selectionPanel1').show();
+			$('#selectionPanel2').hide();
+		}
+		if($(this).val()=="")
+		{
+			$('#selectionPanel1').hide();
+			$('#selectionPanel2').hide();
+			$('#selectionPanel3').hide();
+		}
+		else
+		{
+			$('#selectionPanel3').show();
+		}
+	});
+	$('#btnCallStudents').unbind().bind('click',function()
+	{
+		if(reportFilter!="")
+		{
+			var pgm=$('#selectProgram').val();
+			var batch=$('#selectBatch').val();
+			var status=$('#selectStatus').val();
+			$.ajax(
+			{
+				url:"/students/getStudentContactDetailsByProgram",
+				method:"get",
+				data:{"pid":pgm,"bid":batch,"status":$('#selectStatus').val()},
+				success:function(data)
+				{
+					setUpStudentGuardianData(data);
+					prepReport(sgd);
+				}
+			});			
+		}
+	});
+});
+
+function getAllPrograms()
+{
+		$.ajax(
+		{
+	   		url:'/course/getAllCourses',
+	   		method:'GET',
+	   		success:function(data)
+	   		{
+	   			setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   			$('#selectProgram').unbind().bind('change',function()
+	   			{
+	   				getAllActiveBatchesOfProgram($(this).val());
+	   			});
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+ }
+ function getAllActiveBatchesOfProgram(programId)
+ {
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatchesInAProgram',
+  	   	method:'GET',
+  	   	data:{"courseId":programId},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+  	   		setUpDropDown('selectBatch1',data,'batchId','batchCode');
+
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+
+</script>
+
+	<div class="row well">
+		<div class="col-md-12">
+		    <label for="selectStatus">Choose Report Filter</label>
+		    <select class="form-control grouping" id="reportFilter" >
+		    	<option value="">Select Filter Type</option>
+		    	<option value="bypgm">By Program-Batch</option>
+		    </select>
+		</div>
+	</div>
+
+
+	<div class="row well" id="selectionPanel1">
+		<div class="col-md-6">
+		    <label for="accountName">Select Program</label>
+		    <select class="form-control grouping" id="selectProgram"></select>
+		</div>
+		<div class="col-md-6">
+		    <label for="accountName">Select Batch</label>
+		    <select class="form-control grouping" id="selectBatch"></select>
+		</div>
+	 </div> 
+	 
+	 <div class="row well" id="selectionPanel2">
+		<div class="col-md-6">
+		    <label for="accountName">Admitted From</label>
+		    <input type="text" class="form-control grouping dp" id="fromDate"></select>
+		</div>
+		<div class="col-md-6">
+		    <label for="accountName">To:</label>
+		    <input type="text" class="form-control grouping dp" id="toDate"></select>
+		</div>
+	 </div>
+<hr>
+	<div class="row well" id="selectionPanel3">
+		<div class="col-md-12">
+		    <label for="selectStatus">Select Student Status</label>
+		    <select class="form-control grouping" id="selectStatus">
+		    <option value="invalid">invalid</option>
+	    	<option value="processing">Forwarded</option>
+		    <option value="valid">Approved</option>
+		    </select>
+		</div>
+	</div>
+<hr>
+<div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4"><button id="btnCallStudents" class="btn btn-primary form-control">Apply</button></div>
+		<div class="col-md-4"></div>
+</div>
+<hr>
+<div class="form-group">
+<label>Choose Student</label>
+<select id="studentList">
+</select>
+</div>
+<div class="table-responsive" >
+	<table class="table" id="mainTableContent" >
+		
+	</table>
+</div>
+<button class="btn btn-success" id="printrep">Print</button>
+<button class="btn btn-success" id="printrep2">Document File</button>
+
+
+ 

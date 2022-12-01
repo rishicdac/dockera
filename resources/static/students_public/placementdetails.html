@@ -1,0 +1,207 @@
+<script>
+var selectedStudentCode="";
+var program;
+var bacth;
+function getAllCompanies()
+{
+	$.ajax(
+	{
+		"url":"/students/getAllCompanies",
+		"method":"GET",
+		success:function(data)
+		{
+			try
+			{
+				if(data.length>0)
+				{
+					$('#pc').empty();
+					$('#pc').append('<option value="">Select</option>');
+					for(let i=0;i<data.length;i++)
+					{
+						$('#pc').append('<option value="'+data[i]['pcompanyid']+'">'+data[i]['companyname']+":"+data[i]['companytype']+'</option>')
+					}
+				}
+			}
+			catch(e)
+			{
+				console.log("Error while processing company info");
+			}
+		}
+	});
+}
+$(document).ready(function()
+{
+	getAllCompanies();
+	$('.dp').datepicker({
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true
+	});
+	getAllPrograms();
+	$('#btnCallStudents').on('click',function()
+	{
+		program=$('#selectProgram').val();
+		batch=$('#selectBatch').val();
+		getUnverifiedStudents(program,batch);
+		$(this).hide();
+		$('#selectionPanel').hide();
+	});
+	$('#editForm').unbind().bind('submit',function(e)
+	{
+		e.preventDefault();
+		var formData=$(this).serializeArray();
+		$.ajax(
+		{
+			"url":"/students/addPlacementDetails",
+			"method":"POST",
+			 data:formData,
+			 success:function(data)
+			{
+				if(data)
+				{
+					if(data['studentPlacementCode'])
+					{
+						showMessage("Data Saved successfully");
+						$('#dialogEdit').modal('toggle');
+						getUnverifiedStudents(program,batch);
+					}
+				}
+			}
+						
+		});
+	})
+});
+
+function getUnverifiedStudents(pgm,batch)
+{
+	$.ajax(
+	{
+		url:"/students/getStudentPlacements",
+		method:"get",
+		data:{"pgmid":pgm,"batchid":batch,"status":$('#selectStatus').val()},
+		success:function(data)
+		{
+			for(let i=0;i<data.length;i++)
+			{
+				data[i]['placement_date']=String(data[i]['placement_date']).split('T')[0];
+			}
+			setUpDataTable(data,[{"user_code":"Admission No"},
+				{"studentname":"Name"},
+				{"companyname":"Company"},
+				{"companytype":"Company Type"},
+				{"contactdetails":"Contact Info"},
+				{"placement_date":"Placed on"},{"pcompanyid":"companyId"}],'gridTable',null);
+			onDataTableClick('gridTable',function()
+			{
+				var userCode=selectedRowFromDataTable[0];
+				$('#studentPlacementCode').val(userCode);
+				if(selectedRowFromDataTable[2]!="No Value")
+					$('#pc').val(selectedRowFromDataTable[6]);
+				$('#placementDate').val(selectedRowFromDataTable[5]);
+				$('#dialogEdit').modal({backdrop: 'static', keyboard: false});
+			});
+		}
+	});
+}
+function getAllPrograms()
+{
+		$.ajax(
+		{
+	   		url:'/course/getAllCourses',
+	   		method:'GET',
+	   		success:function(data)
+	   		{
+	   			setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   			$('#selectProgram').unbind().bind('change',function()
+	   			{
+	   				getAllActiveBatchesOfProgram($(this).val());
+	   			});
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+ }
+ function getAllActiveBatchesOfProgram(programId)
+ {
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatchesInAProgram',
+  	   	method:'GET',
+  	   	data:{"courseId":programId},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+  	   		setUpDropDown('selectBatch1',data,'batchId','batchCode');
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+
+</script>
+	<div class="row well" id="selectionPanel">
+		<div class="col-md-6">
+		    <label for="accountName">Select Program</label>
+		    <select class="form-control grouping" id="selectProgram"></select>
+		</div>
+		<div class="col-md-6">
+		    <label for="accountName">Select Batch</label>
+		    <select class="form-control grouping" id="selectBatch"></select>
+		</div>
+		<div class="col-md-4" style="display:none">
+		    <label for="selectStatus">Select Student Status</label>
+		    <select class="form-control grouping" id="selectStatus">
+		    <option value="valid">approved</option>
+		    <option value="course_completed">alumni</option>
+		    </select>
+		</div>
+	 </div> 
+<hr>
+<div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4"><button id="btnCallStudents" class="btn btn-primary form-control">Apply</button></div>
+		<div class="col-md-4"></div>
+</div>
+<hr>
+<div class="table-responsive" id="gridTableDiv">
+	<table id="gridTable" class="table"></table>
+</div>
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Company/Firm Details</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<form id="editForm">
+					<div class="form-group">
+						<label for="accountName">Admission Code</label>
+						<input type="text" class="form-control" name="studentPlacementCode" id="studentPlacementCode"  required readonly>
+					</div>
+					<div class="form-group">
+						<label for="pc">Select Company</label>
+						<select class="form-control" id="pc" name="pc">
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="accountName">Admitted From</label>
+		    			<input type="text" class="form-control grouping dp"  name="placementDate" id="placementDate"></select>
+		    		</div>	
+		  		<button type="submit" class="btn btn-primary">Add</button>
+			</form>	
+			</div>
+		 <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+

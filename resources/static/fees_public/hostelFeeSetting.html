@@ -1,0 +1,270 @@
+<script>
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Order"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTable2",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function getApprovedMaps()
+{
+	$.ajax(
+	{
+		"url":"/fees/getHostelFeeMapsByStatus",
+		"method":"GET",
+		"data":{"status":"approved"},
+		success:function(data)
+		{
+			setUpDataTable(data,[{"sfsFeeHeadId":"ID"},{"sfsFeeHeadName":"Fee Head Name"},{"hostelFeeHeadAmount":"Amount"},{"hostelFeeOrder":"Order"},{"hostelFeeSettingStatus":"status"}],"gridTable0",null);
+			$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+		}
+	});
+}
+function getAllFeeHeadGroup()
+{
+	var groupType="hostel";
+	$.ajax(
+	{
+ 		url:'/fees/getAllFeeHeadGroupsByType',//dont need
+ 		data:{"groupType":groupType},
+ 		method:'GET',
+ 		success:function(data)
+ 		{
+ 			courseMap=data;	
+ 			setUpDropDown("feeGroup",data,"sfsFeeHeadGroupId","sfsFeeHeadGroupName");
+ 			
+ 		},
+ 		error:function(err)
+ 		{
+ 			showMessage(err);
+ 		}
+ 	});
+}
+function getAllFeeHead()
+{
+	$.ajax(
+	{
+		url:'/fees1/getAllExaminationFeeHead',
+		method:'GET',
+		success:function(data)
+		{
+			courseMap=data;	
+			setUpDropDown("sfsFeeHead",data,"sfsFeeHeadId","sfsFeeHeadName");
+		},
+		error:function(err)
+		{
+			showMessage(err);
+		}
+	});
+}
+	
+$(document).ready(function()
+{
+	getAllFeeHeadGroup();
+	getApprovedMaps();
+    $('#feeGroup').change(function()
+    {
+   		var freeGroupId=$(this).val();
+  	 	$('#divGridTable2').show(); 
+   		$('.dp').datepicker(
+   		{
+		    format: 'yyyy-mm-dd',							   
+			autoclose:true,
+			clearBtn:true
+	  	});
+   	 	$.ajax(
+   	 	{
+   	 		url:'/fees/getAllFeeHeadsMappedToGroup',
+   	    	data:{"groupId":freeGroupId},
+   	    	success:function(data)
+   	    	{
+   	    		try
+   	    		{
+   	    			if(data.length>0)
+   	    			{	
+	   	    			$('#divGridTable2').show();
+	   	    			$('#feeMapTableBody2').empty();
+	   	    			$('#detailsDiv2').show();
+	   	    			$('#detailsDiv3').show();
+	   	    			$('#detailsDiv4').show();
+	   	    			$('#detailsDiv5').show();
+   	    				for(var i=0;i<data.length;i++)
+   	    				{
+   	    					var tr=$('<tr><td>'+data[i]["sfsFeeHeadName"]+'</td><td><input class="feeHeads form-control" id="'+data[i]["sfsFeeHeadId"]+'" type="number" name="sfsFeeHead" value="" required="required"></input></td></tr>');
+   	    					$('#feeMapTableBody2').append(tr);
+   	    				}
+   	    			 }
+   	    			 else
+   	    			 {
+   	    				showMessage("no fee heads are found under the selected group");
+   	    				$('#feeMapTableBody2').empty();
+   	    			 }
+   	    		 }
+   	    		catch(e)
+   	    		{
+   	    			showError("Error in processing information.contact Admin");
+   	    		}	 
+   	    	 }
+   	     });
+   	     console.log("HJHJ")
+   	 });
+	 $('#feemapform').unbind().bind('submit',function()
+   	 {
+   		event.preventDefault();
+   		selectedProgram=parseInt($('#course_id').val());
+   		var formData=new Array();
+   		var negative="false";
+   		$('.feeHeads').each(function()
+   		{
+   			var feeId=$(this).attr('id');
+   			var amnt=$(this).val();
+   			if(amnt<0)
+   			{
+   				negative="true";
+   			}
+			var map={};
+     		map['feeHeadId']=feeId;
+   			map['hostelFeeOrder']=$('#orderno').val()
+   			map['hostelFeeHeadAmount']=amnt;
+   			map['hostelFeeSettingStatus']="invalid";
+   			map['hostelFeeSteeingUserRemarks']=$('#remarks').val();
+   			formData.push(map);
+   		});
+   		if(negative=="false")
+		{
+   			$.ajax(
+   		    {
+   				"url":"/fees/saveHostelFeeMappings",
+   				"method":"POST",
+   				data:{"hmaps":formData},
+   				success:function(data)
+   				{
+   					try
+   					{
+   							console.log("data--------"+data.length);
+   							if(data.length>0)
+   							{
+   								showMessage("Successfully Entered Fee Group to Amounts. Kindly make this entry verified");
+   								$('#feeMapTableBody').empty();
+   								refreshContent();
+   							}
+   							else
+   								{
+   								showMessage("Something went wrong. Try again or contact Admin");
+   								}
+   						}
+   						catch(e)
+   						{
+   							showError("Error in processing information.contact Admin");
+   						}
+   					}
+   					
+   				});
+   			}
+   				
+   				else
+   					{
+   					
+   					showMessage("fee amount must not be negative value");
+   					}
+   			});
+   	 	
+   	});
+</script>
+<div id="accordion">
+	 <h3>Approved Mappings</h3>
+ 		<div>
+  		 <p>
+  		 <div class="table-responsive">
+   			<table class="table table-striped" id="gridTable0"></table>
+   		</div>
+   	  </p>
+ 	</div>
+</div>
+	
+<form id="feemapform">
+  <div class="row" id="minify">
+	<div class="col-md-12">
+	    <label for="selectProgram" >Select Fee Group</label>
+	  <select  class="form-control" id="feeGroup"  >	
+	  </select>
+	</div>
+  </div> 
+<hr>
+
+<div id="divGridTable2" class="row" style="display: none">
+	<div class="col-md-12">
+		<div class="table-responsive cell-border">
+			<label><h4>Hostel Fee Amount Mapping</h4></label>
+			<table id="gridTableMapper" class="table table-striped">
+			  <thead>
+			    <tr>
+			      <th scope="col">Fee Head</th>
+			      <th scope="col">Amount</th>
+			    </tr>
+			  </thead>
+			  <tbody id="feeMapTableBody2">
+			  
+			  </tbody>
+			</table>
+		</div>	
+	</div>
+</div>
+
+<div id="detailsDiv2" class="row well"  style="display: none;">
+	<div class="col-md-12">
+	 <label for="comment">Order No:</label>
+ 	 <textarea class="form-control" rows="5" id="orderno" required="required"></textarea>
+	</div>
+</div>
+<div id="detailsDiv3" class="row well"  style="display: none;">
+	<div class="col-md-12">
+	 <label for="comment">Remarks:</label>
+ 	 <textarea class="form-control" rows="5" id="remarks"></textarea>
+	</div>
+</div>
+
+<hr>
+
+<div class="row" id="detailsDiv5" style="display: none;">
+	<div class="col-md-12"></div>
+	<div class="col-md-4">
+	<button class="btn btn-primary" id="btnSubmit" value="submit">Submit</button>
+	</div>
+	<div class="col-md-4"></div>
+</div>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

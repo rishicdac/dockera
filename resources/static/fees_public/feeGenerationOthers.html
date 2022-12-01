@@ -1,0 +1,717 @@
+<div class="row" id="minify">
+	<div class="col-md-4">
+	    <label for="selectProgram">Select Program</label>
+	    <select class="form-control grouping" id="selectProgram"></select>
+	</div>
+	<div class="col-md-4">
+	    <label for="selectBatch">Select Batch</label>
+	    <select class="form-control grouping" id="selectBatch"></select>
+	</div>
+	<div class="col-md-4">
+	    <label for="selectSemester">Select Identifier</label>
+	    <select class="form-control grouping" id="selectSemester">
+	    </select>
+	</div>
+</div> 
+<hr>
+<div id="div1" class="row"  style="display: none;">
+	<div class="col-md-4"></div>
+	<div class="col-md-4">
+	    <button class="btn btn-primary" id="btnFinalise1">Submit Details</button>
+	</div>
+	<div class="col-md-4"></div>
+</div>
+<hr>
+
+<div id="div2" class="row"  style="display: none;">
+	<div class="col-md-12">
+	    <div id="tabs">
+	    
+	    </div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12" id="studentList" style="display:none">
+ <div id="accordion">
+  <h3>Fee Applicable Student List</h3>
+  <div>
+    <p>
+		<div class="table-responsive cell-border" id="divGridTable">
+			<table id="studentTable" class="table table-striped">
+			  <thead>
+			    <tr>
+			      <th scope="col">Student Id</th>
+			      <th scope="col">Fee Category</th>
+			    </tr>
+			  </thead>
+			  <tbody id="studentTableBody">
+			  
+			  </tbody>
+			</table>
+		</div>
+		</p>
+	</div>	
+	</div>
+</div>
+</div>
+<hr>
+
+<div class="row"> 
+	<form id="feeGenerfationForm">
+	<div id="detailsDiv3" class="row well"  style="display: none;">
+		<div class="col-md-12 form-group">
+			<label>Name of this Fee Demand Process</label>
+			<input type="feeCollectionName" id="feeCollectionUniqueName" name="feeCollectionUniqueName" class="form-control" readonly></input>
+		</div>
+	</div>
+	<hr>
+	<div id="detailsDiv7" class="row well"  style="display: none;">
+		<div class="col-md-6 form-group">
+			<label>Fee Collection Start Date</label>
+			<input type="text" id="collectionStartDate"  name="collectionStartDate" class="form-control dp"></input>
+		</div>
+		<div class="col-md-6 form-group">
+			<label>Last Date without fine</label>
+			<input type="text" id="collectionEndtDate"  name="collectionEndtDate" class="form-control dp"></input>
+		</div>
+	</div>
+	<hr>
+	<label hidden id="lab1">Level -1 Simple Fine</label>
+	<div id="detailsDiv4" class="row well"  style="display: none;">
+		<div class="col-md-4 form-group">
+			<label>Fine Collection Start Date</label>
+			<input type="text" id="level1CollectionStartDate" name="level1CollectionStartDate" class="form-control dp"></input>
+		</div>
+		<div class="col-md-4 form-group">
+			<label>Fine Collection End Date</label>
+			<input type="text" id="level1CollectionEndtDate"  name="level1CollectionEndtDate" class="form-control dp"></input>
+		</div>
+		<div class="col-md-4 form-group">
+			<label>Simple Fine Amount</label>
+			<input type="number" id="level1FineAmount"  name="level1FineAmount" class="form-control"></input>
+		</div>
+	</div>
+	<hr>
+	
+	<label hidden id="lab2">Level -2 Per Day Fine</label>
+	<div id="detailsDiv5" class="row well"  style="display: none;">
+		
+		<div class="col-md-4">
+			<label>Fine Collection Start Date</label>
+			<input type="text" id="level2CollectionStartDate" name="level2CollectionStartDate" class="form-control dp"></input>
+		</div>
+		<div class="col-md-4">
+			<label>Fine Collection End Date</label>
+			<input type="text" id="level2CollectionEndtDate" name="level2CollectionEndtDate" class="form-control dp"></input>
+		</div>
+		<div class="col-md-4">
+			<label>Per Day Fine Amount</label>
+			<input type="number" id="level2FineAmount" name="level2FineAmount" class="form-control"></input>
+		</div>
+	</div>
+	<hr>
+	<label hidden id="lab3">Level -3 Re-Admission</label>
+	<div id="detailsDiv6" class="row well"  style="display: none;">
+		<div class="col-md-6">
+			<label>Per Day Fine Amount</label>
+			<input type="number" id="level3DailyFineAmount" name="level3DailyFineAmount" class="form-control"></input>
+		</div>
+		<div class="col-md-6">
+			<label>Re Admission Amount</label>
+			<input type="number" id="level3ReAdmissionFineAmount"  name="level3ReAdmissionFineAmount" class="form-control"></input>
+		</div>
+	</div>
+	<hr>
+	<div id="div3" class="row"  style="display: none;">
+		<div class="col-md-4"></div>
+		<div class="col-md-4">
+		    <button class="btn btn-primary" id="btnFinalise2">Generate Fee Demand</button>
+		</div>
+	</div>
+	</form>
+</div>
+<hr>
+
+<script>
+	var selectedCourseId;
+	var selectedBatchId;
+	var selectedSemester;
+	var tabActiveFeeCategory="";
+	var wholeData;
+	var feeCategoryToGroupMap={};
+	var selectedGroupArray=new Array();
+	var feeCategoryToGroupAmountMap={};
+	var studentList=new Array();
+	var studentArray=new Array();
+	function addToArray(stud)
+	{
+	   if(studentArray.indexOf(String(stud)) !== -1)
+	   {
+	        
+	   }
+	   else
+	   {
+		   studentArray.push(String(stud));  
+	   }
+	}
+	function setUpCheckBox()
+	{
+		$('.studentList').unbind().bind('change',function()
+		{
+			var studId=$(this).attr('id');
+			if(this.checked)
+			{
+				addToArray(studId);
+			}
+			else
+			{
+				removeFromArray(studId);
+			}
+		});
+	}
+	function removeFromArray(stud)
+	{
+	   if(studentArray.indexOf(String(stud)) !== -1)
+	   {
+		   stud=String(stud)
+		   studentArray = jQuery.grep(studentArray,function(value) 
+		   {
+			   return value != stud;
+		   }); 
+	   }
+	}
+	function getFeeIdentifiers(idenType)
+	{
+		$.ajax(
+		{
+			"url":"/fees/getAllFeeProcessIdentifierByType",
+			data:{"feeIdenfierType":idenType},
+			success:function(data)
+			{
+				console.log(data);
+				setUpDropDown("selectSemester",data,"feeProcessIdentifierName","feeProcessIdentifierName");
+			}
+		});		
+	}
+	
+	function setTableInsideAcc(data,feeGroupId)
+	{
+		$('#accop-'+feeGroupId).empty();
+		var tab=$('<table class="table table-responsive table-striped">');
+		var totalFeeAmountOfGroup=0;
+		for(var i=0;i<data.length;i++)
+		{
+			totalFeeAmountOfGroup=totalFeeAmountOfGroup+data[i]["fee_head_amount_map_amount"];
+			var tr=$('<tr><td>'+data[i]["sfs_fee_head_name"]+'</td><td><input class="feeHeads" id="'+data[i]["sfs_fee_head_id"]+'" type="text" value="'+data[i]["fee_head_amount_map_amount"]+'" readonly></input></td></tr>');
+			tab.append(tr);
+		}
+		var tr2=$('<tr><td><b>Total </b></td> <td><b>'+String(totalFeeAmountOfGroup)+'</b></td></tr>')
+		tab.append(tr2);
+		$('#accop-'+feeGroupId).append(tab);
+		//$('#acc-'+feeCategoryId).accordion({active: 1000});		
+	}
+	function getAllFeeHeadAmountMapping(programId,batchId,feeCategoryId,feeGroupId)
+	{
+		var k=feeCategoryId+"-"+feeGroupId;
+		if(typeof feeCategoryToGroupAmountMap[k]!='undefined')
+		{
+			setTableInsideAcc(feeCategoryToGroupAmountMap[k],feeGroupId);	
+		}
+		else
+		{
+			$.ajax(
+			{
+				"url":"/fees/getAllFeeHeadAmountMaps",
+				"method":"GET",
+				data:{"courseId":programId,"batchId":batchId,"feeCategoryId":feeCategoryId,"feeGroupId":feeGroupId,"semester":selectedSemester},
+				success:function(data)
+				{
+					try
+					{
+						if(data)
+						{
+							feeCategoryToGroupAmountMap[k]=data;
+							setTableInsideAcc(data,feeGroupId);
+						}
+					}
+					catch(e)
+					{
+						showError("Error in processing information.contact Admin");
+					}
+				}
+				
+			});	
+		}
+	}
+
+	function setFeeGroupsViewOnCategorySelection(feeCat)
+	{
+		$('#'+String(feeCat)).empty();
+		$("[anchor=tabContent]").empty();
+		
+		$('#'+String(feeCat)).append('<div id="acc-'+String(feeCat)+'"></div>');
+		for(var i=0;i<selectedGroupArray.length;i++)
+		{
+			var mp=selectedGroupArray[i];
+			$('#acc-'+feeCat).append('<h3 att="acco" id="acco-'+mp["feeGroupId"]+'">'+mp["feeGroupName"]+'</h3><div><p id="accop-'+mp["feeGroupId"]+'"></p></div>');
+		}
+		$("[att=acco]").unbind().bind('click',function()
+		{
+			var feeGroupId=$(this).attr('id').split('-')[1];
+			getAllFeeHeadAmountMapping(selectedCourseId,selectedBatchId,tabActiveFeeCategory,feeGroupId);
+		});
+		//$('acco-'+mp["feeGroupId"]).height("350");
+		//$('accop-'+mp["feeGroupId"]).height("300");
+		$('#acc-'+feeCat).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+		$('#studentList').show();
+	}
+	function findAllGroupsMappedAgainstAFeeCategory(feeCat)
+	{
+		selectedGroupArray=[];
+		for(var i=0;i<wholeData.length;i++)
+		{
+			var segment=wholeData[i];
+			console.log(segment)
+			if(String(segment["feeGroupDueDateMapIdentity"]["feeHeadAmountMapIdentityFeeCategory"]["sfsFeeCategoryId"])==String(feeCat))
+			{
+				var feeGrpName=segment["feeGroupDueDateMapIdentity"]["feeGroupDueDateMapIdentitySfsFeeGroup"]["sfsFeeHeadGroupName"];
+				var feeGrpId=segment["feeGroupDueDateMapIdentity"]["feeGroupDueDateMapIdentitySfsFeeGroup"]["sfsFeeHeadGroupId"];
+				var map={"feeGroupId":feeGrpId,"feeGroupName":feeGrpName};
+				selectedGroupArray.push(map);
+			}
+		}
+		setFeeGroupsViewOnCategorySelection(feeCat);
+	}
+	function getExamFeeMaps(pgmId,batchId,feeCategoryId,identifier)
+	{
+		console.log("Calling function getExamFee mOas");
+		$.ajax(
+		{
+			"url":"/fees/getFeeHeadAmountMaps",
+			"data":{"courseId":pgmId,"batchId":batchId,"feeCategoryId":feeCategoryId,"semester":identifier},
+			success:function(data)
+			{
+			  try
+			  {
+					if(data)
+					{	
+						$('#tab-'+feeCategoryId).empty();
+						$('#feeMapTable').empty();
+						var tab=$('<div class="table-responsive"><table id="feeMapTable" class="table table-striped"></table></div>');
+						$('#tab-'+feeCategoryId).append(tab);
+						for(var i=0;i<data.length;i++)
+						{
+							var tr=$('<tr><td>'+data[i]["sfs_fee_head_name"]+'</td><td><input class="feeHeads form-control" id="'+data[i]["sfs_fee_head_id"]+'" type="text" readonly value="'+data[i]["fee_head_amount_map_amount"]+'"></input></td></tr>');
+							//valueMap[data[i]["sfs_fee_head_id"]]=data[i]["fee_head_amount_map_amount"];
+							//nameMap[data[i]["sfs_fee_head_id"]]=data[i]["sfs_fee_head_name"];
+							//$('#table-'+feeCategoryId).append(tr);
+							$('#feeMapTable').append(tr);
+							console.log($('#feeMapTable'));
+							
+							//$('#feeMapTableBody2').append(tr);
+						}
+						//var tr2=$('<tr><td><button disabled class="btn btn-warning" id="save-'+feeCategoryId+'">Save</button> (Changes need to be saved)</td></tr>')
+						var tr2=$('<button disabled class="btn btn-warning save" id="save-'+feeCategoryId+'">Save</button> (Changes need to be saved)');
+						
+						if(data.length>0)
+							//$('#table-'+feeCategoryId).append(tr2);
+							tr2.insertAfter( $("#table-"+feeCategoryId));
+						
+						$('#tabMap').tabs();
+						
+						$('.editable').unbind().bind('click',function()
+						{
+							var elem=$(this).attr('support');
+							//alert(elem)
+							if($('#'+elem).prop('readonly')==true)
+							{
+								$('#'+elem).prop('readonly',false);
+								$('#save-'+feeCategoryId).prop('disabled',false);
+								var remarks=$('<div id="remarksDiv-'+feeCategoryId+ '" class="form-group"><label for="exampleFormControlTextarea1">Remarks</label><textarea class="form-control" id="remarks-'+feeCategoryId+'" rows="3"></textarea></div>');
+								if($('#remarks-'+feeCategoryId).length)
+								{
+									
+								}	
+								else
+								{
+									remarks.insertAfter( $("#table-"+feeCategoryId));
+								}
+							}
+							else
+							{
+								$('#'+elem).prop('readonly',true);
+								$('#remarksDiv-'+feeCategoryId).remove();
+							}
+						});
+						$('#save-'+feeCategoryId).unbind().bind('click',function()
+						{
+							console.log(">>>>>>>>>>>>>>>>>>>");
+							console.log(feeCategoryNameMap[feeCategoryId]);
+							
+							var formData=new Array();
+							var remarksString="";
+							$('.feeHeads').each(function()
+							{
+								var feeId=$(this).attr('id');
+								var amnt=$(this).val();
+								var map={};
+								map['sfsFeeHeadId']=feeId;
+								map['sfsMapCourseId']=selectedProgram;
+								map['sfsMapSemester']=selectedSemester;//$('#feeMapIdentifier').val();//selectedSemester;
+								map['sfsMapBatchId']=selectedBatch;
+								map['sfsMapFeeCategoryId']=feeCategoryId;
+								map['sfsMapAmount']=amnt;
+								map['SfsFeeGroupDueDateMapEntryState']="open";
+								map['sfsFeeGroupDueDateMapStatus']="unverified";
+								map['feeCollectionUniqueName']=selectedSemester;
+								if(valueMap[feeId]!=amnt)
+								{
+									remarksString=remarksString+ " -- Fee Amount for Head "+nameMap[feeId] +" changed from "+valueMap[feeId] +" to "+String(amnt)+ " for Fee Catgeory "+feeCategoryNameMap[feeCategoryId]+" --";
+									//alert(remarksString);
+									remarksString=$('#remarks-'+feeCategoryId).val()+"::: Auto-generted details ::"+remarksString;
+								}
+								
+								
+								formData.push(map);
+							});
+							$.ajax(
+							{
+								"url":"/fees/addExamFeeMapping",
+								"method":"POST",
+								data:{"feeHeadAmountMapWrappers":formData},
+								success:function(data)
+								{
+									try
+									{
+										console.log(data);
+										if(data[0]['feeHeadAmountMapIdentity'])
+										{
+											$.ajax(
+											{
+												"url":"/fees/recordMappingChanges",
+												"method":"POST",
+											 	data:{"recordRemarks":remarksString,"courseId":selectedProgram,"batchId":selectedBatch,"identifier":selectedSemester},
+											 	success:function(data)
+												{
+											 		console.log(data);
+											 		showMessage("Successfully Saved Changes");
+											 		refreshContent();
+												}
+											});
+										}
+									}
+									catch(e)
+									{
+										showError("Error in processing information.contact Admin");
+									}
+								}
+								
+							});
+						});
+					}
+				}
+				catch(e)
+				{
+					showError("Error in processing information.contact Admin"+e);
+				}	 
+			 }
+		});			
+	}
+	function setUpStudentList(data)
+	{
+		studentList=[];
+		$('#studentTableBody').empty();
+		for(var i=0;i<data.length;i++)
+		{
+			var stud=data[i];
+			studentArray.push(stud['studentAdmissionUserCode']);
+			var tr=$('<tr><td>'+stud["studentAdmissionUserCode"]+'</td><td>'+stud["mappedFeeCategory"]["sfsFeeCategoryName"]+'</td><td><input id="'+stud['studentAdmissionUserCode']+'" type="checkbox" class="studentList" style:"margin-right: 20px" id="'+data[i]['studentCode']+'" checked></td></tr>')
+			studentList.push(String(stud["studentAdmissionUserCode"]));
+			$('#studentTableBody').append(tr);
+			//$('#divGridTable').DataTable();
+		}
+		setUpCheckBox();
+	}
+	$(document).ready(function()
+	{
+		$('.dp').datepicker({
+		    format: 'yyyy-mm-dd',							   
+			autoclose:true,
+			clearBtn:true
+		});
+		
+		
+		getFeeIdentifiers("Others");
+		$('#btnFinalise1').unbind().bind('click',function()
+		{
+			$('#div1').hide();
+			$('#minify').resizable();
+			selectedCourseId=$('#selectProgram').val();
+			selectedBatchId=$('#selectBatch').val();
+			selectedSemester=$('#selectSemester').val();
+			$('#selectProgram').prop("disabled", true);
+			$('#selectBatch').prop("disabled", true);
+			$('#selectSemester').prop("disabled", true);
+			
+			$.ajax(
+			{
+				"url":"/fees/getAllFeeGroupMappingsForABatch",
+				"method":"GET",
+				data:{"pgmId":selectedCourseId,"batchId":selectedBatchId,"semester":selectedSemester},
+				success:function(data)
+				{
+					try
+					{
+						if(data)
+						{
+							$('#feeCollectionUniqueName').val(selectedCourseId+"-"+selectedBatchId+"-"+selectedSemester);
+							wholeData=data;
+							$('#div2').show();
+							$('#detailsDiv3').show();
+							$('#detailsDiv4').show();
+							$('#detailsDiv5').show();
+							$('#detailsDiv6').show();
+							$('#detailsDiv7').show();
+							$('#detailsDiv9').show();
+							$('#lab1').show();
+							$('#lab2').show();
+							$('#lab3').show();
+							$('#div3').show();
+							for(var i=0;i<data.length;i++)
+							{
+									
+							}
+							findAllGroupsMappedAgainstAFeeCategory(tabActiveFeeCategory);
+						}
+					}
+					catch(e)
+					{
+						console.log(e);
+					}
+				}
+				
+			});
+			$.ajax(
+			{
+				"url":"/students/getActiveStudentsByProgramBatch",
+				"method":"GET",
+				data:{"programId":selectedCourseId,"batchId":selectedBatchId},
+				success:function(data)
+				{
+					//$('#divGridTable').empty();
+					//setUpDataTable(data,[{"studentAdmissionUserCode":"Student Admission Code"},{"sfsFeeCategoryName":"Fee Category"}],"divGridTable",null);
+					setUpStudentList(data);
+					$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+				}
+			});
+			
+			$('#feeGenerfationForm').unbind().bind('submit',function(event)
+			{
+				event.preventDefault();
+				var formData=$(this).serializeArray();
+				formData.push({"name":"programId","value":selectedCourseId});
+				formData.push({"name":"batchId","value":selectedBatchId});
+				formData.push({"name":"semester","value":selectedSemester});
+				formData.push({"name":"sfsFeestudentList","value":String(studentArray)});
+				$.ajax(
+				{
+					"url":"/fees/saveStudentFeeDemandProcess",
+					"method":"POST",
+					data:formData,
+					success:function(data)
+					{
+						console.log(data);
+						if(data=="fail")
+						{
+							showMessage("Error occured while generating fee demand.Contact Admin")
+							$('#feeGenerfationForm').hide();
+						}
+						else
+						{
+							showMessage("Fee demand generated successfully");
+							refreshContent();
+						}
+					}
+				});				
+			});
+						
+			
+		});
+
+		function getAllFeeHeadsMappedToGroup(groupId)
+		{
+			$.ajax(
+			{
+				"url":"/fees/getAllFeeHeadsMappedToGroup",
+				"method":"GET",
+				data:{"groupId":groupId},
+				success:function(data)
+				{
+					try
+					{
+						//setUpDataTable(data,)	
+					}
+					catch(e)
+					{
+						showError("Error in processing information.contact Admin");
+					}
+				}
+				
+			});			
+		}
+		function setUpTabs(data)
+		{
+			$('#tabs').empty();
+			var ui=$('<ul>');
+			tabActiveFeeCategory=data[0]['sfsFeeCategoryId'];
+			for(var i=0;i<data.length;i++)
+			{
+				ui.append($('<li att="sel" ref="'+data[i]['sfsFeeCategoryId']+'"><a ref="'+data[i]['sfsFeeCategoryId']+'" href="tab-'+data[i]['sfsFeeCategoryId']+'">'+data[i]["sfsFeeCategoryName"]+'</a></li>'));
+			}
+			$( "#tabs" ).append(ui);
+			for(var i=0;i<data.length;i++)
+			{
+				$('#tabs').append($('<div><p anchor="tabContent" id="tab-'+data[i]['sfsFeeCategoryId']+'"></p></div>'));	
+			}
+
+			$("[att=sel]").unbind().bind('click',function()
+			{
+				tabActiveFeeCategory=$(this).attr('ref');
+				//findAllGroupsMappedAgainstAFeeCategory(tabActiveFeeCategory);
+				getExamFeeMaps(selectedCourseId,selectedBatchId,tabActiveFeeCategory,selectedSemester)
+			});
+			//$( "#tabs" ).height("400");
+			$( "#tabs" ).tabs().css({
+				   'min-height': '400px',
+				   'overflow': 'auto'
+				});;
+		}
+		function loadAllActiveFeeCategories()
+		{
+		    $.ajax(
+			{
+				"url":"/fees/getAllActiveFeeCategories",
+				"method":"GET",
+				success:function(data)
+				{
+					setUpTabs(data);
+				}
+			});
+		}
+		function getAllPrograms()
+		{
+	 		$.ajax(
+	 		{
+	   	   		url:'/course/getAllCourses',
+	   	   		method:'GET',
+	   	   		success:function(data)
+	   	   		{
+	   	   			setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   	   			$('#selectProgram').unbind().bind('change',function()
+	   	   			{
+	   	   				getAllActiveBatchesOfProgram($(this).val());
+	   	   			});
+	   	   		},
+	   	   		error:function(err)
+	   	   		{
+	   	   			showMessage(err);
+	   	   		}
+	   	   	});
+		 }
+		 function getAllActiveBatchesOfProgram(programId)
+		 {
+			$.ajax(
+			{
+		  		url:'/batch/getAllActiveBatchesInAProgram',
+		  	   	method:'GET',
+		  	   	data:{"courseId":programId},
+		  	   	success:function(data)
+		  	   	{
+		  	   		console.log(data);
+		  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+		  	   		$('#selectBatch').unbind().bind('change',function()
+		  	   		{
+						if($(this).val()!="select")
+						{
+							$('#div1').show();
+						
+						}
+						else
+						{
+							$('#div1').hide();
+						}	
+		  	   		});
+		  	   	},
+		  	   	error:function(err)
+		  	   	{
+		  	   		showMessage(err);
+		  	   	}
+		  	 });	  
+		  }		
+		  function getAllSemsForTheBatch(batchId)
+		  {
+		 	 $.ajax(
+			 {
+				 url:'/batch/getAllSemestersInABatch',
+				 method:'GET',
+				 data:{"batchId":batchId},
+				 success:function(data)
+				 {
+					try
+					{
+						if(data && data.length>0)
+						{
+							$('#activeSem').empty();
+							$('#selectSemester').append('<option value="sv">Select Semester</option>');
+							for(var i=0;i<data.length;i++)
+							{
+								$('#selectSemester').append('<option>'+data[i]['semesterIdentity']['semesterCode']+'</option>');	
+							}
+						}
+					}
+					catch(e)
+					{
+						showError("Error in Processing Data.Contact Admin");
+					}
+				 	//setUpDropDown('activeSem',data,'semesterCode','semesterCode');
+				 }
+			  });
+		  }
+		  function getAllFeeGroups()
+		  {
+				$.ajax(
+				{
+					"url":"/fees/getAllFeeHeadGroups",
+					"method":"GET",
+					success:function(data)
+					{
+						try
+						{
+							console.log(data);
+							setUpDropDown('selectFeeGroup',data,'sfsFeeHeadGroupId','sfsFeeHeadGroupName');
+							$('#selectFeeGroup').unbind().bind('change',function()
+							{
+								if(($(this).val()!=null)&&($(this).val()!="")&&($(this).val()!="Select"))
+								{
+									$('#divButton').show();	
+								}
+								else
+								{
+									$('#divButton').hide();
+								}
+							});
+						}
+						catch(e)
+						{
+							showMesage("Error in processing information.contact Admin");
+						}
+					}
+					
+				});		
+			}
+		  getAllPrograms();
+		  loadAllActiveFeeCategories();
+	});
+</script>
+
+

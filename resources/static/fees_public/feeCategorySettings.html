@@ -1,0 +1,191 @@
+<script>
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Fee Category-Id"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTableRecords",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+$(document).ready(function()
+{
+	
+	function setUpFeeCategoryTableView(data)
+	{
+		setUpDataTable(data,[{"sfsFeeCategoryId":"Id"},{"sfsFeeCategoryName":"Name"},{"sfsFeeCategoryStatus":"Status"},{"sfsFeeCategoryEnteredBy":"EnteredBy"},{"sfsFeeCategoryVerifiedBy":"VerifiedBy"},{"sfsFeeCategoryEneteredDate":"Entered Date"},{"sfsFeeCategoryVerifiedDate":"Verified Date"}],'gridTableFeeCategory',null);
+	}
+	function loadAllFeeCategories()
+	{
+	    $.ajax(
+   		{
+   			"url":"/fees/getAllFeeCategories",
+   			"method":"GET",
+   			 success:function(data)
+   			{
+   			    setUpDataTable(data,[{"sfsFeeCategoryId":"Id"},{"sfsFeeCategoryName":"Name"},{"sfsFeeCategoryStatus":"Status"}],'gridTableFeeCategory',null);
+   				onDataTableClick("gridTableFeeCategory",function()
+	  	   		{
+	  	   		    $('#categoryId').val(selectedRowFromDataTable[0]);
+	  	   			getRecordTimeLines(selectedRowFromDataTable[0],"fee-category");
+					$('#categoryNameEdit').val(selectedRowFromDataTable[1]);
+					if(selectedRowFromDataTable[2]!="invalid")
+					{
+						$('#btnedit').attr('disabled',true);
+					}
+					else
+					{
+						$('#btnedit').attr('disabled',false);
+					}
+					$('#dialogEdit').modal({backdrop: 'static',
+	  				     keyboard: false});
+	  	   		})
+   			}
+   		});
+	}
+	loadAllFeeCategories();
+	
+	$('#buttonAddFeeCategory').unbind().bind('click',function()
+	{
+		 $('#dialogAdd').modal({backdrop: 'static', keyboard: false});	
+	});
+	
+	$('#formFeeCategoryAdd').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"sfsFeeCategoryStatus","value":"invalid"});
+		$.ajax(
+		{
+   			"url":"/fees/addFeeCategory",
+   			"method":"POST",
+   			"data": formData,
+   			 success:function(data)
+   			{
+				console.log(data);
+				if(data)
+				{
+					showMessage("Category Added Succesfully");
+					clearDataTable('gridTableFeeCategory');
+					$('#dialogAdd').modal('toggle');
+					loadAllFeeCategories();
+				}
+   			},
+   			error:function(err)
+   			{
+   				
+   				showError("Some problem occured. Contact Admin");
+   			}
+		})
+		
+	})
+	$('#formCategoryEdit').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"sfsFeeCategoryStatus","value":"invalid"});
+		$.ajax(
+		{
+			"url":"/fees/addFeeCategory",
+			"method":"POST",
+			 data:formData,
+			 success:function(data)
+		   	 {
+		   		console.log(data);
+		   		showMessage("Changes Saved");
+		   		$('#dialogEdit').modal('toggle');
+		   		clearDataTable('gridTableFeeCategory');
+		   		loadAllFeeCategories();
+		   	  }
+		 });	
+	});	
+	
+});
+</script>
+<div class="row" >
+	<div class="col-xs-8"></div>
+	<div class="col-xs-4">
+		<button type="button"  id="buttonAddFeeCategory" class="btn btn-primary">Add Fee Category</button>
+	</div>
+</div>
+	<br>
+<div class="table-responsive cell-border">
+	<table id="gridTableFeeCategory" class="table table-striped"></table>
+</div>
+
+<div class="modal fade" id="dialogAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+			<h5 class="modal-title" id="exampleModalLabel">Add Fee Category</h5>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			  <span aria-hidden="true">&times;</span>
+			</button>
+        </div>
+		<div class="modal-body">
+			<form id="formFeeCategoryAdd" >
+				<div class="form-group">
+					<label for="sfsFeeCategoryName">Fee Category Name</label>
+					<input type="text" class="form-control" id="sfsFeeCategoryName" required  name="sfsFeeCategoryName" placeholder="Enter Category Name">
+				</div>
+				<button type="submit" class="btn btn-primary">Add</button>
+		   	</form>
+		</div>
+		<div class="modal-footer">
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Details/Edit Fee Category</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<p class="h3">Fee Category Details</p>
+			<form id="formCategoryEdit" >
+			<div class="form-group">
+		   		<label for="categoryId">Category ID</label>
+		   		<input type="text" class="form-control" id="categoryId"  name="sfsFeeCategoryId" readonly>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="categoryName">Category Name</label>
+		   		<input type="text" class="form-control" id="categoryNameEdit"  name="sfsFeeCategoryName" >
+		   	</div>
+		   	
+		   	<button type="submit" id="btnedit" class="btn btn-primary">Save</button>
+		   	</form>
+		   	<div id="accordion">
+ 		 		<h3>Record Flow History</h3>
+	  			<div>
+	   		 	<p>
+	   			 <div class="table-responsive">
+	    			<table class="table table-striped" id="gridTableRecords"></table>
+	    		</div>
+	    		</p>
+	  			</div>
+	   		</div>
+		</div>
+		      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>

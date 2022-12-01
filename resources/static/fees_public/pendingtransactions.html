@@ -1,0 +1,113 @@
+<script>
+
+var selectedpendingtran;
+function getpendingtrans()
+{
+	$.ajax(
+	{
+		"url":"/fees/getpendingtrans",////
+		"method":"GET",
+		success:function(data)
+		{
+			if(data)
+			{
+				setUpDataTable(data,[{"activeTranId":"Tran Ref"},{"activeTran":"Fee Name"},
+			    {"activeTranUserCode":"Related to Student/user"},{"actualAmount":"Amount"},
+			    {"payAgent":"Gateway"},{"entryTime":"Time of Entry"}],"gridTable",null);
+				onDataTableClick('gridTable',function()
+				{
+					$('#activeTranId').val(selectedRowFromDataTable[0]);
+					$('#activeTran').val(selectedRowFromDataTable[1]);
+					$('#activeTranUserCode').val(selectedRowFromDataTable[2]);
+					$('#actualAmount').val(selectedRowFromDataTable[3]);
+					$('#payAgent').val(selectedRowFromDataTable[4]);
+					$('#entryTime').val(selectedRowFromDataTable[5]);
+		   			$('#dialogAdd').modal({backdrop: 'static',keyboard: false});
+				});
+			}
+		}
+	});
+}
+$(document).ready(function()
+{
+	getpendingtrans();
+	$('#addForm').on('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		$.ajax(
+		{
+			"url":"/fees/addFeeHead",
+			"method":"POST",
+			 data:formData,
+			 success:function(data)
+			{
+				if(data)
+				{
+					getpendingtrans();	
+				}
+			}
+						
+		});	
+	}); 
+});
+</script>
+<div class="table-responsive">
+	<table id="gridTable" class="table"></table>
+</div>
+
+<div class="modal fade" id="dialogAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Fee Head</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<form id="addForm">
+				<div class="form-group">
+					<label for="accountName">Tran Ref:</label>
+					<input type="text" class="form-control" name="activeTranId" id="activeTranId" readonly>
+				</div>
+					<div class="form-group">
+					<label for="accountName">Fee Name</label>
+					<input type="text" class="form-control" name="activeTran" id="activeTran" readonly>
+				</div>
+				<div class="form-group">
+					<label for="accountName">Student/User Code</label>
+					<input type="text" class="form-control" name="activeTranUserCode" id="activeTranUserCode" readonly>
+				</div>
+				<div class="form-group">
+					<label for="accountName">Amount</label>
+					<input type="text" class="form-control" name="actualAmount" id="actualAmount" readonly>
+				</div>
+				<div class="form-group">
+					<label for="accountName">Gateway</label>
+					<input type="text" class="form-control" name="payAgent" id="payAgent" readonly >
+				</div>
+				<div class="form-group">
+					<label for="accountName">Time Entered</label>
+					<input type="text" class="form-control" name="entryTime" id="entryTime" readonly >
+				</div>					
+				<button type="submit" class="btn btn-primary">Check Status</button>
+				<div class="form-group table-responsive" id="resultDiv">
+					<table  class="table table-striped">
+						<tr><td></td><td></td></tr>
+						<tr><td></td><td></td></tr>
+						<tr><td></td><td></td></tr>
+						<tr><td></td><td></td></tr>
+						<tr><td></td><td></td></tr>
+						<tr><td></td><td></td></tr>
+					</table>		
+				</div>
+			</form>	
+		</div>
+		      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>
+

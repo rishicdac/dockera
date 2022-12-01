@@ -1,0 +1,219 @@
+<script>
+var studentArray=new Array();
+function trimString(str)
+{
+	var str1=str.replace(/ /g,'').replace(/\//g,'-').replace(/#/g,'-').replace(/ /g,'');
+	console.log("Converted string is "+str1)
+	return str1;
+}
+function setUpStudentList(data)
+{
+	$('#studentTableBody').empty();
+	for(var i=0;i<data.length;i++)
+	{
+		var stud=data[i];
+		studentArray.push(stud['studentCode']);
+		var tr=$('<tr><td>'+stud["studentCode"]+'</td><td>'+stud["studentPersonalStudentName"]+'</td><td><input  studId="'+stud['studentCode']+'"  id="'+trimString(stud['studentCode'])+'" type="checkbox" class="studentList" style:"margin-right: 20px"  checked></td></tr>')
+		$('#studentTableBody').append(tr);
+		setUpCheckBox();
+		$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+	}
+}
+function setUpCheckBox()
+{
+	function addToArray(stud)
+		{
+		   if(studentArray.indexOf(String(stud)) !== -1)
+		   {
+		   }
+		   else
+		   {
+			   studentArray.push(String(stud));  
+		   }
+		}
+		function removeFromArray(stud)
+		{
+		   if(studentArray.indexOf(String(stud)) !== -1)
+		   {
+			   stud=String(stud)
+			   studentArray = jQuery.grep(studentArray,function(value) 
+			   {
+				   return value != stud;
+			   }); 
+		   }
+		}
+	$('.studentList').unbind().bind('change',function()
+	{
+		var studId=$(this).attr('studId');
+		if(this.checked)
+		{
+			addToArray(studId);
+		}
+		else
+		{
+			removeFromArray(studId);
+		}
+	});
+}
+function getAllPrograms()
+{
+	$.ajax(
+	{
+   		url:'/course/getAllCourses',
+   		method:'GET',
+   		success:function(data)
+   		{
+   			setUpDropDown("selectProgram",data,"courseId","courseCode");
+   			$('#selectProgram').unbind().bind('change',function()
+   			{
+   				getAllActiveBatchesOfProgram($(this).val());
+   			});
+   		},
+   		error:function(err)
+   		{
+   			showMessage(err);
+   		}
+   	});
+ }
+ function getAllActiveBatchesOfProgram(programId)
+ {
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatchesInAProgram',
+  	   	method:'GET',
+  	   	data:{"courseId":programId},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+  	   		setUpDropDown('selectBatch1',data,'batchId','batchCode');
+
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+ function getUnverifiedStudents(pgm,batch)
+ {
+ 	$.ajax(
+ 	{
+ 		url:"/students/getUnverifiedStudents",
+ 		method:"get",
+ 		data:{"courseId":pgm,"batchId":batch,"status":$('#selectStatus').val()},
+ 		success:function(data)
+ 		{
+ 			setUpStudentList(data);
+ 		}
+ 	});
+ }
+$(document).ready(function()
+{
+	getAllPrograms();
+	$('#btnCallStudents').on('click',function()
+	{
+		var program=$('#selectProgram').val();
+		var batch=$('#selectBatch').val();
+		getUnverifiedStudents(program,batch);
+		//$(this).hide();
+		//$('#selectionPanel').hide();
+	});
+	$('#sendnotification').unbind().bind('click',function()
+	{
+		if(studentArray.length>0)
+		{
+			
+			
+			$.ajax(
+			{
+				url:"/messaging/addMessage",
+				data:{"receiverUserCode":String(studentArray),"messageContent":$('#notificationcontent').val(),"messageSubject":$('#subject').val()},
+				type:"POST",
+				success:function(data)
+				{
+					console.log(data.split("-")[0]);
+					if(parseInt(data.split("-")[0])>0)
+					{
+						$.ajax(
+						{
+							url:"/userManagement/sendNotification",
+							data:{"userList":String(studentArray),"content":$('#notificationcontent').val(),"subject":$('#subject').val()},
+							type:"POST",
+							success:function(data)
+							{
+								if(parseInt(data['success'])>0)
+								{
+									showMessage("Successfull send Notifications to "+data['success']+ " users");
+								}
+								else
+								{
+									showMessage("Failed to send notification.");
+								}
+							}
+						});
+					}
+				}
+			});
+		}
+		else
+		{
+			showMessage("No student selected for sending notification");
+		}
+	});
+});
+</script>
+
+<div class="row well" id="selectionPanel">
+	<div class="col-md-4">
+	    <label for="accountName">Select Program</label>
+	    <select class="form-control grouping" id="selectProgram"></select>
+	</div>
+	<div class="col-md-4">
+	    <label for="accountName">Select Batch</label>
+	    <select class="form-control grouping" id="selectBatch"></select>
+	</div>
+	<div class="col-md-4">
+	    <label for="selectStatus">Select Student Status</label>
+	    <select class="form-control grouping" id="selectStatus">
+	    <option value="invalid">invalid</option>
+    	<option value="processing">Forwarded</option>
+	    <option value="valid">Approved</option>
+	    </select>
+	</div>
+ </div> 
+ <div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4"><button id="btnCallStudents" class="btn btn-primary form-control">Apply</button></div>
+		<div class="col-md-4"></div>
+</div>
+
+ <div class="row">
+	<div class="col-md-12">
+		<label for="accountName">Subject</label>
+	    <input class="form-control" id="subject" name="subject"></input>
+	</div>
+</div>
+ <div class="row">
+	<div class="col-md-12">
+		<label for="accountName">Message</label>
+	    <textarea class="form-control" id="notificationcontent" name="notificationcontent"></textarea>
+	</div>
+</div>
+<div id="accordion">
+   <h3>Students</h3>
+   <div>
+    <p>
+		<div class="table-responsive">
+			<table class="table">
+				<tbody id="studentTableBody"></tbody>
+			</table>
+		</div>
+	</p>
+	</div>
+</div>	
+ <div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4"><button id="sendnotification" class="btn btn-primary form-control">Send Notification</button></div>
+		<div class="col-md-4"></div>
+</div>

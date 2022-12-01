@@ -1,0 +1,180 @@
+<script>
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					//data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Community-Id"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTableRecords",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+$(document).ready(function()
+{
+	function loadAllReligions()
+	{
+	    $.ajax(
+   		{
+   			"url":"/religion/getAllCommunityValidInvalid",
+   			"method":"GET",
+   			 success:function(data)
+   			{
+   				console.log(data);
+   				setUpDataTable(data,[{"religionCommunityId":"Community ID"},{"religionCommunityName":"Community Name"},{"religionCommunityStatus":"Status"}],"gridTable",null);
+   				onDataTableClick('gridTable',function()
+   				{
+   					$('#religionCommunityId').val(selectedRowFromDataTable[0]);
+   					getRecordTimeLines(selectedRowFromDataTable[0],"Community");
+					if(selectedRowFromDataTable[2]!="invalid")
+   					{
+   						$('#btnSave').attr('disabled',true);
+   					}
+   					else
+   					{
+   						$('#btnSave').attr('disabled',false);
+   					}
+   					$('#editreligionCommunityName').val(selectedRowFromDataTable[1]);
+   					$('#dialogEdit').modal({backdrop: 'static',
+   	   				     keyboard: false});
+   				});
+   			}
+   		});
+	}
+	loadAllReligions();
+	$('#formReligionAdd').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"religionCommunityStatus","value":"invalid"});
+	     $.ajax(
+   		{
+   			"url":"/religion/addCommunity",
+   			"method":"POST",
+   			 data:formData,
+   			 success:function(data)
+   			{
+   				if(data.religionId)
+   				{
+   					showMessage("Community Added");	
+   				}
+   				$('#dialogAdd').modal('toggle');
+   				clearDataTable('gridTable');
+   				loadAllReligions();
+   			}
+   		});	
+	});	
+	$('#formReligionEdit').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"religionCommunityStatus","value":"invalid"});
+	     $.ajax(
+   		{
+   			"url":"/religion/addCommunity",
+   			"method":"POST",
+   			 data:formData,
+   			 success:function(data)
+   			{
+   				console.log(data);
+   				showMessage("Changes Saved");
+   				$('#dialogEdit').modal('toggle');
+   				clearDataTable('gridTable');
+   				loadAllReligions();
+   			}
+   		});	
+	});	
+	$('#buttonAddReligion').unbind().bind('click',function()
+	{
+		 $('#formReligionAdd input[type="text"]').val('');
+		 $('#dialogAdd').modal({backdrop: 'static',
+		 keyboard: false});
+	});
+});
+</script>
+<div class="row" >
+	<div class="col-xs-8"></div>
+	<div class="col-xs-4">
+		<button type="button"  id="buttonAddReligion" class="btn btn-primary form-control">Add Community</button>
+	</div>
+</div>
+<hr>
+<div class="table-responsive cell-border well">
+	<table id="gridTable" class="table table-striped"></table>
+</div>
+
+<div class="modal fade" id="dialogAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Community</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<p><h5>Check whether this Community already exists using search option</h5></p>
+			<form id="formReligionAdd" >
+		   	<div class="form-group">
+		   		<label for="categoryCode">Community Name</label>
+		   		<input type="text" class="form-control" id="religionCommunityName" name="religionCommunityName" pattern="^[a-zA-Z]+( [a-zA-Z]+)*$" placeholder="Enter Religion Name" required>
+		   	</div>
+		   		<button type="submit" class="btn btn-primary">Add</button>
+		   	</form>
+		</div>
+		<div class="modal-footer">
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Details/Edit Community</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<p class="h5">Get the entry verified after editing</p>
+			<form id="formReligionEdit" >
+			<div class="form-group">
+		   		<label for="categoryCode">Community Id</label>
+		   		<input type="text" class="form-control" id="religionCommunityId"  name="religionCommunityId" readonly required>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="categoryCode">Community Name</label>
+		   		<input type="text" class="form-control" id="editreligionCommunityName" pattern="^[a-zA-Z]+( [a-zA-Z]+)*$"  name="religionCommunityName" required>
+		   	</div>
+			<button type="submit" id="btnSave" class="btn btn-primary">Save</button>
+		   	</form>
+		   	<hr>
+			<div id="accordion">
+	 			<h3>Record Flow History</h3>
+		  		<div>
+		   	 	<p>
+		   		 <div class="table-responsive">
+		    		<table class="table table-striped" id="gridTableRecords"></table>
+		    	</div>
+		    	</p>
+		  		</div>
+		   	</div>
+		</div>
+		      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>

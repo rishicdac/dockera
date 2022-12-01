@@ -1,0 +1,197 @@
+<script>
+var allCats;
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					//data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Category-Id"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTableRecords",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+$(document).ready(function()
+{
+	for(var i=1;i<=200;i++)
+	{
+		$('#categoryPriority').append('<option>'+String(i)+'</option>');
+		$('#editcategoryPriority').append('<option>'+String(i)+'</option>');
+	}
+	function loadCategories()
+	{
+	    $.ajax(
+   		{
+   			"url":"/category/getAllCategoriesValidInvalid",
+   			"method":"GET",
+   			 success:function(data)
+   			{
+   				console.log(data);
+   				allCats=data;
+   				setUpDataTable(data,[{"categoryId":"Category ID"},{"categoryCode":"Category Code"},{"categoryDescription":"Description"},{"categoryStatus":"Status"}],"gridTable",null);
+   				onDataTableClick('gridTable',function()
+   				{
+   					$.ajax(
+					{
+						"url":"/category/getCategoryDetails",
+						"data":{"categoryId":selectedRowFromDataTable[0]},
+						"success":function(data)
+						{
+							$('#editcategoryPriority').val(data['categoryPriority']);
+							if(data["categoryInterChangeable"])
+							{
+								$('#editcategoryInterChangeable').val(data["categoryInterChangeable"]["categoryId"]);
+							}
+							else
+							{
+								$('#editcategoryInterChangeable').val('');
+							}
+						}
+					});
+					if(selectedRowFromDataTable[3]!="invalid")
+   					{
+   						$('#btnSave').attr('disabled',true);
+   					}
+   					else
+   					{
+   						$('#btnSave').attr('disabled',false);
+   					}
+   					$('#categoryId').val(selectedRowFromDataTable[0]);
+   					getRecordTimeLines(selectedRowFromDataTable[0],"Category");
+   					$('#categoryCodeEdit').val(selectedRowFromDataTable[1]);
+   					$('#categoryDescriptionEdit').val(selectedRowFromDataTable[2]);
+   					
+   					$('#editcategoryInterChangeable').val(selectedRowFromDataTable[4]);
+   					$('#dialogEdit').modal({backdrop: 'static',
+   	   				     keyboard: false});
+   				});
+   				$('#editcategoryInterChangeable').empty();
+   				$('#editcategoryInterChangeable').append('<option value=null>Not Applicable</option>')
+   				for(var i=0;i<allCats.length;i++)
+   				{
+   					if(allCats[i]['categoryStatus']=="valid")
+   					{
+   						$('#editcategoryInterChangeable').append('<option value="'+allCats[i]['categoryId']+'">'+allCats[i]['categoryCode']+'-'+allCats[i]['categoryDescription']+'</option>')
+   					}
+   				}
+   			}
+   		});
+	}
+	function populateInterchangeableCategory()
+	{
+		$('#categoryInterChangeable').empty();
+		$('#categoryInterChangeable').append('<option value=null>Not Applicable</option>')
+		for(var i=0;i<allCats.length;i++)
+		{
+			if(allCats[i]['categoryStatus']=="valid")
+			{
+				$('#categoryInterChangeable').append('<option value="'+allCats[i]['categoryId']+'">'+allCats[i]['categoryCode']+'-'+allCats[i]['categoryDescription']+'</option>')
+			}
+		}
+
+	}
+	loadCategories();
+	$('#buttonAddCategory').unbind().bind('click',function()
+	{
+		 populateInterchangeableCategory();
+		 $('#dialogAdd').modal({backdrop: 'static',
+		 keyboard: false});
+	});
+	$('#formCategoryEdit').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		var categoryCode=$('#categoryCodeEdit').val();
+		formData.push({"name":"categoryCode","value":categoryCode});
+	    $.ajax(
+   		{
+	    	"url":"/category/addCategory",
+			"method":"POST",
+  			 data:formData,
+  			 success:function(data)
+  			{
+  				console.log(data);
+  				$('#dialogEdit').modal('toggle');
+  				clearDataTable('gridTable');
+  				loadCategories();
+  				showMessage("Saved");
+  			},
+  			error:function(e)
+  			{
+  				showMessage("Error in adding Category. Contact Admin");
+  			}
+   		});
+	});	
+});
+</script>
+
+<div class="table-responsive cell-border well">
+	<table id="gridTable" class="table table-striped"></table>
+</div>
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Details/Edit Category</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<form id="formCategoryEdit" >
+			<div class="form-group">
+		   		<label for="categoryCode">Category ID</label>
+		   		<input type="text" class="form-control" id="categoryId"  name="categoryId" readonly>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="categoryCode">Category Code</label>
+		   		<input type="text" class="form-control" id="categoryCodeEdit" pattern="^[a-zA-Z]+( [a-zA-Z]+)*$"  name="categoryCodeEdit"  required>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="categoryDescription">Category Description</label>
+		   		<input type="text" class="form-control" id="categoryDescriptionEdit"  pattern="^[a-zA-Z]+( [a-zA-Z]+)*$"  name="categoryDescription" placeholder="Enter Category Code">
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="editcategoryPriority">Category Priority</label>
+		   		<select id="editcategoryPriority"  class="form-control" name="categoryPriority"></select>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="categoryInterChangeable">Interchangeable Category</label>
+		   		<select id="editcategoryInterChangeable"  class="form-control" name="categoryInterChangeable"></select>
+		   	</div>
+		   	 <div class="form-group">
+				<label for="religionStatus">Set Status</label>
+				<select class="form-control" id="categoryStatus" name="categoryStatus">
+					<option value="verified">Verified</option>
+				</select>
+			</div>
+		   	<button type="submit"  id="btnSave" class="btn btn-primary">Save</button>
+		   	</form>
+		   	<div id="accordion">
+	 			<h3>Record Flow History</h3>
+		  		<div>
+		   	 	<p>
+		   		 <div class="table-responsive">
+		    		<table class="table table-striped" id="gridTableRecords"></table>
+		    	</div>
+		    	</p>
+		  		</div>
+		   	</div>
+		</div>
+		      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>

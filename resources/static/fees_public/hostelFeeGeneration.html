@@ -1,0 +1,442 @@
+<div class="row">
+	<div class="col-md-12">
+		<div id="acc" style="display:none">
+			<h3>Applicable Batches</h3>
+			 <div>
+			    <div id="accordion">
+				</div>
+ 			</div>
+ 		</div>
+ 	</div>	
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<label>Select Allotment</label>
+		<select class="form-control" id="feeIden">
+			<option>select</option>
+			<option>Allotment-1</option>
+			<option>Allotment-2</option>
+			<option>Allotment-3</option>
+			<option>Allotment-4</option>
+			<option>Allotment-5</option>
+			<option>Allotment-6</option>
+			<option>Allotment-7</option>
+			<option>Allotment-8</option>
+			<option>Allotment-9</option>
+			<option>Allotment-10</option>
+			<option>Allotment-11</option>
+			<option>Allotment-12</option>
+			<option>Allotment-13</option>
+			<option>Allotment-14</option>
+			<option>Allotment-15</option>
+			<option>Allotment-16</option>
+			<option>Allotment-17</option>
+			<option>Allotment-18</option>
+			<option>Allotment-19</option>
+			<option>Allotment-20</option>
+		</select>
+	</div>
+</div>
+<div class="row" id="feeSettingsDiv" style="display:none">
+	<div class="col-md-12">
+		<div id="accordionFineDetails">
+		<h3>Fee Settings</h3>
+		 <div>
+		    <div class="row" id="feeGenerationDiv"> 
+				<form id="feeGenerfationForm" >
+					<label>Fee Collection Setup</label>
+					<div id="detailsDiv3" class="row well" >
+						<div class="col-md-12 form-group">
+							<label>Name of this Fee Demand Process</label>
+							<input type="feeCollectionName" id="feeCollectionUniqueName" name="feeCollectionUniqueName" class="form-control" readonly></input>
+						</div>
+					</div>
+					<hr>
+					<div id="detailsDiv7" class="row well" >
+						<div class="col-md-6 form-group">
+							<label>Fee Collection Start Date</label>
+							<input type="text" id="collectionStartDate"  name="collectionStartDate" class="form-control dp req" required></input>
+						</div>
+						<div class="col-md-6 form-group">
+							<label>Last Date without fine</label>
+							<input type="text" id="collectionEndtDate"  name="collectionEndtDate" class="form-control dp req" required></input>
+						</div>
+					</div>
+					<hr>
+					<label  id="lab1">Level -1 Simple Fine</label>
+					<div id="detailsDiv4" class="row well" >
+						<div class="col-md-4 form-group">
+							<label>Fine Collection Start Date</label>
+							<input type="text" id="level1CollectionStartDate" name="level1CollectionStartDate" class="form-control dp req" required></input>
+						</div>
+						<div class="col-md-4 form-group">
+							<label>Fine Collection End Date</label>
+							<input type="text" id="level1CollectionEndtDate"  name="level1CollectionEndtDate" class="form-control dp req" required></input>
+						</div>
+						<div class="col-md-4 form-group">
+							<label>Simple Fine Amount</label>
+							<input type="number" id="level1FineAmount"  name="level1FineAmount" class="form-control req" required></input>
+						</div>
+					</div>
+					<hr>
+					<label  id="lab2">Level -2 Per Day Fine</label>
+					<div id="detailsDiv5" class="row well" >
+						<div class="col-md-4">
+							<label>Fine Collection Start Date</label>
+							<input type="text" id="level2CollectionStartDate" name="level2CollectionStartDate" class="form-control dp req" required></input>
+						</div>
+						<div class="col-md-4">
+							<label>Fine Collection End Date</label>
+							<input type="text" id="level2CollectionEndtDate" name="level2CollectionEndtDate" class="form-control dp req" required></input>
+						</div>
+						<div class="col-md-4">
+							<label>Per Day Fine Amount</label>
+							<input type="number" id="level2FineAmount" name="level2FineAmount" class="form-control req" required></input>
+						</div>
+					</div>
+					<hr>
+					<label  id="lab3">Level -3 Re-Admission</label>
+					<div  class="row well"  >
+						<div class="col-md-6">
+							<label>Per Day Fine Amount</label>
+							<input type="number" id="level3DailyFineAmount" name="level3DailyFineAmount" class="form-control req" required></input>
+						</div>
+						<div class="col-md-6">
+							<label>Re Admission Amount</label>
+							<input type="number" id="level3ReAdmissionFineAmount"  name="level3ReAdmissionFineAmount" class="form-control req" required></input>
+						</div>
+					</div>
+					<hr>
+					<div id="accordion2">
+						<h3>Applicable Fee Heads</h3>
+						 <div  class="table-responsive">
+							<table class="table" id="feeHeadMapTable"></table>	  
+			 			</div>
+					</div>
+					<input type="submit"  id="btnSave" class="btn btn-warning"></input>
+				   </form>
+				</div>
+			</div>
+	 	</div>
+	 </div>
+</div>
+
+<script>
+var batchArray=new Array();
+var feeAmountMapArray=new Array();
+var selectedFeeHeadArray=new Array();
+var selectedAllotment;
+var feeSet=false;
+
+function getHosteFeeIdentifiers()
+{
+	$.ajax(
+	{
+		url:"fees/getAllFeeProcessIdentifierByType",
+		data:{"feeIdenfierType":"Hostel"},
+		success:function(data)
+		{
+			$('#feeIden').empty();
+			$('#feeIden').append('<option value="">Select Allotment/Fee Name</option>')
+			for(let i=0;i<data.length;i++)
+			{
+				var opt=$('<option>'+data[i]["feeProcessIdentifierName"]+'</option>')
+				$('#feeIden').append(opt);
+			}
+		}
+	})	
+
+}
+function addToArray(stud)
+{
+   if(batchArray.indexOf(String(stud)) !== -1)
+   {
+   }
+   else
+   {
+	   batchArray.push(String(stud));  
+   }
+}
+function removeFromArray(stud)
+{
+   if(batchArray.indexOf(String(stud)) !== -1)
+   {
+	   stud=String(stud)
+	   batchArray = jQuery.grep(batchArray,function(value) 
+	   {
+		   return value != stud;
+	   }); 
+   }
+}
+function addToArray2(stud)
+{
+   if(selectedFeeHeadArray.indexOf(String(stud)) !== -1)
+   {
+   }
+   else
+   {
+	   selectedFeeHeadArray.push(String(stud));  
+   }
+}
+function removeFromArray2(stud)
+{
+   if(selectedFeeHeadArray.indexOf(String(stud)) !== -1)
+   {
+	   stud=String(stud)
+	   selectedFeeHeadArray = jQuery.grep(selectedFeeHeadArray,function(value) 
+	   {
+		   return value != stud;
+	   }); 
+   }
+}
+function fillProgramInAccordion(data)
+{
+	$('#accordion').empty();
+	for(let i=0;i<data.length;i++)
+	{
+		$('#accordion').append($('<h3>'+data[i]['courseCode']+'</h3><div class="table-responsive"><table class="table '+data[i]['courseId']+'"></table></div>'));
+	}
+	$( "#accordion" ).accordion({collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+	$( "#acc" ).accordion({collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+}
+function fillBatchesInAccordion(data)
+{
+	try
+	{
+		for(let i=0;i<data.length;i++)
+		{
+			var courseId=data[i]['mappedCourse']['courseId'];
+			var cb=$('<tr><td>'+data[i]["batchCode"]+'</td><td><input  batchId="'+data[i]['batchId']+'" type="checkbox" class="batchList" style:"margin-right: 20px"  checked></td></tr>');
+			$('.'+String(courseId)).append(cb);
+			addToArray(data[i]['batchId']);
+		}
+		$('.batchList').unbind().bind('change',function()
+		{
+			if(this.checked)
+			{
+				addToArray($(this).attr('batchId'));
+			}
+			else
+			{
+				removeFromArray($(this).attr('batchId'));
+			}
+		});
+	}
+	catch(e)
+	{
+		console.log("Error in filling batches::"+e);
+	}
+}
+function getAllPrograms()
+{
+	$.ajax(
+	{
+   		url:'/course/getAllCourses',
+   		method:'GET',
+   		success:function(data)
+   		{
+   			fillProgramInAccordion(data);
+   			getAllActiveBatches();
+   		},
+   		error:function(err)
+   		{
+   			showMessage(err);
+   		}
+   	});
+ }
+ function getAllActiveBatches()
+ {
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatches',
+  	   	method:'GET',
+  	   	success:function(data)
+  	   	{
+  	   		fillBatchesInAccordion(data);
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+ function fillFeeMapCheckBox(feeList)
+ {
+	 $.ajax(
+	{
+		url:"/fees/getHostelAmountMapByFeeHeads",
+		data:{"feeHeads":feeList},
+		success:function(data)
+		{
+			if(data)
+			{
+				$('#feeHeadMapTable').empty();
+				 for(let i=0;i< data.length;i++)
+				 {
+					 let cb=$('<tr><td>'+data[i]['feeHeadAmountMapIdentity']['hostelFeeHead']['sfsFeeHeadName']+'</td><td>'+data[i]['hostelFeeHeadAmount']+' /-</td><td><input  type="checkbox" class="feeList" style:"margin-right: 20px"  checked disabled></td></tr>');
+					 $('#feeHeadMapTable').append(cb);
+				 }
+			}
+		}
+	});
+ }
+ function fillUpFeeSettings(data)
+ {
+	 $('#feeCollectionUniqueName').val(data['feeCollectionUniqueName']);
+	 $('#collectionStartDate').val(data['collectionStartDate'].split('T')[0]);
+	 $('#collectionStartDate').prop('readonly',true);
+	 $('#collectionEndtDate').val(data['collectionEndtDate'].split('T')[0]);
+	 $('#collectionEndtDate').prop('readonly',true);
+	 $('#level1CollectionStartDate').val(data['level1CollectionStartDate'].split('T')[0]);
+	 $('#level1CollectionStartDate').prop('readonly',true);
+	 $('#level1CollectionEndtDate').val(data['level1CollectionEndtDate'].split('T')[0]);
+	 $('#level1CollectionEndtDate').prop('readonly',true);
+	 $('#level1FineAmount').val(data['level1FineAmount']);
+	 $('#level1FineAmount').prop('readonly',true);
+	 $('#level2CollectionStartDate').val(data['level2CollectionStartDate'].split('T')[0]);
+	 $('#level2CollectionStartDate').prop('readonly',true);
+	 $('#level2CollectionEndtDate').val(data['level2CollectionEndtDate'].split('T')[0]);
+	 $('#level2CollectionEndtDate').prop('readonly',true);
+	 $('#level2FineAmount').val(data['level2FineAmount']);
+	 $('#level2FineAmount').prop('readonly',true);
+	 $('#level3DailyFineAmount').val(data['level3DailyFineAmount']);
+	 $('#level3DailyFineAmount').prop('readonly',true);
+	 $('#level3ReAdmissionFineAmount').val(data['level3ReAdmissionFineAmount']);
+	 $('#level3ReAdmissionFineAmount').prop('readonly',true);
+	 $('#feeHeadMapTable').empty();
+	 var feeList=data['sfsSettingStudentList'];
+	 fillFeeMapCheckBox(feeList);
+ }
+ function checkFeeSettings(feeIden)
+ {
+	 $.ajax(
+	 {
+		url:"/fees/getHostelFeeDetailsByFeeIden",
+		data:{"feeIden":feeIden},
+		success:function(data)
+		{
+			$('#feeSettingsDiv').show();
+			if(data)
+			{
+				fillUpFeeSettings(data);
+				$('#btnSave').hide();
+				feeSet=true;
+			}
+			else
+			{
+				feeSet=false;
+				$('#btnSave').show();
+				showMessage("No fee Settings Mapped to this allotment. Kindly Set Fee Details");
+				$('#feeCollectionUniqueName').val(feeIden);
+				//$('#accordionFineDetails').accordion( "enable" );
+				$('#accordionFineDetails').accordion({ active: 0});
+				$('.req').val('');
+				$('.req').prop('readonly',false);
+				getAllHostelFeeMaps();
+			}
+		}
+	 });
+ }
+ var headToAmount={};
+ var headToName={};
+ function prepareFeeMaps(data)
+ {
+	 try
+	 {
+	 	for(let i=0;i<data.length;i++)
+	 	{
+	 		headToAmount[data[i]['feeHeadAmountMapIdentity']['hostelFeeHead']['sfsFeeHeadId']]=data[i]['hostelFeeHeadAmount'];
+	 		headToName[data[i]['feeHeadAmountMapIdentity']['hostelFeeHead']['sfsFeeHeadId']]=data[i]['feeHeadAmountMapIdentity']['hostelFeeHead']['sfsFeeHeadName']
+	 	}
+	 }
+	 catch(e)
+	 {
+		 
+	 }
+ }
+ function prepareFeeMapView()
+ {
+	 $('#feeHeadMapTable').empty();
+	 for(let key in headToAmount)
+	 {
+		 let cb=$('<tr><td>'+headToName[key]+'</td><td>'+headToAmount[key]+' /-</td><td><input  id="'+key+'" type="checkbox" class="feeList" style:"margin-right: 20px"  checked></td></tr>');
+		 $('#feeHeadMapTable').append(cb);
+		 selectedFeeHeadArray.push(key);
+		 
+	 }
+	 $('.feeList').unbind().bind('change',function()
+	 {
+		if(this.checked)
+		{
+			addToArray2($(this).attr('id'));
+		}
+		else
+		{
+			removeFromArray2($(this).attr('id'));
+		}
+	 });
+	 $( "#accordion2" ).accordion({collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+ }
+ function getAllHostelFeeMaps()
+ {
+	$.ajax(
+	{
+		url:"/fees/getHostelFeeMapsByStatus",
+		data:{"status":"approved"},
+		success:function(data)
+		{
+			selectedFeeHeadArray=[];
+			feeAmountMapArray=[];
+			feeAmountMapArray=data;
+			prepareFeeMaps(data);
+			prepareFeeMapView();
+		}
+		
+	})
+ }
+$(document).ready(function()
+{
+	$( "#accordionFineDetails" ).accordion({collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+	getAllPrograms();
+	getAllHostelFeeMaps();
+	getHosteFeeIdentifiers();
+	$('#feeIden').unbind().bind('change',function()
+	{
+		selectedAllotment=$(this).val();
+		if(selectedAllotment!='select')
+		{
+			checkFeeSettings(selectedAllotment);	
+		}
+	});
+	$('.dp').datepicker({
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true
+	});
+	$('#feeGenerfationForm').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"sfsFeestudentList","value":String(selectedFeeHeadArray)});//sfsFeestudentList: using this to save feeheads to be taken
+		formData.push({"name":"semester","value":$('#feeCollectionUniqueName').val()});//sfsFeestudentList: using this to save feeheads to be taken
+		
+		$.ajax(
+		{
+			"url":"/fees/saveHostelFeeSettings-v1",
+			method:"post",
+			data:formData,
+			success:function(data)
+			{
+				if(data=="success")
+				{
+					feeSet=true;
+					showMessage("You can apply fees now");
+					checkFeeSettings(selectedAllotment);	
+				}
+			}
+		});
+		
+	});
+	
+});
+</script>

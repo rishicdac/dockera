@@ -1,0 +1,1353 @@
+	<!-- Main content -->
+    <div class="content" id="divExamSchedules">
+      <div class="container-fluid" id="notifications">
+		 <div class="container-fluid" >
+		<!--Exam Notification-->
+		<div class="row" >
+			<div class="col-lg-12">
+				<div class="card card-info card-outline">
+				     <div class="card-header ">
+							<h5 class="m-0 card-title">Semester Exam Registration</h5>
+							
+						  </div>
+                      </br>
+					<div class="table-responsive">
+						  <table  id="tblExamNotifications" class="table table-striped table-bordered  display" style="width:100%">
+							<thead>
+								<tr>
+								  
+								   <th>Academic Year</th>
+								   <th>Program / Batch / Semester</th>
+								   <th>Exam Name</th>
+								   <th>Exam Type</th>
+								   <th>Month - Year </th>
+								   <th>Last Date to Apply</th>
+								   <th>View Details</th>
+								   <th>Apply</th>
+								</tr>
+								</thead>
+								<tbody>
+								
+							
+							</tbody>
+						  </table>
+						</div>
+				</div>
+			</div>		
+		</div>
+		<!--Exam Notification -->
+		<!--Condonation Details -->
+		
+		
+		    <!-- /.col-md-12 -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.main content -->
+    <!-- /Preview Schedule -->
+			
+			<div  id="divViewSchedules" style="display:none;">
+			<div class="row" >
+			<div class="col-lg-12">
+			<div class="invoice p-3 mb-3">
+			<div class="tab-content">
+			<div class="post">
+			<div class="user-block text-center">
+			<img class="img-circle img-bordered-sm" src="exam-management_proxy/exam-management_public/img/nuals.jpg" alt="user image" style="width:70px;height:70px;">
+			<span class="username text-center">
+			<h3>The National University of Advanced Legal Studies</h3>
+			</span>
+			<h6 id="applnType" style="font-weight:600">Exam Schedule</h6>
+			<hr/>
+			</div>
+			</div>
+			</div>
+			
+			<div class="row mb-4">
+			<div class="col-md-3">
+			<div class="description-block border-right">
+			<h5 class="description-header">Academic Year : <br/><code id="academicYear"></code></h5>
+			</div>
+			</div>
+			
+			<div class="col-md-3">
+			<div class="description-block border-right">
+			<h5 class="description-header">Programme  : <br/><code id="program"> </code></h5>
+			</div>
+			</div>
+			<div class="col-md-3">
+			<div class="description-block border-right">
+			<h5 class="description-header">Batch / Semester : <br/><code id="batch_sem"></code></h5>
+			</div>
+			</div>
+			
+			<div class="col-md-3">
+			<div class="description-block">
+			<h5 class="description-header">Exam Type : <br/><code id="exam_type"></code></h5>
+			</div>
+			</div>
+			</div>
+			<hr>
+			<dl class="row pl-5 ml-3">
+			<dt class="col-sm-4 description-header" >Name of the Exam : </dt>
+			<dd class="col-sm-8" id="exam_name"> </dd>
+			<dt class="col-sm-4">Month and Year :</dt>
+			<dd class="col-sm-8" id="month_year"></dd>
+			<dt class="col-sm-4">Tentative date of Exam:</dt>
+			<dd class="col-sm-8" id="tentative_date"></dd>
+			<dt class="col-sm-4">Last Date of payment without fine:</dt>
+			<dd class="col-sm-8" id="date_without_fine"></dd>
+			<dt class="col-sm-4">Last Date of payment with fine:</dt>
+			<dd class="col-sm-8" id="date_with_fine"></dd>
+			<dt class="col-sm-4">Instructions:</dt>
+			<dd class="col-sm-8" id="instructions"> </dd>
+			<dt class="col-sm-4"> Fee Structure:</dt>
+			<dd class="col-sm-8" id="">
+			     <div class="table-responsive">
+					<table class="table" id="displayTable1">					
+						</table>
+					</div>
+			</dd>
+			</dl>
+				
+			<div class="row">
+			<div class="col-md-12">
+			<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Timetable</div>
+			<table class="table table-bordered m-0" id="tblTimetable">
+			<thead>
+			<tr>
+			<th>Date </th>
+			<th>Day</th>
+			<th>Course Id</th>
+			<th>Course Name</th>
+			<th>Start and End Time</th>
+			</tr>
+			</thead>
+			</table>
+			</div>
+			</div>
+			</div>
+			</div>
+			</div>
+			</div>
+			<!-- Preview Schedule-->
+	<!--Registration Details-->
+	  
+        <div class="row" id="registrationForm" style="display: none;">          
+          <!-- /.col-md-12 -->
+          <div class="col-lg-12"> 
+            <div class="invoice p-3 mb-3">
+   <!--            <div class="card-header">
+               <button id="btnBack" class="btn btn-info "> ❮  Back to list</button>
+                <h5 class="username m-0 text-red" id="examName"></h5>
+              </div> -->
+              <div class="tab-content">
+						  <div class="tab-pane active" id="activity">		
+							<div class="post">
+              <div class="user-block text-center">
+									<img class="img-circle img-bordered-sm" src="exam-management_proxy/exam-management_public/img/nuals.jpg" alt="user image" style="width:70px;height:70px;">
+									<span class="username text-center">
+									  <h3>The National University of Advanced Legal Studies</h3>
+									</span>
+										<div class="description-block border-right">
+										<h5 class="description-header text-red" id="examName"> </h5>
+									
+									<hr/>
+								</div>	
+			
+			
+			    </div>
+              <div class="card-body">	
+				<!--Instructions -->
+                <div class="attachment-block info-box clearfix">
+                 <span class="info-box-icon"><i class="fa fa-exclamation-circle"></i></span>
+                  <div class="attachment-pushed m-0">
+                    <h4 class="attachment-heading">Instructions</h4>
+                    <div class="attachment-text" id="divInstructions">
+                    
+                    </div>                 
+                  </div>                  
+                </div>
+				<!--Instructions-->
+				<!--Personal Details-->
+				<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Personal Details</div>
+				
+				<div class="row">
+				  <div class="col-sm-3 ">
+                    <div class="description-block border-right">
+						<div class="text-center">
+						  <img class="profile-user-img img-fluid img-circle" id="studentImage"  alt="User profile picture">
+						</div>                    
+						<h5 class="description-header" id="nameGender">Nina Mcintire(Female)</h5>						
+						<span class="description" id="dobAge">11/01/1990 - 30Yrs</span>
+                    </div>
+                    <!-- /.description-block -->
+                  </div>
+				  <div class="col-sm-9">
+					<div class="row pt-4">						
+						<div class="col-sm-4">
+							<div class="description-block border-right">                     
+							  <h5 class="description-header">Registration / Student Code / Roll No</h5>
+							  <span class="description-text" id="regStudentcodeRollno"></span>
+							</div>
+							
+							<!-- /.description-block -->
+						  </div>
+						  <!-- /.col -->
+						  <div class="col-sm-2">
+							<div class="description-block border-right">                     
+							  <h5 class="description-header">Program</h5>
+							  <span class="description-text" id="program">LLB</span>
+							</div>
+							<!-- /.description-block -->
+						  </div>
+						  <!-- /.col -->
+						  <div class="col-sm-2">
+							<div class="description-block border-right">                    
+							  <h5 class="description-header">Batch</h5>
+							  <span class="description-text" id="batch"></span>
+							</div>
+							<!-- /.description-block -->
+						  </div>
+						  <!-- /.col -->
+						    <div class="col-sm-2">
+							<div class="description-block border-right">                    
+							  <h5 class="description-header">Semester</h5>
+							  <span class="description-text"  id="semester" ></span>
+							</div>
+							<!-- /.description-block -->
+						  </div>
+						  <!-- /.col -->	
+						   <div class="col-sm-2">
+							<div class="description-block border-right">                    
+							  <h5 class="description-header">Division</h5>
+							  <span class="description-text"  id="division">---</span>
+							</div>
+							<!-- /.description-block -->
+						  </div>
+						  <!-- /.col -->						
+					</div>
+			<!-- 		<div class="row">						
+						  /.col
+						  <div class="col-sm-4">
+							<div class="description-block border-right">                     
+							  <h5 class="description-header">Mother Tongue</h5>
+							  <span class="description-text" id="motherTongue">Malayalam</span>
+							</div>
+							/.description-block
+						  </div>
+						  /.col
+						  <div class="col-sm-4">
+							<div class="description-block border-right">                    
+							  <h5 class="description-header">Religion</h5>
+							  <span class="description-text" id="religion">Test</span>
+							</div>
+							/.description-block
+						  </div>
+						  /.col
+						  /.col
+						  <div class="col-sm-4">
+							<div class="description-block border-right">                    
+							  <h5 class="description-header">Community</h5>
+							  <span class="description-text" id="community">Test</span>
+							</div>
+							/.description-block
+						  </div>
+						  /.col						  
+
+					</div> -->
+				  </div>
+                  
+                 
+                </div>
+				<!--Personal Details-->
+				<!-- Address Details -->
+				<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Communication Details</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="description-block border-right">                    
+						  <h5 class="description-header text-left">Permanent Address</h5>
+						  <span class="description-text" id="permanentAddress" ></span></br>
+					
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="description-block border-right">                    
+						  <h5 class="description-header text-left">Communication Address</h5>
+						  <span class="description-text" id="communicationAddress"></span></br>
+						
+						</div>
+					</div>
+				</div>
+				<!-- Address Details -->
+				
+				<!--Exam Details-->
+				<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Exam Details</div>
+					<div class="row">							
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="program">Center of Examination</label>
+								<select class="form-control" id="selectExamCenter">
+									  <option  selected="selected">Nuals Center</option>
+									  
+								</select>
+							 </div>							
+						</div>		
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="program">Place of Examination</label>
+								<select class="form-control" id="selectExamPlace">
+									  <option  selected="selected">Kalamassery, Kochi</option>
+									  
+								</select>
+							 </div>							
+						</div>						
+					</div>	
+						<!--Course Details-->
+				<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Course Details</div>
+			
+					<div class="row" id="divRegular"  style="display:none;">
+						<div class="col-md-6 ">														
+							<div class="form-group">
+								<label for="courses">Compulsory Courses</label>
+								<ul class="todo-list ui-sortable" data-widget="todo-list"  id="regularCourse">
+								 
+								</ul>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="courses">Elective Courses</label>
+								<ul class="todo-list ui-sortable" data-widget="todo-list" id="electiveCourse">
+								 
+								</ul>
+							</div>	
+						</div>							
+					</div>	
+					
+			
+			<div class="row" id="divSupplementary" style="display:none;">
+				<div class="col-md-6"> 
+					<div class="table-responsive">
+						<label for="tblSupplementary"> Courses</label>
+						<table class="table" id="tblSupplementary">
+							
+						</table>
+					</div>	
+				</div>
+				<div class="col-md-6 well" id="displayDiv">
+					<div class="table-responsive">
+						<label for="displayCourses">Selected Courses</label>
+						<table class="table" id="displayCourses">
+							
+						</table>
+					</div>
+				</div>
+			</div>	
+				<div class="row">
+				
+					  <p class="col-sm-4 text-red" >Total number of courses </dt>
+					  <p class="col-sm-8 text-red" id="numPapers"></dd>
+			
+				</div>
+								
+				<!--Exam Details-->
+				<!-- Fee Structure -->
+				<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Fee Details</div>
+				<div class="row">
+					<div class="col-md-12  well" id="displayDiv">
+					<div class="table-responsive">
+						<table class="table" id="displayTable">
+							
+						</table>
+					</div>
+				  </div>
+				</div>
+				  </div>
+				<!-- Fee Structure -->
+				<!--Declaration-->
+				<div class="pl-3">
+				<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Declaration</div>
+				<form id="submitReg">
+				<div class="row">
+				
+				  <div class="col-12 pt-2">
+					<div class="icheck-primary">
+					  <input type="checkbox" id="cbxDeclaration" name="terms" value="agree" required>
+					  <label for="agreeTerms pr-2">
+					   I hereby declare that the entries made above are correct to the best of my knowledge.
+					  </label>
+					</div>
+				  </div>				  
+				</div>
+				<!--Declaration-->				
+            
+			  <div class="card-footer">
+					<div class="row">
+						<div class="col-md-3">
+							<button id="btnSubmitRegistration" type="submit" class="btn btn-info ">Register</button>
+						<!-- 	<a href="#" class="btn btn-info" id="btnSubmitRegistration">Submit</a> -->
+							
+						<!-- 	<button id="previewRegistration"  class="btn btn-info ">Preview</button> -->
+						</div>
+					</div>               			
+				</div>
+				
+				</form>
+            </div>
+			
+          </div>
+          <!-- /.col-md-12 -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.main content -->
+	
+	<script>
+	//global variables and fns
+
+/* base url for exam management */
+var BASE_URL = "/exam-management/api/v1/";
+var MARKS_CONFIG_URL = "/mark-config/api/v1/academics/marks-management/evaluation-types-program/program-id/";
+var ACADEMIC_YEAR_URL = "/academics/api/v1/academics/getDetailsByMasterId/masterId/83";
+
+	
+	/* fn to convert form data to json */
+	$.fn.serializeObject = function()
+	{
+	    var o = {};
+	    var a = this.serializeArray();
+	    $.each(a, function() {
+	        if (o[this.name] !== undefined) {
+	            if (!o[this.name].push) {
+	                o[this.name] = [o[this.name]];
+	            }
+	            o[this.name].push(this.value || '');
+	        } else {
+	            o[this.name] = this.value || '';
+	        }
+	    });
+	    return o;
+	 };
+
+ 
+ 	$('.datepicker').datepicker({
+	    //format: 'yyyy-mm-dd',	
+ 		//startDate : moment() , //0
+	    format: 'dd-mm-yyyy',
+		autoclose:true,
+		clearBtn:true,
+		pickerPosition: "bottom-left"
+		
+	});  
+	
+ 	
+	$('.datepicker-month-year').datepicker({
+	    format: 'M-yyyy',	
+	    startView: "months", 
+        minViewMode: "months",						   
+		autoclose:true,
+		clearBtn:true
+	});
+	
+
+    
+    
+    //getStudentInfo();
+   	function getStudentInfo()
+	{
+
+      $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		data:{"userCodes":$("#usercode").val()},
+	   		success: function(data)
+	   		{
+	   		  console.log(data);
+	   		  return data;
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+	 }
+    $(document).ready(function() {
+ 
+    var studentData = {};
+    var loggedStudentId = $("#usercode").val();
+    var courses;
+    var selectedScheduleId;
+    var selectedProgramId;
+    var selectedExamName;
+    var selectedConfigArray=new Array();
+    var examFeeArray= {};
+    var selectedCoursedArray = new Array();
+    var selectedSubjectsArray = []; 
+ 
+
+     
+     
+   /**
+    *  Get the logged in student details
+    **/
+        $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		data:{"userCodes":loggedStudentId},
+	   		
+	   		success: function(data)
+	   		{
+	   		
+	   		 studentData = data[loggedStudentId];
+	   		  console.log(studentData);
+	   		  
+	   		  loadExamNotifications(studentData);
+               
+              },
+	   		error:function(err)
+	   		{
+	   			//showMessage(err);
+	   			toastr.error("Error in getting student information !!");
+	   		}
+	   	});
+	   	
+	  
+	
+	 
+	/**
+    *  list active exam schedules
+    **/
+         
+   function loadExamNotifications(studentData)
+   {	
+      var examNotificationsDataTable =  $('#tblExamNotifications').DataTable({
+            "language": {
+                    "emptyTable": "No Active exam schedules"
+                  },
+			"processing": true,
+			"destroy": true,
+			"ajax":{ 
+			  	"url": BASE_URL+"schedule/active-list/student/program/"+studentData.programCode+'/'+studentData.batchCode,// TO-DO set correct
+	   	  	  
+			   "dataSrc":function (data) {
+			      console.log(data.data);
+			       if(data.data == null){
+			         data.data = [];
+			         }
+			        return data.data; 
+			     }  
+			  
+			    },
+			"columns": [
+			/*
+		    { "data": "id"},
+		    
+			{"data":"program"},
+			{"data":"batch"},*/
+			{ "data": "academic_year"},
+			{ "data": "null",
+			            "render": function (data, type, full, meta) {
+		                
+		                    return (full.programName + " / " + full.batchName + " / " + full.semester)   
+			            }
+		      },
+			{ "data": "name_exam" },
+			{ "data": "exam_type" },
+			{ "data": "month_year" },
+			{ "data": "pay_date" , "render": function(data){return moment(data).format('D/MM/YYYY')}},
+			{ "data": null , "render": function(data){
+				return '<a data-toggle="collapse" href="#"  class=""small-box-footer text-danger" id="btnView"> <i class="fas fa-eye"></i></a>'
+				
+			}},
+			{
+				"data": null,
+				 "render": function (data, type, full, meta) {
+		               if(full.regId ==null) 
+	                   return '<a data-toggle="collapse" href="#"  class=""small-box-footer text-danger" id="btnEdit"> <i class="fas fa-edit"></i></a>'
+	                   else
+	                	   return "<p  class='btn btn-xs btn-danger' >Registration Done</p>";
+	                	   //return "Already Registered"; 
+		            }  
+					
+					 
+					
+			}
+			]
+	
+		});
+   
+    
+	   /*
+	   *  Action function to apply for exam list 
+	   */
+	    $('#tblExamNotifications tbody').on('click', '#btnEdit', function () {
+	    
+	    	  $('#divViewSchedules').hide();
+	    	  $('#registrationForm').show();
+	      var data = examNotificationsDataTable.row($(this).parents('tr')).data();
+	    //  getFeeDetails(data.id); 
+	    
+	      selectedScheduleId = data.id;
+	      selectedProgramId = data.program;
+	      selectedExamName = data.name_exam;
+	      selectedExamType = data.exam_type;
+	      getviewFeeDetails(data.id);
+	      getFeeDetails(data.id,data.program);
+	      var condonationData = {"programId":data.program,"batchId":data.batch,"semester":data.semester,"studentId": studentData.studentCode}
+	      
+	      //if ( checkAlreadyRegistered)
+          checkCondonationList(condonationData);
+	      
+          loadScheduleDetails(data);
+	  
+		});
+		
+	    /*
+		   *  Action function to apply for exam list 
+		   */
+		    $('#tblExamNotifications tbody').on('click', '#btnView', function () {
+		    	   
+		    	  var data = examNotificationsDataTable.row($(this).parents('tr')).data();
+		    	  $('#divViewSchedules').show();
+		    	  $('#registrationForm').hide();
+		    	  scheduleId = data.id;
+		    	    selectedProgramId = data.program;
+		    	    bindViewSchedule(data);
+		    	    bindTimeTable(data.id);
+		    	    getFeeDetails(data.id,data.program);
+		    	    getviewFeeDetails(data.id);
+		    	   
+		    	   	var timetableDataTable =  $('#tblExamTimetable').DataTable({
+		    	            "language": {
+		    	                    "emptyTable": "No data available for the selected exam name"
+		    	                  },
+		    				"processing": true,
+		    				"destroy": true,
+		    				"ajax": BASE_URL+"time-table/list-schedule-id/"+data.id,
+		    				"columns": [
+		    				{ "data": "courseId" },
+		    				{ "data": "courseName"},
+		    				{ "data": "examDate" },//,"render": $.fn.dataTable.render.moment('Do MMM YY' )
+		    				{ "data": "startDateTime" },
+		    				{ "data": "endDateTime"}
+		    			]
+		    			});
+		  
+		    	   	$('html, body').animate({
+		        		scrollTop: $("#divViewSchedules").offset().top
+		  			}, 1000);
+		    	   	
+			});
+		    
+		$('#tblExamNotifications tbody').on( 'click', 'tr', function () {
+	
+	        if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	            examNotificationsDataTable.$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	        }
+	    } );
+	    
+	}
+	
+	/*
+	* Check whether the student code is in condonation List
+	*/
+	function  checkCondonationList(condonationData)
+	{
+	
+	   $.ajax({
+	   		url: BASE_URL+"condonation/check",
+	   		method:"POST",
+	   		data:condonationData,
+	   		success: function(data)
+	   		{
+	   		   console.log(data.data);
+	   		   data = data.data;
+	   		   if( (data == null) || (data.exempted == true)) // TO-DO  Remove null option  
+	   		   {
+	   		  //    $("#divExamSchedules").hide();
+	   		  
+	   		       showRegistrationMenu();
+	   		   }
+	   		   else {
+	   		           console.log(checkCondonationFeePaid(data.orderId,data.studentId));
+	   		        if(checkCondonationFeePaid(data.orderId,data.studentId) == true)
+	   		        {
+	   		          //To-DO
+	   		          showRegistrationMenu();
+	   		        }
+	   		        else{
+	   		          //showMessage("Your name is in condonation list . so , your are  not eligibile to apply registration !! . Kindly pay condonation fee" );
+	   		        	
+			   		         var msg = { title : "Condonation List",msg : "Your name is listed in condonation. Kindly pay fine or request for exemption to proceed registration !!!"}
+			   			  ConfirmDialog(msg, "").then(function(response) {
+			   								
+			   				toastr.error("You are not allowed to register for examination !!");
+			   										
+			   				}, function(error) {
+			   						
+			   					toastr.error("You are not allowed to register for examination !!");
+			   						
+			   				});
+	   		        	//toastr.error("Your name is in condonation list . so , your are  not eligibile to apply registration !!." );
+	   		        	}
+	   		   
+	   		   }
+	   		   
+	   		  
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});	  
+          
+	}
+	
+	/**
+	* To check whether the student paid condonation fee
+	*/
+	function checkCondonationFeePaid(orderId,studentId)
+	{
+	    var status = true; //To-DO need to return correct value
+		  $.ajax({
+		         url: "/fees/getFeeOrderStatusByFeeIdentifierAndAccount",
+		         data:{"feeIdentifier":orderId , "studentCode": studentId },
+		         async:false,
+				 success: function(data)
+		           {
+					 console.log(data);
+					 if(data.feeOrderStatusValue == 'settled')
+					    status = true ;
+					 else
+					    status = false;
+					   
+					return status;
+		           },
+		          failure:function(data)
+		          {
+		        	
+		        	  toastr.error("Error in getting fee details!!");
+		        	
+		        	  
+		          }
+		         
+		         });
+        return status;
+	}
+	
+	
+	/**
+	* To show registration menu if no issue in condonation
+	*/
+	function showRegistrationMenu()
+	{
+	     $("#registrationForm").show(); 
+	     	$('html, body').animate({
+		        		scrollTop: $("#registrationForm").offset().top
+		  			}, 1000);
+	}
+	
+	
+	/**
+	* To load schedule details
+	*/
+	 function loadScheduleDetails(data)
+	 {
+	  loadLoggedInStudentDetails();
+	  $("#divInstructions").text(data.instructions);
+	  $("#examName").text(" Application for registration of - "+ data.name_exam);
+	    bindExamCourses(data);
+	 
+	    
+	 
+	 
+	 }
+	 
+	 /**
+	* To get fee details for the given schedule id
+	*/
+	 function getviewFeeDetails(scheduleId)
+	 {
+		 console.log(scheduleId);
+	   $.ajax({
+		         url: BASE_URL+"schedule/fees/schedule-id/"+scheduleId,
+		         async:false,
+				 success: function(data)
+		           {
+		           console.log(data);
+					console.log(data.data.configList);
+					selectedConfigArray = data.data.configList;
+					 bindViewFeeDetails(data.data.configList);
+					
+					
+		           }, 
+		           function(error) {
+					
+				       toastr.error("Failed loading Fee details !!");
+					
+			        }
+		           
+		         });
+	 
+	 
+	 }
+	 
+	 function bindFeeDetails(config,numPapers)
+	 {
+		 console.log(config);
+	 var total = 0 ;
+	 $("#numPapers").text(numPapers);
+	 $.ajax(
+			{
+				"url":"/fees/getManyFeeHeadAmountMap",
+				"data":{"pgmId":selectedProgramId,"feeIdentifierList":String(selectedConfigArray)},
+				success:function(data)
+				{
+					console.log(data.length);
+					$('#displayTable').empty();
+						for(let i=0;i<data.length;i++)
+						{
+							 var tr;
+							if(data[i]['configKey'] != config){
+								console.log("inside");console.log(data[i]['configKey']);
+							  tr=$('<tr><td>'+data[i]['configKey']+'</td><td>---</td><td class="calculation" feeHeadId='+data[i]['feeHeadId']+'>'+data[i]['feeAmount']+'</td></tr>');
+							 total = total + data[i]['feeAmount'];
+							}
+							else{
+								tr=$('<tr><td>'+data[i]['configKey']+'</td><td>'+data[i]['feeAmount']+'( '+ numPapers+')'+'</td><td class="calculation" feeHeadId='+data[i]['feeHeadId']+' >'+data[i]['feeAmount']*numPapers+'</td></tr>');
+								total = total + data[i]['feeAmount']*numPapers;
+							}				      	    
+					       
+							$('#displayTable').append(tr);
+						}
+						
+						var tr=$("<tr class='text-red'><td>Total</td><td></td><td feeHeadId='+data[]+'>"+total+"</td></tr>");
+						$('#displayTable').append(tr);
+				},
+				error:function(e)
+				{
+					console.log("Error in calling ajax "+e);
+					toastr.error("Fee not set for this program ");
+				}
+			});
+			
+			
+	 }
+	 
+	 
+	
+	  
+   /**
+	* To load loggedin student details
+	*/
+	 function loadLoggedInStudentDetails()
+	 {
+	    
+	      $.ajax({
+		         url: "/students/getStudentDetails",
+		         data:{"studentAdmissionUserCode":loggedStudentId },
+				 success: function(data)
+		           {
+					 console.log(data);
+					 bindStudentData(data);
+					
+		           },
+		           error:function(e)
+					{
+						console.log("Error in calling ajax "+e);
+						toastr.error("Error in getting student admission details ");
+					}
+		         });
+	 }
+	 
+	 /**
+	  * Bind student data in registration form
+	  */
+	  function bindStudentData(data)
+	  {
+	      /*  name and gender  */ 
+	 	  var gender = "Female"; 
+		  if (data.sp.studentPersonalGender == 'm')
+		     gender = "Male";
+		  else
+		      gender = data.sp.studentPersonalGender;
+		  $('#nameGender').html(data.sp.studentPersonalStudentName +"   ( "+gender+" )" );
+		  
+		  /* Dob and Age */
+		  var dobDate = moment(data.sp.studentPersonalDob).format('DD-MM-YYYY');
+		  var dob = new Date(data.sp.studentPersonalDob);
+		  var today = new Date();
+		  var age = Math.floor((today-dob) / (365.25 * 24 * 60 * 60 * 1000));
+		  $('#dobAge').html(dobDate +" ( "+ age +" Years) ");
+		  
+		  
+		  /*  Reg , code , roll numbers  */
+		  $("#regStudentcodeRollno").text(data.sa.studentRegNo + " / "+ data.sp.studentCode +" / "+ data.sa.studentAdmissionRollNo );
+		  
+		  /*  Program , batch , semester , divison    */
+		 
+		 $("#program").text(studentData.programName);
+		 $("#batch").text(studentData.batchName);
+		 $("#semester").text(studentData.semester);
+		 $("#division").text(studentData.division ? studentData.Division : "---");
+		 
+		 /* mother tongue , religion ,community */
+	     $("#motherTongue").text(data.sp.studentPersonalMotherTounge);
+	     $("#religion").text(data.sp.studentPersonalMappedReligion.religionName ? data.sp.studentPersonalMappedReligion.religionName : null);
+	     
+	     $("#community").text(data.sp.studentPersonalMappedCommunity != null ? data.sp.studentPersonalMappedCommunity.religionCommunityName : "---");
+	     
+	     /* adresses */
+	     $("#permanentAddress").text(data.sp.studentPersonalPermanentAddress);
+	     $("#communicationAddress").text(data.sp.studentPersonalCommunicationAddress);
+	     
+	     /* image */
+	     var imagePath = "filerepo_public/minioFiles/nuals/"+studentData.programCode+"/"+studentData.batchCode+"/"+studentData.studentCode+"/studentImage.jpg";
+	     $("#studentImage").attr("src",imagePath);
+	   
+	    
+	 }
+	 
+	 /**
+	 * bind courses of the selected exam 
+	 */
+	 function bindExamCourses(selectedExam)
+	 {
+
+	  var program = selectedExam.program; 
+      var batch = selectedExam.batch;
+      var semester = selectedExam.semester;
+       courses = null;
+      $("#electiveCourse").empty();
+      $("#regularCourse").empty();
+      $("#tblSupplementary").empty();
+      selectedSubjectsArr = []; 
+      let config = selectedExam.exam_type+"-Exam-Fee" ;
+   
+     
+      $.ajax({
+	   		url: "/academic/getStudentsCoreAndElectiveCoursesV1",
+	   		data:{"program":program,"batch":batch,"sem":semester,"userCode":loggedStudentId},
+	   		success: function(data)
+	   		{
+	   		   courses = data; 
+	   		   $("#totalPapers").text(data.length);
+	   		   console.log(selectedExam.exam_type);
+	   		   if(data.length ==0)
+	   		   {
+	   		   toastr.error("No Course details found for this student!!");
+	   		   
+	   		   }
+	   		   else{
+	   		   
+	   		       if(selectedExam.exam_type =="Regular"){
+	   		           $("#divRegular").show();
+	   		           $("#divSupplementary").hide();
+					   for ( var i = 0; i < data.length; i++ ) {
+							  
+						     if(data[i].elective == 'Y')  $("#electiveCourse").append('<li>'+ data[i].course_name + ' ( ' + data[i].course_code +' ) </a></li>');
+						     else if(data[i].elective == 'N') $("#regularCourse").append('<li>'+ data[i].course_name + ' ( ' + data[i].course_code +' ) </a></li>');
+						     selectedSubjectsArr.push({ "courseId": data[i].course_code,"courseName": data[i].course_name,"isElective": data[i].elective });
+						       
+				         }
+	   		       }
+	   		       else
+	   		       {
+ 	   		    	   $("#divSupplementary").show();
+  	   		    	   $("#divRegular").hide();
+				       for ( var i = 0; i < data.length; i++ ){
+							var tr=$('<tr><td>'+data[i].course_name+ ' ( ' + data[i].course_code +' )</td><td><input  id="'+i+'" type="checkbox"  class="courses"  style:"margin-right: 20px"></td></tr>');
+							$('#tblSupplementary').append(tr);
+										
+							}
+						  $('.courses').unbind().bind('change',function()
+								{
+								
+																   
+									var selectedId = $(this).attr('id') ;
+								
+									if(this.checked)
+									{
+										 selectedSubjectsArr.push({
+										      "courseId": data[selectedId].course_code,
+									      "courseName": data[selectedId].course_name,
+									      "isElective": data[selectedId].elective
+										     });
+									}
+									else
+									{
+										
+										for( var i = 0; i < selectedSubjectsArr.length; i++){
+											if ( selectedSubjectsArr[i].courseId === data[selectedId].course_code) { 
+												
+												selectedSubjectsArr.splice(i, 1);
+											}
+										}
+									}
+									displaySelectedCourses(selectedSubjectsArr);
+									bindFeeDetails(config,selectedSubjectsArr.length);
+																		
+								});
+							  
+							   }
+				
+	   		    bindFeeDetails(config,selectedSubjectsArr.length);
+			   }
+	   		 
+	   		  	   			
+	   		},
+	   		error:function(e)
+				{
+					console.log("Error in calling ajax "+e);
+					toastr.error("Error while getting course details of this program");
+				}
+	   		
+	   	});
+	 }
+	 
+	 
+	function displaySelectedCourses(data)
+		{
+		console.log(data);
+			$('#displayCourses').empty();
+			for(let i=0;i<data.length;i++)
+			{
+				var tr=$('<tr><td>'+ data[i].courseName+ ' ( ' + data[i].courseId +' )</td></tr>');
+				$('#displayCourses').append(tr);
+			}
+			
+			
+		}
+		
+		
+
+		
+	 
+  /**
+   * function to confirm for exam registration
+   */
+
+   $("#submitReg").submit(function(e){
+	   e.preventDefault();
+	   if(selectedSubjectsArr.length == 0 )
+		  {
+		  
+		  toastr.error("Kindly select the courses!!!");
+		  return;
+		  }
+	   
+          var msg = {
+					 title : "Registration",
+					 msg : "Do you want to register for exam?"
+				}
+		  ConfirmDialog(msg, "SAVE").then(function(response) {
+							
+					examRegistration();
+									
+			}, function(error) {
+					
+				toastr.error("Exam Registration cancelled !!");
+					
+			});
+      
+   });
+   
+	 /**
+	 * Submit the registration 
+	 */
+	  function examRegistration()
+	  {
+			
+		
+			//To-DO actual data
+			
+			var map={};
+			var formData = [];
+		
+			var fullDetailArray=new Array();
+			 var timestamp = Number(new Date());
+			 var orderId = "Exam-"+selectedExamName+"-"+ $("#usercode").val()+ "-"	+ timestamp;
+			$('.calculation').each(function()
+			{
+				/*	private String transactionIdentifierRemarkOrProcess;
+					private String transactionIdentifierProcessId;
+					private Double transactionAmount;
+					private String studentUserCode;*/
+				var map={}
+				map['transactionIdentifierRemarkOrProcess']=orderId;
+				map['transactionIdentifierProcessId']=$(this).attr('feeHeadId');
+				map['transactionAmount']=$(this).text();
+				fullDetailArray.push(map);
+			});
+		
+	
+			var data={
+					  "examCenter": $( "#selectExamCenter option:selected" ).text(),
+					  "examPlace": $( "#selectExamPlace option:selected" ).text(),
+					  "scheduleId":selectedScheduleId,
+					  "orderId":orderId,
+					  "paymentDetails":fullDetailArray.join(", "),
+					  "status": "SUBMITTED",
+					  "approvalStatus": "Pending",
+					  "studentId":loggedStudentId,
+					   "subjects": selectedSubjectsArr 
+					}
+			
+			
+		
+			
+			   $.ajax({
+		         url: BASE_URL +"registration/create",
+		         method:"POST",
+		         data: data,
+		         		
+				 success: function(data)
+		           {
+					 console.log(data);
+					// showMessage("Successfully Submitted. Kindly pay fees to Registration");
+						$('#displayTable').empty();
+						  $("#electiveCourse").empty();
+					      $("#regularCourse").empty();
+					      $("#tblSupplementary").empty();
+					      $( "#cbxDeclaration" ).prop( "checked", false );
+					      loadExamNotifications(studentData);// reload datatable
+					      
+					 $("#registrationForm").hide();
+						debitStudentFee(fullDetailArray);
+					 toastr.success("Successfully Registered. Kindly pay fees to process the registration!!");
+		           },
+		           error: function(err)
+		           {
+		        	   if (err.status == 409) {
+                           
+                           toastr.error("You have already registered for this exam !!");
+                          }
+		        	   else
+		               toastr.error("Exam registration failed !!");
+		           }
+		           
+		         });
+			
+    }
+	 
+	 
+	 
+	function debitStudentFee(fullDetailArray)
+	{
+	
+        
+	    $.ajax({
+	           type: "POST",
+	            url: "/fees/generateFeeDebits-v2",
+	            data:{"transactionWrappers":fullDetailArray},
+					   
+	            success: function(data)
+	           {
+				//showMessage("Fee Debit done Successfully !! . Kindly pay the fees at the fee section ");
+				toastr.success("Fee Debit generated");
+				//addPaymentDetails(certificateNum,orderId,feeAmount);
+	           },
+		       error: function(err)
+		           {
+		               toastr.error("Fee Debit failed !!");
+		           }
+	         });
+			
+	}
+	
+	  /**
+	   * function to confirm for exam registration
+	   */
+
+	   $("#previewRegistration").on('click',function(e){
+		   e.preventDefault();
+		   alert("SDdsf");
+	         printReport2("registrationForm","Registrtion");
+	      
+	   });
+	
+	   /**
+	   Bind the schedule details
+	*/	
+	function bindViewSchedule(data)
+	{
+	console.log(data.pay_date);
+	   $("#academicYear").text(data.academic_year);
+	   $("#program").text(data.programName);
+	   $("#batch_sem").text(data.batchName + " - "+data.semester);
+	   $("#exam_type").text(data.exam_type);
+	   
+	   $("#exam_name").text(data.name_exam);
+	   $("#month_year").text(data.month_year);
+	   $("#tentative_date").text( moment(data.tentative_date).format('D/MM/YYYY'));
+	   $("#date_without_fine").text( moment(data.pay_date).format('D/MM/YYYY'));
+	   $("#date_with_fine").text( moment(data.pay_date_fine).format('D/MM/YYYY'));
+	   $("#instructions").text(data.instructions);
+	
+	
+	}
+
+	/**
+	   Bind the Time table details
+	*/	
+	function bindTimeTable(scheduleId)
+	{
+	     $.ajax({
+				   type: "GET",
+				   url:  BASE_URL+"time-table/list-schedule-id/"+scheduleId,
+				   headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				   },		   
+				   success: function(result)
+				   {
+						$("#tblTimetable tbody").remove();	
+						console.log(result.data);
+						if(result.data.length>0)	
+						{				
+							$.each(result.data, function (key, value) {
+								
+								$("#tblTimetable").append($('<tbody><tr><td>' +  moment(value.examDate).format('D/MM/YYYY')+ '</td><td>'+  moment(value.examDate).format('dddd')+ '</td><td>' +value.courseId+ '</td><td>' +value.courseName+ '</td><td>'+  value.startDateTime +' - '+ value.endDateTime+'</td></tr></tbody>'));
+							});
+						}else{
+							$("#tblTimetable").append($('<tbody><tr><td colspan="5" class="text-center">No data available</td></tr></tbody>'));
+						}
+								
+					 
+					 
+				   },
+			   		error:function(err)
+			   		{
+			   		  toastr.error("Failed to load time table details");
+			   		}
+				 });
+	
+	}
+	 
+	  /**
+	* To get fee details for the given schedule id
+	*/
+	 function getFeeDetails(scheduleId,programId)
+	 {
+		 console.log(scheduleId);
+	   $.ajax({
+		         url: BASE_URL+"schedule/fees/schedule-id/"+scheduleId,
+		         async:false,
+				 success: function(data)
+		           {
+		    		
+					var config= data.data.configList;
+					selectedConfigArray = config.split(",");
+					bindFeeDetails(config,programId);
+		           }, 
+		           function(error) {
+					
+				       toastr.error("Failed loading Fee details !!");
+					
+			        }
+		           
+		         });
+	 
+	 
+	 }
+	 
+	 function bindViewFeeDetails(config)
+	 {
+
+	 $.ajax(
+			{
+				"url":"/fees/getManyFeeHeadAmountMap",
+				"data":{"pgmId":selectedProgramId,"feeIdentifierList":String(config)},
+				success:function(data)
+				{
+					console.log(data.length);
+					$('#displayTable1').empty();
+			
+						for(let i=0;i<data.length;i++)
+						{
+							 var tr=$('<tr><td>'+data[i]['configKey']+'</td><td>'+data[i]['feeAmount']+'</td></tr>');
+														      	    
+					       
+							$('#displayTable1').append(tr);
+							
+						}
+						
+						
+				},
+				error:function(e)
+				{
+					console.log("Error in calling ajax "+e);
+					toastr.error("Fee not set for this program ");
+				}
+			});
+			
+			
+	 }
+  });               
+  var ConfirmDialog = function (data,type){
+
+ var TYPE;
+ var ICON ;
+ var BTN_CLASS;
+
+	 if ( type == 'SAVE'){
+		 TYPE = 'green';
+		 ICON =  'fa fa-save';
+		 BTN_CLASS = 'btn-success';
+	 }
+	 else if ( type == 'DELETE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-trash';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else if ( type == 'APPROVE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-thumbs-up';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else
+	 {
+		 TYPE = 'red';
+		 ICON =  'fa fa-warning';
+		 BTN_CLASS = 'btn-warning';	
+	 }
+	 var DialogPromise = function (resolve, reject) {
+	    
+	     $.confirm({
+	        title: data.title,
+	        content:data.msg,
+	        closeIcon : true,
+	        type: TYPE,
+	        icon: ICON,
+	        offsetTop: 40,	      
+	        bgOpacity :'0.7',
+	        buttons: {  
+	            ok: {
+	                text: "<b> Yes </b>",	            
+	                keys: ['enter'],
+	                action: function(){	                    
+	                     resolve(true); 	                    
+	                }
+	            },
+	            no: function(){
+	              text: "<b> No </b>",	                  
+	                    reject(false); 
+	            }
+	        }
+     });    
+    
+   };    
+    return  new  Promise (DialogPromise);
+ }
+    </script>  
+	
+	

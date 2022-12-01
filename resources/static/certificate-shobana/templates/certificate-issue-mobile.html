@@ -1,0 +1,830 @@
+ 
+   <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+      	<div class="row">
+			<div class="col-md-12">
+				<div class="card card-info card-outline">
+					<div style="cursor: move;" class="card-header ui-sortable-handle">
+						<h3 class="card-title">  Issue Certificates</h3>
+					</div>
+					<div class="card-body">
+					  <form id="CertIssueForm">
+						<div class="row">
+							<div class="col-md-3">
+									<div class="form-group">
+										<label>Program</label> 
+										<select class="form-control"
+											name="programId"
+											id="selectProgram" required>
+											<option>---Select---</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label>Batch</label> 
+										<select class="form-control" 
+											name="batchId"
+											id="selectBatch" required>
+											<option>---Select---</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label>Semester</label> 
+										<select class="form-control" 
+											name="semesterId"
+											id="selectSemester" required>
+											<option>---Select---</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-2 pt-4 mt-1">
+									<button id='submit_btn' type="submit" class="btn btn-info">Submit</button>
+								</div>
+							</div>	
+						</form>				
+					</div>
+				</div>
+			</div>
+		</div>
+        <div class="row" id="datatable_div">          
+          <!-- /.col-md-12 -->
+          <div class="col-lg-12"> 
+				<div class="card card-info card-outline">				
+				  <div class="card-body">
+					<div class="table-responsive">
+					   <table id="certificateIssueTbl" class="table table table-striped table-bordered  display" style="width:100%">
+						<thead>
+							<tr>
+							  <th>Student ID</th>
+							  <th>Certificate Type</th>
+							  <th>Certificate </th>															  
+							  <th>Certificate Status</th>
+							  <th>Approval Status</th>							 
+							  <th>Action</th>
+							</tr>
+							</thead>
+					 </table>		
+					</div>
+					<!-- /.table-responsive -->
+				  </div> 
+				</div>
+
+				<!--Issue-->
+				<div class="row card collapse" id="collapseExample">
+					<div class="col-md-12">
+						<div class="" >
+							<div class="card-body">
+								<form id="issueCertificateForm">
+									<div class="row">						
+										<div class="col-md-4">
+											<div class="form-group">
+											   <label for="name">Name of Person collected Certificate</label>
+											   <input type="text" class="form-control" placeholder="Enter name" id="receivedBy" required/>
+											</div>
+										</div>									
+									</div>
+									<div class="row">
+										<div class="col-md-4">
+											<div class="form-group">
+											   <label for="remarks">Remarks</label>
+											   <textarea class="form-control" id="issueRemarks" rows="3" placeholder="Enter ..." required></textarea>
+											</div>
+											<button type="submit"  class="btn btn-sm btn-info" id="previewBtn">Issue Certificate</button>	
+										</div>
+									</div>	
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	
+<script>
+//global variables and fns
+	
+	/* base url for exam management */
+	//var BASE_URL = "certificate-management/certificate-management/api/v1/academics/certificate-management/";
+	var BASE_URL = "/certificate-management/api/v1/academics/certificate-management/";
+	var BASE_MINIO = "/filerepo_public/minioFiles/nuals"; 
+	loadCertMappings();
+	/* CERTIFICATE TYPES */
+	var ORIGINAL_TYPE = 1388;
+	var DUPLICATE_TYPE = 1389;
+	var MIGRATION = 1400;
+	var TRANSCRIPT = 1399;
+	var DEGREE = 1397;
+	var PROVISIONAL = 1398;
+	var NO_DUES = 1655;
+	var TRANSFER = 1401;
+	var CONDUCT = 2166; //need to check
+	var ATTENDANCE = 2168 ; //need to check
+	var CONSOLIDATED_MARK_SHEET = 2170;//need to check
+	var studentAdmissionDateTime;
+	
+	var certMap = new Map();
+	
+	/* fn to convert form data to json */
+	$.fn.serializeObject = function()
+	{
+	    var o = {};
+	    var a = this.serializeArray();
+	    $.each(a, function() {
+	        if (o[this.name] !== undefined) {
+	            if (!o[this.name].push) {
+	                o[this.name] = [o[this.name]];
+	            }
+	            o[this.name].push(this.value || '');
+	        } else {
+	            o[this.name] = this.value || '';
+	        }
+	    });
+	    return o;
+	 };
+
+ 
+ 	$('.datepicker').datepicker({
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true,
+		pickerPosition: "bottom-left"
+	});  
+	
+	$('.datepicker-month-year').datepicker({
+	    format: 'M-yyyy',	
+	    startView: "months", 
+        minViewMode: "months",						   
+		autoclose:true,
+		clearBtn:true
+	});
+	
+	
+	function loadCertMappings()
+	{
+		$.ajax({
+			   type: "GET",
+			   url:  BASE_URL + "getCertificateMapping",
+			   headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			   },		   
+			   success: function(result)
+			   {
+				  var data = result.data;
+				  
+				  data.forEach(element => {
+					  console.log(element);
+					  if(element.mappedId == null){
+						  toastr.error("Failed to Map "+element.certName +" certificates.Kindly contact Admin");
+						  }
+					  else 
+				    certMap.set(element.certName,element.mappedId);
+				  });
+				 //  console.log(certMap.get('ORIGINAL_TYPE'));
+				 // for (const [key, value] of certMap.entries()) {
+				 //	  console.log(key, value);
+				 //	}
+			   }
+			 });
+		
+	}
+	function openCertificates(certificateurl){
+		  window.open(BASE_MINIO+"/"+certificateurl, '_blank');
+			/*$.ajax({
+				   type: "GET",
+				   url:  BASE_URL + "getAffidavitCertificate/"+certificateId,
+				   headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				   },		   
+				   success: function(result)
+				   {
+					  console.log(result);
+					  window.open(result.DownloadLink, '_blank');
+					// $('#affidavitUrl').attr("href",result.DownloadLink);
+					 
+				   }
+				 });*/
+		
+	}
+	
+	
+	
+	/*$('.datetimepicker').datetimepicker({
+      language: 'en'
+    //  pick12HourFormat: true
+    });*/
+    
+     /**
+    *  Get the logged in student details
+    **/
+         
+   function getStudentInfo(studentId)
+	{
+       var studentData = {};       
+	    $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		async:false,
+	   		data:{"userCodes":studentId},
+	   		success: function(data)
+	   		{
+	   		  studentData = data;
+	   		  console.log(data);	   		
+	   		  setStudentInfo(data,studentId);	   		  
+	   		  return data;
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   		 toastr.error("Failed to load student details");
+	   		}
+	   	});
+	   	
+	   	return studentData; 
+	 }
+	 
+	 
+	 /**
+    *  set the student details
+    **/
+         
+   function setStudentInfo(data,studentId)
+	{
+	  var studentDetails = data[studentId];
+	  console.log( studentDetails);
+	  loggedStudentProgramId = studentDetails.programCode;
+ 		//alert(programId);
+ 		
+	  $("#student_reg_no").text(studentDetails.regNo ? studentDetails.regNo : "----");
+      $("#student_name").text(studentDetails.studentName);
+      $("#student_gender").text(studentDetails.studentPersonalGender);
+      $("#student_code").text(studentDetails.studentCode);
+      $("#program_name").text(studentDetails.programName);
+      $("#batch_name").text(studentDetails.batchName);
+      $("#semester").text(studentDetails.semester);
+      $("#division").text(studentDetails.division ? studentDetails.division: "-----")
+      $("#student_roll_no").text(studentDetails.rollNo ? studentDetails.rollNo:"-----");
+     
+	}
+
+   
+   function loadDataOnPreview(data)
+	{
+		console.log("Data :: "+JSON.stringify(data));
+		console.log(data.purpose);
+		
+		
+	   if(data.originalNo)
+		   {
+		   $('#duplicate_org_no').show();
+		   $('#label_duplicate_org_no').show();
+		   $('#duplicate_org_no').text(data.originalNo);
+		   }
+	   else{
+		   $('#duplicate_org_no').hide();
+		   $('#label_duplicate_org_no').hide();
+	   }
+	 
+	   if(data.isAffidavit==true && data.affidavit!=null)
+		   {
+		   $('#isAffidavit').text('Yes');
+		   $('#isAffidavit').show();
+		   $('#label_isAffidavit').show();
+		   $('.AffidavitLink').show();
+		   }
+		 
+	   else{
+		 
+		   $('#isAffidavit').hide();
+		   $('#label_isAffidavit').hide();
+		   $('.AffidavitLink').hide();
+	   }
+	  
+	   if(parseInt(data.noCopies)>0)
+		   {
+			  $('#transcript_copy').show();
+			  $('#label_transcript_copy').show();
+			  $('#transcript_copy').text(data.noCopies);
+		   }
+	   else{
+		  $('#transcript_copy').hide();
+		  $('#label_transcript_copy').hide();
+	   }
+	  
+	   if(data.remarks)
+		   {
+		   $('#noduenumber').text(data.remarks);
+		   $('#noduenumber').show();
+		   $('#label_noduenumber').show();
+		   }		
+	   else{
+		   $('#noduenumber').hide();
+		   $('#label_noduenumber').hide();
+	   }
+	  
+	   if(data.nameId == TRANSFER || data.nameId == MIGRATION)
+		   {
+		   loadInterUniversityData(data.studentId);
+		   $('#interuniversity').show();
+		   $('#label_interuniversity').show();
+		   
+		   }
+	   else
+		   {
+		   $('#interuniversity').hide();
+		   $('#label_interuniversity').hide();
+		   
+		   }
+	  
+	   if(data.purpose)
+		   {
+		   $('#purpose_certificate').text(data.purpose);
+		   $('#purpose_certificate').show();
+		   $('#label_purpose_certificate').show();
+		   }
+		
+	   else{
+		   $('#purpose_certificate').hide();
+		   $('#label_purpose_certificate').hide();
+	   }
+		//$('#fee').text(data.paymentsAmount?data.paymentsAmount:0);//TODO Add Fee details
+		$('#fee').text(data.paymentsAmount?data.paymentsAmount+" Rs/-":"0 Rs/-");
+		$('#applnType').text(data.name+"("+data.type+")");
+		$('#collapseExample').show();
+		$('html, body').animate({
+		        scrollTop: $("#previewCertificate").offset().top
+		}, 1000);
+		
+	}
+	/**
+	* To load inter university details of loggedin student
+	*/
+	 function loadInterUniversityData(loggedInStudentId)
+	 {
+	    
+	      $.ajax({
+		         url: "/students/getStudentDetails",
+		         data:{"studentAdmissionUserCode":loggedInStudentId },
+				 success: function(data)
+		           {
+					 console.log(data);
+					studentAdmissionDateTime = data.sa.studentAdmissionDateTime;
+					if(data.sa.studentAdmissionInterUniversity){
+						
+						$('#interuniversity').text(
+						 	"  Inter-University Admission No -- "+data.sa.studentAdmissionInterUniversityAdmissionNo +
+						    "  , ProgramName -- "+data.sa.studentAdmissionInterUniversityOldProgramName +
+							"  , RollNo -- " +data.sa.studentAdmissionInterUniversityOldRollNo +
+							"  , University -- " + data.sa.studentAdmissionInterUniversityOldUniversity +
+							"  , Semesters completed -- " + data.sa.studentAdmissionInterUniversitySemestersCompleted 					
+						);
+						
+						
+					  
+						
+					}
+					else{
+						
+						$('#interuniversity').text("NO");
+					}
+					
+		           }
+		         });
+	 }
+	 
+   
+    /**
+   * Fee Settings
+   */
+   
+   var studentListWithData=new Array();
+   var studentCodeList=new Array();
+   
+   
+	function loadData(url)
+	{
+		let dataWithPayment=[];
+		$.ajax(
+		{
+			url:url,
+			async:false,
+			success:function(data)
+			{
+			studentListWithData=data.data;
+			console.log(studentListWithData);
+			if(studentListWithData.length>0){
+			  var studfeeidmapArray=generateFeeIdenMapArray(studentListWithData);
+			  console.log(studfeeidmapArray);
+			  dataWithPayment = getFeeOrderStatus(studfeeidmapArray);
+			}
+		}
+	})
+	
+	return dataWithPayment;
+  }
+	
+ function generateFeeIdenMapArray(data)
+	{
+		var mapArray=new Array();
+		for(let i=0;i<data.length;i++)
+		{
+			var map={};
+			var studCode=data[i]['studentId'];
+			map['feeOrderStudent']=studCode;//maintain the same key feeOrderStudent in map
+			map['feeOrderIdentity']=data[i]['orderId'];//maintain the same key feeOrderIdentity in map
+			mapArray.push(map);
+			}
+			return mapArray;
+	}
+
+ function addTostudentListWithData(data)
+	{
+	 console.log("Inside addtistudentlistwithdaTA");
+	 	console.log(data);
+		for(let i=0;i<studentListWithData.length;i++)
+		{
+		for(let j=0;j<data.length;j++)
+		{
+		//if(String(studentListWithData[i]['studentId'])==data[j]['feeOrderStudentCode'])
+		if(String(studentListWithData[i]['orderId'])==data[j]['feeOrderId'])
+		{
+		studentListWithData[i]['feeOrderStatusValue']=data[j]['feeOrderStatusValue'];
+		}
+		if(studentListWithData[i]['orderId'] == null)
+		{
+			studentListWithData[i]['feeOrderStatusValue'] = "-";  
+		}
+		
+		}
+	}
+	
+	}
+	
+	
+ function getFeeOrderStatus(datatosend)
+	{
+		console.log("calling getFeeOrderStatus function")
+		$.ajax(
+		{
+			   url:'/fees/getManyFeeOrderStatusByFeeIdentifierAndAccount',
+			   data:{'feeOrderStudents':datatosend},
+			   method:"post",
+			   async:false,
+			   success:function(data)
+			   {
+					console.log(data); 
+					if(data.length>0)
+					{
+					addTostudentListWithData(data);
+					//loadDatatable(studentListWithData);
+					//return studentListWithData;
+					}
+	           },
+		    error:function(err)
+				{
+				showMessage(err);
+				}
+		});
+		return studentListWithData;
+}
+
+
+ var ConfirmDialog = function (data,type){
+
+ var TYPE;
+ var ICON ;
+ var BTN_CLASS;
+
+	 if ( type == 'SAVE'){
+		 TYPE = 'green';
+		 ICON =  'fa fa-save';
+		 BTN_CLASS = 'btn-success';
+	 }
+	 else if ( type == 'DELETE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-trash';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else
+	 {
+		 TYPE = 'orange';
+		 ICON =  'fa fa-warning';
+		 BTN_CLASS = 'btn-warning';	
+	 }
+	 var DialogPromise = function (resolve, reject) {
+	    
+	     $.confirm({
+	        title: data.title,
+	        content:data.msg,
+	        closeIcon : true,
+	        type: TYPE,
+	        icon: ICON,
+	        offsetTop: 40,	      
+	        bgOpacity :'0.7',
+	        buttons: {  
+	            ok: {
+	                text: "<b> Yes </b>",	            
+	                keys: ['enter'],
+	                action: function(){	                    
+	                     resolve(true); 	                    
+	                }
+	            },
+	            no: function(){
+	              text: "<b> No </b>",	                  
+	                    reject(false); 
+	            }
+	        }
+     });    
+    
+   };    
+    return  new  Promise (DialogPromise);
+ }
+$( document ).ready(function() { 
+	$('#collapseExample').hide();
+	$('#datatable_div').hide();
+	var certificateId;
+		/**
+		Populate Certificate
+		**/
+		$('#CertIssueForm').submit(function(e){
+			
+			e.preventDefault();
+			var msg  = {
+					title : "Save",
+					msg : "Are you sure?"
+					}
+			ConfirmDialog(msg,"SAVE").then( function(response){
+				var programId = $('#selectProgram').val();
+				var batchId = $('#selectBatch').val();
+				var semesterId = $('#selectSemester').val();
+				$.ajax({
+					   type: "GET",
+					   url:  BASE_URL +"getCertificatesWithPrintCount-v1/programId/"+programId+"/batchId/"+batchId+"/semesterId/"+semesterId,
+					  
+					   headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					   },		   
+					   success: function(result)
+					   {				
+						
+						   InitDatatable(result.data);
+						   $('#datatable_div').show();
+					   },
+				   		error:function(err)
+				   		{
+				   		 toastr.error("Failed to generate certificate");
+				   		}
+					 });
+			})
+		})
+		/**
+		 Initialize Data table load
+		**/
+		function InitDatatable(data)
+		{
+			var issueDataTable =  $('#certificateIssueTbl').DataTable({
+				 "language": {
+	                "emptyTable": "No data available for the verification"
+	              },
+				"destroy": true,
+				"data":data,
+				//"ajax": BASE_URL + "getCertificatesWithPrintCount",			
+	           "columns": [
+	           { "data": "studentId"},
+				{ "data": "type" },
+				{ "data": "name" },
+				{ "data": "status"},
+				{ "data":"approvalStatus"},	
+				{ "data": null},		
+	           /*{
+					"data": null,
+					"defaultContent":
+						'<a data-toggle="collapse" href="#"  class="small-box-footer text-danger" id="detailsButton">Issue <i class="fas fa-arrow-circle-down"></i></a>' 
+				}*/
+	           ],
+				columnDefs: [{
+					// puts a button in the last column
+					targets: [-1], render: function (a, b, data, d) {
+						
+						if (data.approvalStatus!="APPROVED" && data.noPrint<=0) {
+							
+							return '<label  class="small-box-footer text-info" >Not Generated Yet</a>' ;
+							
+						}else if(data.status==="ISSUED")
+						{
+							return '<label  class="small-box-footer text-success" >Already issued</a>' ;
+						}else
+						{
+							return '<a data-toggle="collapse" href="#"  class="small-box-footer text-danger" id="detailsButton">Issue <i class="fas fa-arrow-circle-down"></i></a>' ;
+							
+						}
+						
+					}
+				}]
+	          
+			});
+			
+			/**
+			 Data table row click event
+			**/
+			
+			$('#certificateIssueTbl tbody').on('click', '#detailsButton', function () {
+				var data = issueDataTable.row($(this).parents('tr')).data();
+			
+				console.log(data)
+				certificateId = data.certId;
+				$('#collapseExample').show();
+				$('html, body').animate({
+					        scrollTop: $("#collapseExample").offset().top
+					}, 1000);
+				
+			});
+		}
+			
+		
+		/**
+		Form Submit for issue certificate
+		**/
+		$('#issueCertificateForm').submit(function(e){
+			e.preventDefault();
+			var issuedata = {
+							  "certificatesId": certificateId,
+							  "recievedBy": $('#receivedBy').val(),
+							  "remarks": $('#issueRemarks').val()
+							};
+			
+			var msg  = {
+					title : "Save",
+					msg : " Do you want to Issue Certificate?"
+					}
+					ConfirmDialog(msg,"SAVE").then( function(response){
+
+						$.ajax({
+							   type: "POST",
+							   url: BASE_URL + "issue",
+							   data:JSON.stringify(issuedata),
+							   headers: {
+								'Accept': 'application/json',
+								'Content-Type': 'application/json'
+							   },		   
+							   success: function(data)
+							   {		
+							
+								 $('#collapseExample').hide();
+								// $('#certificateIssueTbl').DataTable().ajax.reload();
+								 $('#datatable_div').hide(); 
+								 toastr.success(data.message);
+								 $("html, body").animate({ scrollTop: 0 }, "slow");
+								
+								 $('#receivedBy').val('');
+								 $('#issueRemarks').val('');
+								 //TODO Notification 
+							   },
+							   error: function(data)
+							   {
+								    toastr.error(data.message);
+							   }
+							 });
+
+
+					},function(error){
+
+					});
+			
+				
+		})
+	
+});
+$(document).ready(function() {
+
+	getAllPrograms();
+	getAllAcademicYear();
+	
+	
+    /* 
+      To list the programs
+	*/
+	
+	function getAllPrograms()
+	{
+	
+		$.ajax({
+	   		url:'/course/getAllCourses',
+	   		method:'GET',
+	   		success:function(data)
+	   		{
+	   		    setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   			$('#selectProgram').unbind().bind('change',function()
+	   			{
+	   			
+	   				getAllActiveBatchesOfProgram($(this).val());
+	   				
+	   			});
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+		
+	}
+	
+	/**
+	  To get all batches for the given programid
+	*/
+	 function getAllActiveBatchesOfProgram(programId)
+	 {
+	// $("#selectBatch").prop( "disabled", false );
+		$.ajax(
+		{
+	  		url:'/batch/getAllActiveBatchesInAProgram',
+	  	   	method:'GET',
+	  	   	data:{"courseId":programId},
+	  	   	success:function(data)
+	  	   	{
+	  	   	
+	  	        setUpDropDown("selectBatch",data,"batchId","batchCode");
+	  	   		$('#selectBatch').unbind().bind('change',function()
+	   			{
+	  	   			
+	  	   			getAllActiveSemesterOfBatch($(this).val());
+	   				
+	   			});
+	  	   		
+	  	   	},
+	  	   	error:function(err)
+	  	   	{
+	  	   		showMessage(err);
+	  	   	}
+	  	 });	  
+	  }
+	  
+	  /**
+	  To get all semesters the given batchid
+	  */
+	 function getAllActiveSemesterOfBatch(batchId)
+	 {
+		//$("#selectSemester").prop( "disabled", false );
+		  $.ajax({
+					"url" : "/batch/getAllSemestersInABatch",
+					"method" : "GET",
+					data : {"batchId":batchId},
+					success :function(data) {
+					console.log(data);
+					
+					    try{
+						   if(data && data.length >0){
+							   $('#selectSemester').empty();
+							   $('#selectSemester').append('<option>Select Semester</option>');
+							   for(var i=0;i< data.length;i++){
+							   	   $("#selectSemester").append('<option value='+data[i]['semesterIdentity']['semesterCode']+'>'+data[i]['semesterIdentity']['semesterCode']+'</option>');
+							   }
+						      }
+							}
+							catch(e){
+							    console.error(e);
+							    showMessage(" Error occurred while processing semester list"); 
+							}
+					},
+					error :function(e) {
+					     showMessage(err);
+					}
+				});
+		}  
+	  /**
+	  To get Academic Year
+	  */
+	 function getAllAcademicYear()
+		{
+		
+			$.ajax({
+		   		url:'/nualsTest/api/v1/academics/getDetailsByMasterId/masterId/83',
+		   		method:'GET',
+		   		success:function(data)
+		   		{
+		   		    setUpDropDown("selectAcademicYear",data,"detailName","detailName");
+		   			
+		   		},
+		   		error:function(err)
+		   		{
+		   			showMessage(err);
+		   		}
+		   	});
+		}
+	
+	
+});
+
+</script>
+
+
+
+ 

@@ -1,0 +1,787 @@
+  
+ <!-- Main content -->
+    <div class="content" id="scheduleDiv" style="display:none;" >
+    <form id="formExamSchedule" >
+      <div class="container-fluid">
+        <div class="row">          
+          <!-- /.col-md-12 -->
+          <div class="col-lg-12">           
+
+            <div class="card card-info card-outline">
+              <div class="card-header ">
+                <h5 class="m-0 card-title">Revaluation / Scrutiny  Schedule</h5>
+				
+              </div>
+              <div class="card-body ">
+              <div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Program Details</div>
+				<div class="row">
+					<div class="col-md-3">
+						<div class="form-group">
+						   <label for="academic Year">Academic Year</label>
+						   <select class="form-control" id="selectAcademicYear" name="academic_year" required>
+								  <option>Select</option>
+							
+							</select>
+						</div>
+					</div>	
+					<div class="col-md-3">
+						<div class="form-group">
+						   <label for="program">Program</label>
+						   <select class="form-control" id="selectProgram" name="program" required>
+								<option>Select Program</option>	
+							</select>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+						   <label for="batch">Batch</label>
+						   <select class="form-control" id="selectBatch" name="batch" required>
+								  <option>Select Batch</option>							  
+							</select>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+						   <label for="semester">Semester</label>
+						   <select class="form-control" id="selectSemester" name="semester" required>
+								   <option>Select Semester</option>
+							</select>
+						</div>
+					</div>	
+				</div>
+				<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Exam  and Revaluation Details</div>
+				<div class="row">
+					<div class="col-md-3">
+						<div class="form-group">
+						   <label for="examtype">Exam Type</label>
+						   <select class="form-control" id="selectExamType" name="exam_type" required>
+						          <option>Select Exam Type</option>
+																 
+							</select>
+						</div>
+					</div>
+					<div class="col-md-5">
+						<div class="form-group">
+						   <label for="examname">Name of Exam</label>
+						   <!-- <input type="text" class="form-control" id="nameExam" name="name_exam" placeholder="Name of the exam" required /> -->
+						     <select class="form-control" id="selectExamName" name="name_exam" required>
+						          <option>Select Exam Name</option>
+																 
+							</select>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+						   <label for="examname">Schedule Type</label>
+						 <select class="form-control" id="selectRevaluationType" name="exam_type" required>
+						          <option>Select Schedule Type</option>
+						          
+																 
+							</select>
+							</div>
+					</div>	 
+					  
+				</div>
+				<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Payment Details and Instructions</div>
+				<div class="row">
+						<div class="col-md-4">
+								<div class="form-group">
+								   <label for="monthand feepaymentdate">Last Date to Apply</label>
+								   <input type="text" class="form-control datepicker " placeholder="date to apply" name="tentative_date" id="tentativeDate"  required/>						  
+								</div>
+							</div>		
+						
+						
+							<div class="col-md-4">
+								<div class="form-group">
+								   <label for="monthand feepaymentdate">Last Date of payment without fine</label>
+								   <input type="text" class="form-control datepicker " placeholder="Without Fine" id="dateWithouFine"  name="pay_date" required/>						  
+								</div>
+							</div>		
+						
+							<div class="col-md-4">
+								<div class="form-group">
+								   <label for="monthand feepaymentdate">Last Date of payment with fine</label>
+								   <input type="text" class="form-control datepicker" placeholder="With Fine"  name="pay_date_fine" id="pay_date_fine" required/>						  
+								</div>
+							</div>					
+						<!--  	<div class="col-md-4">
+							 <div class="form-group">
+                        		<label>Instructions for Hall ticket (only pdf)</label>
+                        		<div class="custom-file">
+						  			<input type="file" class="custom-file-input"  accept="application/pdf"   id="instructionsFile" placeholder="Instructions to be placed in hall tickets"  required>
+						  			<label class="custom-file-label" for="customFile">Choose file</label>
+								</div>
+                      		</div>				
+						</div> -->	
+					</div>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+								   <label for="instructions">Instructions</label>
+								  <textarea class="form-control" rows="5" placeholder="" id="instructions" name="instructions" required>
+ 1. Incomplete Application will be summarily rejected 
+ 2. After Submitting the application, Fee need to be paid under payment section 
+ 3.No application will be registered unless the prescribed fee is paid				  </textarea>
+								</div>
+							</div>					
+						</div>						
+		<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Fee Settings</div>
+				   	
+				   	
+	 	
+		   	<div class="row">
+				<div class="col-md-6">
+				<label for="table">Select the fee heads </label>
+				
+					<div class="table-responsive">
+						<table class="table" id="checkBoxTable">
+							
+						</table>
+					</div>	
+				</div>
+				<div class="col-md-6 well" id="displayDiv">
+			
+				<label for="table">	Selected fee heads </label>
+					<div class="table-responsive">
+						<table class="table" id="displayTable">
+							
+						</table>
+					</div>
+				</div>
+			</div>
+		
+				   	
+				   	
+				   	
+				   	<button type="submit" class="btn btn-info">Submit</button>
+				   	
+              </div>
+            </div>
+           
+             
+          </div>
+          <!-- /.col-md-12 -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.main content -->
+    </form>
+  </div>
+  <!-- /.content-wrapper -->
+<script>
+//global variables and fns
+
+/* base url for exam management */
+var BASE_URL = "/exam-management/api/v1/";
+var MARKS_CONFIG_URL = "/mark-config/api/v1/academics/marks-management/evaluation-types-program/program-id/";
+var ACADEMIC_YEAR_URL = "/academics/api/v1/academics/getDetailsByMasterId/masterId/83";
+
+	
+	/* fn to convert form data to json */
+	$.fn.serializeObject = function()
+	{
+	    var o = {};
+	    var a = this.serializeArray();
+	    $.each(a, function() {
+	        if (o[this.name] !== undefined) {
+	            if (!o[this.name].push) {
+	                o[this.name] = [o[this.name]];
+	            }
+	            o[this.name].push(this.value || '');
+	        } else {
+	            o[this.name] = this.value || '';
+	        }
+	    });
+	    return o;
+	 };
+
+ 
+ 	$('.datepicker').datepicker({
+	    //format: 'yyyy-mm-dd',	
+ 		//startDate : moment() , //0
+	    format: 'dd-mm-yyyy',
+		autoclose:true,
+		clearBtn:true,
+		pickerPosition: "bottom-left"
+		
+	});  
+	
+ 	
+	$('.datepicker-month-year').datepicker({
+	    format: 'M-yyyy',	
+	    startView: "months", 
+        minViewMode: "months",						   
+		autoclose:true,
+		clearBtn:true
+	});
+	
+
+    
+    
+    //getStudentInfo();
+   	function getStudentInfo()
+	{
+
+      $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		data:{"userCodes":$("#usercode").val()},
+	   		success: function(data)
+	   		{
+	   		  console.log(data);
+	   		  return data;
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+	 }
+    
+ 
+    var selectedConfigArray=new Array();
+//$(document).ready(function() {
+	function getAllPrograms()
+	{
+	
+		$.ajax({
+	   		url:'/course/getAllCourses',
+	   		method:'GET',
+	   		success:function(data)
+	   		{
+	   		    setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   			$('#selectProgram').unbind().bind('change',function()
+	   			{
+	   				getAllActiveBatchesOfProgram($(this).val());
+	   				loadEvaluationypes($(this).val());
+	   			    if($("#displayTable").length){
+	   				   $('#displayTable').empty();
+	   			    }
+	   			   if($(".configList").length){
+	   				 
+	   			    $('.configList').prop('checked', false);
+	   			   }
+	   			selectedConfigArray =[];
+	   			
+	   			});
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+	}
+	getAllPrograms();
+	
+    /* 
+      To list the programs
+	*/
+	
+
+	
+	/**
+	  To get all batches for the given programid
+	*/
+	 function getAllActiveBatchesOfProgram(programId)
+	 {
+	// $("#selectBatch").prop( "disabled", false );
+		$.ajax(
+		{
+	  		url:'/batch/getAllActiveBatchesInAProgram',
+	  	   	method:'GET',
+	  	   	data:{"courseId":programId},
+	  	   	success:function(data)
+	  	   	{
+	  	   	
+	  	        setUpDropDown("selectBatch",data,"batchId","batchCode");
+	  	   		$('#selectBatch').unbind().bind('change',function()
+	   			{
+	   				getAllActiveSemesterOfBatch($(this).val());
+	   				
+	   				
+	   			});
+	  	   		
+	  	   	},
+	  	   	error:function(err)
+	  	   	{
+	  	   		showMessage(err);
+	  	   	}
+	  	 });	  
+	  }
+	  
+	  /**
+	  To get all semesters the given batchid
+	  */
+	 function getAllActiveSemesterOfBatch(batchId)
+	 {
+		//$("#selectSemester").prop( "disabled", false );
+		  $.ajax({
+					"url" : "/batch/getAllSemestersInABatch",
+					"method" : "GET",
+					data : {"batchId":batchId},
+					success :function(data) {
+					console.log(data);
+					    try{
+						   if(data && data.length >0){
+							   $('#selectSemester').empty();
+							   $('#selectSemester').append('<option>Select Semester</option>');
+							   for(var i=0;i< data.length;i++){
+							   	   $("#selectSemester").append('<option value='+data[i]['semesterIdentity']['semesterCode']+'>'+data[i]['semesterIdentity']['semesterCode']+'</option>');
+							   }
+						 }
+						}
+						catch(e){
+						    console.error(e);
+						    showMessage(" Error occurred while processing semester list"); 
+						}
+													
+						
+					},
+					error :function(e) {
+					     showMessage(err);
+					}
+				});
+		}
+	 
+	 function loadEvaluationypes(programId){
+			$.ajax(
+			{
+				"url":MARKS_CONFIG_URL+programId,
+				success:function(data)
+				{
+					types= data.data; 
+					setUpDropDown("selectRevaluationType",types,"id","evaluationType");
+				}
+			});
+		
+		}
+		
+		/* load exam types */
+		function loadExamTypes(){
+			$.ajax(
+			{
+				"url":BASE_URL+"exam-management/exam-types",
+				success:function(data)
+				{
+					types= data.data; 
+					setUpDropDown("selectExamType",types,"id","type");
+				}
+			});
+		
+		}
+		
+		/* load academic year from look  up */
+		function loadAcademicYear(){
+			$.ajax(
+			{
+				"url": ACADEMIC_YEAR_URL ,//"/academics/api/v1/academics/getDetailsByMasterId/masterId/83",
+			//	"url":"/nualsTest/api/v1/academics/getDetailsByMasterId/masterId/83",
+				success:function(data)
+				{
+					 
+					setUpDropDown("selectAcademicYear",data,"id","detailName");
+				}
+			});
+		
+		}
+	 
+		
+//});
+ $(document).ready(function() {
+ 
+   //$("nameExam").prop( "disabled", true );
+   
+
+	loadExamTypes();
+	loadAcademicYear();
+
+	
+	$('#selectExamType').unbind().bind('change',function(){
+		
+	      var exam_type = $( "#selectExamType option:selected" ).text();
+	      var program = $( "#selectProgram option:selected" ).val();
+		   var batch = $( "#selectBatch option:selected" ).val();
+		   var semester = $( "#selectSemester option:selected" ).val();
+	      
+		 $.ajax({
+	   	   	   "url": BASE_URL+"schedule/type/list",
+			   "type":"POST",
+			    "data":{"program":program,"batch":batch,"semester":semester,"exam_type":exam_type},
+	   		success: function(data)
+	   		{
+	   		    var examDetails = data.data;
+	   		  	
+	   		   setUpDropDown("selectExamName",examDetails,"id","name_exam");
+	   		 
+	   		   
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+		 
+	});
+	
+ 
+	
+	
+
+	
+	/* **************************************************************************/
+	/* exam fee settings  by rishi*/
+	/* ****************************************************************************/
+	
+	var feeConfigMap={};// in case nuals need dynamic addition of fee config, we can set the values from an //api
+	//var selectedConfigArray=new Array();
+	//selectedConfigArray ="Exam-fee,Testing-Fee";
+	//var pgmId=200;// set this from ur code
+	//var examScheduleId="abc";//set this from ur code
+	
+	$.ajax(
+	{
+		"url":"/fees/getAllConfigByType",
+		"data":{"configType":"Examination"},
+		success:function(data)
+		{
+			console.log(data);
+			if(data)
+			{
+				for(let i=0;i<data.length;i++)
+				{
+					feeConfigMap[data[i]['processName']]=data[i]['processName'];
+				}
+				setUpCheckBox(feeConfigMap,'checkBoxTable');
+			}
+		}
+	});
+	
+	function setUpCheckBox(maparray,tableId)
+	{
+		selectedConfigArray=[];
+		for (let key in maparray) 
+		{
+			if (maparray.hasOwnProperty(key)) 
+			{
+				var tr=$('<tr><td>'+maparray[key]+'</td><td><input  configkey="'+key+'"  id="'+key+'" type="checkbox" class="configList" style:"margin-right: 20px"></td></tr>');
+				$('#'+tableId).append(tr);
+				//selectedConfigArray.push(key);
+				
+			}
+			$("#scheduleDiv").show();
+		}
+		$('.configList').unbind().bind('change',function()
+				{
+					var configKey=$(this).attr('id');
+				
+					if($('#selectProgram').val() =="" ){
+						
+						toastr.error("Kindly select program!!");
+						$(this).prop('checked', false);
+									
+					}
+					else{
+						if(this.checked)
+						{
+							addToArray(configKey);
+						}
+						else
+						{
+							removeFromArray(configKey);
+						}
+						getAmountDetails(configKey);
+					}
+				});
+				
+			}
+	
+
+	
+	
+	function addToArray(stud)
+	{
+	   if(selectedConfigArray.indexOf(String(stud)) !== -1)
+	   {
+	   }
+	   else
+	   {
+		   selectedConfigArray.push(String(stud));  
+	   }
+	}
+	function removeFromArray(stud)
+	{
+	   if(selectedConfigArray.indexOf(String(stud)) !== -1)
+	   {
+		   stud=String(stud)
+		   selectedConfigArray = jQuery.grep(selectedConfigArray,function(value) 
+		   {
+			   return value != stud;
+		   }); 
+	   }
+	}
+	
+	function displayInfo(data)
+	{
+		$('#displayTable').empty();
+		for(let i=0;i<data.length;i++)
+		{
+			var tr=$('<tr><td>'+feeConfigMap[data[i]['configKey']]+'</td><td>'+data[i]['feeAmount']+'</td></tr>');
+			$('#displayTable').append(tr);
+		}
+	}
+	function getAmountDetails(configKey)
+	{
+		//alert("inside amount"+selectedConfigArray);
+		if(selectedConfigArray.length>0 && $('#selectProgram').val() != "" )
+		{
+			$.ajax(
+			{
+				"url":"/fees/getManyFeeHeadAmountMap",
+				"data":{"pgmId":$('#selectProgram').val(),"feeIdentifierList":String(selectedConfigArray)},
+				success:function(data)
+				{
+					
+					var feeHeads = data.length;
+					var configArray = selectedConfigArray.length;
+										
+					if(data.length == 0  || configArray != feeHeads ){
+						toastr.error("No fee set for this program!!");
+						 $('#'+configKey).prop('checked', false);
+					     removeFromArray(configKey);
+					}
+					//else if( configArray != feeHeads )
+						//toastr.error("No fee set for this program!!");
+					else
+					displayInfo(data);
+				},
+				error:function(e)
+				{
+					console.log("Error in calling ajax "+e);
+				}
+			});
+		}
+		else
+		{
+			
+			$('#displayTable').empty();
+		}	
+	}
+	
+	
+	/* ***************************************************************************************************** */
+   /**
+   * function to confirm for exam schedule
+   */
+    $('#formExamSchedule').unbind().bind('submit',function(event)
+	{
+				event.preventDefault();
+				
+			     var scheduleData = {};
+			 //    scheduleData.id =  scheduleId ; 
+		        scheduleData.scheduleId = $( "#selectExamName option:selected" ).val(); 
+		        scheduleData.scheduleName = $( "#selectExamName option:selected" ).text(); 
+		        scheduleData.program =  $( "#selectProgram option:selected" ).val();
+		        scheduleData.batch =  $( "#selectBatch option:selected" ).val();
+		        scheduleData.evalType = $( "#selectRevaluationType option:selected" ).val(); 
+		        scheduleData.evalTypeName = $( "#selectRevaluationType option:selected" ).text(); 
+		        scheduleData.instructions = $( "#instructions" ).val(); 
+		        scheduleData.lastDateApply =  moment($("#tentativeDate").val(),'DD-MM-YYYY').format('YYYY-MM-DD');
+		        scheduleData.dateWithoutFine = moment($("#dateWithouFine").val(),'DD-MM-YYYY').format('YYYY-MM-DD');
+		        scheduleData.dateWithFine = moment($("#pay_date_fine").val(),'DD-MM-YYYY').format('YYYY-MM-DD');
+		     
+		        if (scheduleData.dateWithoutFine > scheduleData.dateWithFine) {
+		        	toastr.error("Date of Payment with fine cannot be eariler   !!");
+		        	return;
+		        }
+		        if ($("#instructions").val().length == 0) {
+		       
+		        	toastr.error("Instructions cannot be empty   !!");
+		        	return;
+		        }
+		        
+		   
+		       scheduleData.status = "IN ACTIVE";
+		        scheduleData.approvalStatus = "SUBMITTED";
+		  
+		        scheduleData.feeSettings = String(selectedConfigArray);
+		       
+		     	var scheduleFormDataJson = scheduleData;
+		     	
+	
+				
+				
+          var msg = {
+					 title : "Revaluation/ Scrutiny Schedule",
+					 msg : "Do you want to schedule this exam ?"
+				}
+          
+		  ConfirmDialog(msg, "SAVE").then(function(response) {
+							
+					//examSchedule(formData,scheduleFormDataJson);
+			  createRevaluationSchedule(scheduleFormDataJson);
+									
+			}, function(error) {
+					
+				toastr.error("Revaluation/ Scrutiny  Schedule cancelled !!");
+					
+			});
+      
+   });
+
+	
+	
+			
+	
+	function createRevaluationSchedule(scheduleFormDataJson)
+	{
+		
+               				
+			    $.ajax(
+		   		{
+		   			"url":BASE_URL+"revaluation/create-schedule",
+		   			"method":"POST",
+		   			data:scheduleFormDataJson,
+		   			success:function(data){
+	   			
+			   			 toastr.success("Schedule created Successfully");
+			   			 $('#displayTable').empty();
+			   			 //reset  	
+			   			  $("#formExamSchedule")[0].reset(); 
+			   			 selectedConfigArray =[];
+			   		  	  var  scheduleId = data.data;
+			   			  createFeeDetails(scheduleFormDataJson,scheduleId);
+			   			
+		   			},
+		   			
+					error:function(err)
+			   		{
+			   			if (err.status == 409) {
+                             
+                             toastr.error("Schedule already exists for the given program, batch and semester !!");
+                            }
+                            else
+			   			toastr.error("Saving Exam Schedule failed !!");
+			   			 			
+			   		}
+		   		});	
+	 }	
+	
+	   /*
+	   *  Create a fee against the 
+	   */		
+	  function createFeeDetails(data,scheduleId)
+	  {
+	    
+		//  var today = new Date();
+		  var today = moment().format('YYYY-MM-DD');
+		
+		  var level1Date = (data.pay_date) ;
+		  var level2Date = (data.pay_date_fine) ; 
+		
+		  var feeData =  	{   
+					  "batchId":data.batch ,
+					  "collectionEndtDate":level2Date,
+					  "collectionStartDate": today,
+					  "feeCollectionUniqueName": data.scheduleName+"-"+scheduleId,
+					  "level1CollectionEndtDate":level1Date,
+					  "level1CollectionStartDate":today,
+					  "level1FineAmount": 0,
+					  "level2CollectionEndtDate": level2Date,
+					  "level2CollectionStartDate":level1Date ,
+					  "level2FineAmount": 0,
+					  "level3DailyFineAmount": 0,
+					  "level3ReAdmissionFineAmount": 0,
+					  "programId":data.program,
+					  "semester": data.scheduleName+"-"+scheduleId,
+					  "sfsFeeGroupDueDateMapBlackOutDate":level2Date,
+					  "sfsFeeGroupDueDateMapEneteredDate":level2Date,
+					 
+					}
+		  
+			    $.ajax(
+		   		{
+		   			"url":"/fees/saveFeeSettings-v5",
+		   			"method":"POST",
+		   		     data:feeData,
+		   			success:function(data){
+		   				$("#formExamSchedule")[0].reset();
+		   			//  showMessage("Fee Details created Successfully");
+		   				toastr.success(" Fee settings created successfully!!");
+		   			},
+		   			error:function(error)
+		   			{
+		   			  toastr.error(" Fee settings Failed !!");
+		   				
+		   			}
+		   		 
+		   		});	
+	  
+	  }
+  });              
+
+
+ var ConfirmDialog = function (data,type){
+
+ var TYPE;
+ var ICON ;
+ var BTN_CLASS;
+
+	 if ( type == 'SAVE'){
+		 TYPE = 'green';
+		 ICON =  'fa fa-save';
+		 BTN_CLASS = 'btn-success';
+	 }
+	 else if ( type == 'DELETE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-trash';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else if ( type == 'APPROVE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-thumbs-up';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else
+	 {
+		 TYPE = 'red';
+		 ICON =  'fa fa-warning';
+		 BTN_CLASS = 'btn-warning';	
+	 }
+	 var DialogPromise = function (resolve, reject) {
+	    
+	     $.confirm({
+	        title: data.title,
+	        content:data.msg,
+	        closeIcon : true,
+	        type: TYPE,
+	        icon: ICON,
+	        offsetTop: 40,	      
+	        bgOpacity :'0.7',
+	        buttons: {  
+	            ok: {
+	                text: "<b> Yes </b>",	            
+	                keys: ['enter'],
+	                action: function(){	                    
+	                     resolve(true); 	                    
+	                }
+	            },
+	            no: function(){
+	              text: "<b> No </b>",	                  
+	                    reject(false); 
+	            }
+	        }
+     });    
+    
+   };    
+    return  new  Promise (DialogPromise);
+ }
+
+
+
+</script>  
+
+
+

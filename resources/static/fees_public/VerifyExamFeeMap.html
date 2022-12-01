@@ -1,0 +1,397 @@
+
+<script>
+
+var ProgramId;
+var orderNo1;
+var pgmCode;
+var effectiveDate;
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},//certificate-fee-mapping
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Fee Head-Id"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTable0",null);
+				$( "#accordion0" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function datepickershow()
+{
+	console.log("check heck");
+	 $('.dp').datepicker(
+	{
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true
+	});
+}
+function getExamFeeMaps(pgmId,orderNo,status)
+{
+	ProgramId=pgmId;
+	getRecordTimeLines(ProgramId,"Examination-fee-mapping");
+	orderNo1=orderNo;
+	$.ajax({
+		url:'/fees/getAllInvalidExaminationFeeAmountByPrgmAndOrder',
+		data:{"pgmId":pgmId,"orderNo":orderNo,"status":status},
+		success:function(data)
+		 {
+			try
+			{
+				console.log(data);
+				if(data.length>0)
+				{	
+					$('#divGridTable2').show();
+					$('#feeMapTableBody2').empty();
+					$('#detailsDiv2').show();
+					$('#detailsDiv3').show();
+					$('#detailsDiv4').show();
+					$('#detailsDiv5').show();
+					$('#verificationStatusDiv').show();
+					$('#detailsDiv8').show();
+					for(var i=0;i<data.length;i++)
+					{
+						var prgmId=data[i]['examFeeMap']['courseforExamFeeMap']['courseId'];
+						var feeHeadId=data[i]['examFeeMap']['sfsFeeHead']['sfsFeeHeadId'];
+						var feeHeadName=data[i]['examFeeMap']['sfsFeeHead']['sfsFeeHeadName'];
+						var orderNo=data[i]['examFeeMap']['exmfeeMapOrderNo'];
+						var feeAmnt=data[i]['feeAmount'];
+						var validFrom=data[i]['validFrom'];
+						var tr1=$('<tr><td>'+feeHeadName+'</td><td><input class="feeHeads form-control" id="'+feeHeadId+'" type="number" name="sfsFeeHead" value="'+feeAmnt+'" readonly="true"></input></td><td><span class="editable far fa-edit pull-left" prgmId="'+prgmId+'"  supportName="'+feeHeadName+'"  support="'+feeHeadId+'"></span></td></tr>');
+						$('#feeMapTableBody2').append(tr1);
+					}
+					var orderNoDivDetails=$('<div class="col-md-10" > <label for="comment">Order No:</label><input type="text" class="form-control order" id="'+orderNo1+'" value="'+orderNo+'" readonly="true"></input></div><div class="col-md-2" ><span class="editable far fa-edit pull-left" pgmId="'+ProgramId+'"  support="'+orderNo1+'" ></span></div>')
+					var validFromDivDetails=$('<div class="col-md-10" > <label for="comment">Valid From:</label><input type="text" class="dp form-control validfrom" id="'+ProgramId+'"  support1="validfrom" value="'+validFrom+'" readonly="true"></input></div><div class="col-md-2" ><span class="editable far fa-edit pull-left" pgmId="'+ProgramId+'"  support="'+ProgramId+'" ></span></div>')
+					$('#orderNodiv').append(orderNoDivDetails);
+					$('#orderNodiv').append(validFromDivDetails);
+					$('#TimeLineHistory').show();
+					$('.editable').unbind().bind('click',function()
+					{
+						var elem=$(this).attr('support');
+						if($('#'+elem).prop('readonly')==true)
+						{
+							$('#'+elem).prop('readonly',false);
+							$('#btnUpdate').prop("disabled", false); 
+							$('#updateRemarksDiv').show();
+							$('#detailsDiv6').show();
+							$('#updationRemark').show();
+						}
+						else
+						{
+							$('#'+elem).prop('readonly',true);
+						}
+					});
+				}
+				else
+				{
+					showMessage("no fee heads are found under the selected group");
+					$('#feeMapTableBody2').empty();
+				}
+			}
+			catch(e)
+			{
+				showError("Error in processing information.contact Admin");
+			}	 
+		}
+   	});
+}
+	
+
+
+function loadAllExaminationFeeMap()
+{
+	$.ajax(
+	{
+		"url":"/fees/getAllExaminationFeeMapDisplay",
+		success:function(data)
+		{
+			if(data)
+			{
+				try
+				{
+					$('#feeMapTableBody').empty();
+					for(var i=0;i<data.length;i++)
+					{
+						var prgmId=data[i]['course_Id'];
+						pgmCode=data[i]['course_code'];
+						var orderNo=data[i]['exmfee_map_order_no'];
+						var validfrom=data[i]['valid_From'];
+						var status=data[i]['status'];
+						var action=$('<button class="btn btn-primary mapSelection" statu="'+status+'" pgmId="'+prgmId+'"  orderNo="'+orderNo+'" validfrom="'+validfrom+'" value="select">Select</button>');
+						var tr=$('<tr>');
+						tr.append('<td>'+pgmCode+'</td>');
+					    tr.append('<td>'+orderNo+'</td>');
+						tr.append('<td>'+validfrom+'</td>');
+						tr.append('<td>'+status+'</td>');
+						tr.append(action);
+						$('#feeMapTableBody').append(tr);
+					}
+					$('.mapSelection').unbind().bind('click',function()
+					{
+						var pgmId=$(this).attr('pgmId');
+						var orderNo=$(this).attr('orderNo');
+						var status=$(this).attr('statu');
+						effectiveDate=$(this).attr('validfrom');
+						console.log("pgm  "+pgmId);
+						console.log("orderNo  "+orderNo);
+						getExamFeeMaps(pgmId,orderNo,status);
+						$('#divGridTable').hide();
+						$('#orderno').val(orderNo);
+						$('#validFrom').val(effectiveDate);
+					    $('#orderNodiv').show();
+					    $('#verificationRemark').show();
+					});
+				}
+				catch(e)
+				{
+					console.log(e);
+				}
+			}
+			if(data.length==0)
+			{
+				showMessage("No Fee Mapping entries to verify or approve");
+			}
+		}
+	});
+}
+$(document).ready(function() {
+	
+	loadAllExaminationFeeMap();
+	datepickershow();
+	$('.dp').datepicker(
+	{
+	    format: 'yyyy-mm-dd',							   
+		autoclose:true,
+		clearBtn:true
+	});
+	$('#editFeeMapForm').unbind().bind('submit',function()
+  	{
+  		event.preventDefault();
+  		var formData=new Array();
+  		var negative="false";
+  		$('.feeHeads').each(function()
+  		{
+  			
+  			var feeId=$(this).attr('id');
+  			var amnt=$(this).val();
+  			if(amnt<0)
+  			{
+  				negative="true";
+  			}
+  			var pgm = ProgramId.toString();
+  			var validdate=$('#'+pgm).val();
+  			var map={};
+  			map['sfsFeeHead']=feeId;
+  			map['courseforExamFeeMap']=ProgramId;
+  			map['orderNo']=orderNo1;
+  			map['feeAmount']=amnt;
+  			map['validFrom']=validdate;
+   			formData.push(map);
+  		});
+  		if(negative=="false")
+		{
+  			$.ajax(
+  			{
+  				"url":"/fees/updateExaminationFeeMapping",
+  				"method":"POST",
+  				data:{"examinationFeeHeadAmountMapWrappers":formData},
+  				success:function(data)
+  				{
+  					try
+  					{
+  						console.log("data--------"+data.length);
+  						if(data.length>0)
+  						{
+  							showMessage("Successfully Entered Fee Group to Amounts. Kindly make this entry verified");
+  							$('#feeMapTableBody').empty();
+  							refreshContent();
+  						}
+  						else
+  						{
+  							showMessage(" Duplicate data present");
+  						}
+  					}
+  				    catch(e)
+  					{
+  						showError("Error in processing information.contact Admin");
+  					}
+  				}
+  			});
+  		}
+  		else
+  		{
+  			showMessage("fee amount must not be negative value");
+  		}
+  	});
+  	$('#btnApprove').unbind().bind('click',function()
+  	{
+  	    event.preventDefault();
+		var formData=new Array();
+		var negative="false";
+		$('.feeHeads').attr('readonly',false);
+		$('.validfrom').attr('readonly',false);
+		$('.order').attr('readonly',false);
+		$('.feeHeads').each(function()
+		{
+			var feeId=$(this).attr('id');
+			var amnt=$(this).val();
+			var verificationRemark=$('#verificationRemarks').val();
+			var status=$('#sfsFeeHeadAmountMapThat').val();
+			if(amnt<0)
+			{
+				negative="true";
+			}
+			var pgm = ProgramId.toString();
+			var validdate=$('#'+pgm).val();
+			var map={};
+			map['sfsFeeHead']=feeId;
+			map['courseforExamFeeMap']=ProgramId;
+			map['orderNo']=orderNo1;
+		    map['sfsHdAmntMpTmLnRmrk']=verificationRemark;
+		    map['sfsHdAmntMpTmLnStatus']=status;
+			map['status']=status;
+			map['feeAmount']=amnt;
+			map['validFrom']=validdate;
+			map['remarks']=$('#verificationRemarks').val();
+			map['validto']=validdate;
+		    formData.push(map);
+		});
+		if(negative=="false")
+		{
+			$.ajax(
+			{
+				"url":"/fees/verifyExamCertFeeAmount",
+				"method":"POST",
+				data:{"examinationFeeHeadAmountMapWrappers":formData},
+				success:function(data)
+				{
+					try
+					{
+						console.log("data--------"+data.length);
+						if(data.length>0)
+						{
+							showMessage("Successfully updated");
+							refreshContent();
+						}
+						else
+						{
+							showMessage("Already valid record exists with the enetered order id");
+						}
+					}
+					catch(e)
+					{
+						showError("Error in processing information.contact Admin");
+					}
+				}
+			});
+		}
+		else
+		{
+			showMessage("fee amount must not be negative value");
+		}
+	});
+});
+</script>
+<div id="divGridTable" class="row">
+	<div class="col-md-12">
+		<div class="table-responsive">
+			<table id="gridTable" class="table table-striped">
+				<thead>
+			    	<tr>
+			      		<th scope="col">Program</th>
+			      		<th scope="col">Order No</th>
+			      		<th scope="col">With Effective From</th>
+			      		<th scope="col">Status</th>
+			       		<th scope="col">Action</th>
+			    	</tr>
+			  	</thead>
+			    <tbody id="feeMapTableBody">
+			  
+			    </tbody>
+			</table>
+		</div>	
+	</div>
+</div>
+<hr>
+<form id='editFeeMapForm'>
+<div id="divGridTable2" class="row" style="display: none">
+	<div class="col-md-12">
+		<div class="table-responsive cell-border">
+			<label><h2>Edit the below details to set up Exam Fee Mapping</h2></label>
+			<table id="gridTableMapper" class="table table-striped">
+			  <thead>
+			    <tr>
+			      <th scope="col">Fee Head</th>
+			      <th scope="col">Amount</th>
+			    </tr>
+			  </thead>
+			  <tbody id="feeMapTableBody2">
+			  
+			  </tbody>
+			</table>
+		</div>	
+	</div>
+</div>
+<div id="orderNodiv" class="row well"  style="display: none;">
+</div>
+
+<div id="updationRemark" class="row well"  style="display: none;">
+	<div class="col-md-12">
+	 <label for="comment">Remarks:</label>
+ 	 <textarea class="form-control" rows="5" id="activityLog"></textarea>
+	</div>
+</div>
+<div class="row" id="detailsDiv6" style="display: none;">
+	<div class="col-md-12"></div>
+	<div class="col-md-4">
+	<button class="btn btn-primary" id="btnUpdate" value="Save" disabled>Save</button>
+	</div>
+	<div class="col-md-4"></div>
+</div>
+<hr>
+<div id="verificationRemark" class="row well"  style="display: none;">
+	<div class="col-md-12">
+	 <label for="comment">Remarks:</label>
+ 	 <textarea class="form-control" rows="5" id="verificationRemarks"></textarea>
+	</div>
+</div>
+
+<div id="TimeLineHistory" class="row well"  style="display: none;">
+ 	<div id="accordion0">
+		<h3>Record Flow history</h3>
+	 	<div>
+	  	 	<p>
+	  		 	<div class="table-responsive">
+	   				<table class="table table-striped" id="gridTable0"></table>
+	   			</div>
+	   		</p>
+		</div>
+	</div>
+ </div> 
+<div id="verificationStatusDiv" class="row well" style="display: none;" >
+	 <label for="comment">Forward or Approve</label>
+ 		<select class="form-control" id="sfsFeeHeadAmountMapThat" >
+ 			<option value="verified">Verify & Forward</option>
+ 			<option value="valid">Approve</option>
+ 		</select>
+</div>
+<hr>
+<div class="row" id="detailsDiv8"   style="display: none;">
+	<div class="col-md-12"></div>
+	<div class="col-md-4">
+	<button class="btn btn-primary" id="btnApprove" value="Save">Submit</button>
+	</div>
+	<div class="col-md-4"></div>
+</div>
+<hr>
+</form>

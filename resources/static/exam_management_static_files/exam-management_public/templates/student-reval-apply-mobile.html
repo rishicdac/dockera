@@ -1,0 +1,763 @@
+	<!-- Main content -->
+    <div class="content" id="divExamSchedules">
+      <div class="container-fluid" id="notifications">
+		 <div class="container-fluid" >
+		<!--Exam Notification-->
+		<div class="row" >
+			<div class="col-lg-12">
+				<div class="card card-info card-outline">
+				     <div class="card-header ">
+							<h5 class="m-0 card-title">Scrutiny / Revaluation Registration</h5>
+							
+						  </div>
+                      </br>
+					<div class="table-responsive">
+						  <table  id="tblRevaluationNotifications" class="table table-striped table-bordered  display" style="width:100%">
+							<thead>
+								<tr>
+								  
+								   <th>Academic Year</th>
+								   <th>Program / Batch / Semester</th>
+								   <th>Exam Name</th>
+								   <th>Exam Type</th>
+								   <th> Evaluation Type </th>
+								   <th>Last Date to Apply</th>
+								   <th>View </th>
+								   <th>Apply</th>
+								</tr>
+								</thead>
+								
+						  </table>
+						</div>
+				</div>
+			</div>		
+		</div>
+		<!--Exam Notification -->
+		<!--Condonation Details -->
+		
+		
+		    <!-- /.col-md-12 -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.main content -->
+    <div  id="divViewSchedules" style="display:none;">
+			<div class="row" >
+			<div class="col-lg-12">
+			<div class="invoice p-3 mb-3">
+			<div class="tab-content">
+			<div class="post">
+			<div class="user-block text-center">
+			<img class="img-circle img-bordered-sm" src="exam-management_proxy/exam-management_public/img/nuals.jpg" alt="user image" style="width:70px;height:70px;">
+			<span class="username text-center">
+			<h3>The National University of Advanced Legal Studies</h3>
+			</span>
+			<h6 id="applnType" style="font-weight:600"> </h6>
+			<hr/>
+			</div>
+			</div>
+			</div>
+			
+			<div class="row mb-4">
+			<div class="col-md-3">
+			<div class="description-block border-right">
+			<h5 class="description-header">Academic Year : <br/><code id="academicYear">2005-2010</code></h5>
+			</div>
+			</div>
+			
+			<div class="col-md-3">
+			<div class="description-block border-right">
+			<h5 class="description-header">Programme  : <br/><code id="program">LLB </code></h5>
+			</div>
+			</div>
+			<div class="col-md-3">
+			<div class="description-block border-right">
+			<h5 class="description-header">Batch / Semester : <br/><code id="batch_sem">2005/Semester9</code></h5>
+			</div>
+			</div>
+			
+			<div class="col-md-3">
+			<div class="description-block">
+			<h5 class="description-header">Exam Name : <br/><code id="exam_type">Supplmentary</code></h5>
+			</div>
+			</div>
+			</div>
+			<hr>
+			<dl class="row pl-5 ml-3">
+			<dt class="col-sm-4 description-header" >Name of the Exam : </dt>
+			<dd class="col-sm-8" id="exam_name"> 2014-2019 Master of Law</dd>
+			
+			<dt class="col-sm-4">Last date to Apply:</dt>
+			<dd class="col-sm-8" id="tentative_date">12-01-2020</dd>
+			<dt class="col-sm-4">Last Date of payment without fine:</dt>
+			<dd class="col-sm-8" id="date_without_fine">12-12-2019</dd>
+			<dt class="col-sm-4">Last Date of payment with fine:</dt>
+			<dd class="col-sm-8" id="date_with_fine">23-12-2019</dd>
+			<dt class="col-sm-4">Instructions:</dt>
+			<dd class="col-sm-8" id="instructions">Testing </dd>
+			<dt class="col-sm-4"> Fee Structure:</dt>
+			<dd class="col-sm-8" id="">
+			     <div class="table-responsive">
+					<table class="table" id="displayTable">					
+						</table>
+					</div>
+			</dd>
+			</dl>
+				
+		
+			</div>
+			</div>
+			</div>
+			</div>
+			<!-- Preview Schedule-->  
+	<!--Registration Details-->
+	  
+          
+	<div class="col-md-12" id="registrationForm"  style="display:none;">
+			
+					<div class=" invoice p-3 mb-3">
+						<div class="tab-content">
+						  <div class="tab-pane active" id="activity">		
+							<div class="post">
+								<div class="user-block text-center">
+									<img class="img-circle img-bordered-sm" src="exam-management_proxy/exam-management_public/img/nuals.jpg" alt="user image" style="width:70px;height:70px;">
+									<span class="username text-center">
+									  <h3>The National University of Advanced Legal Studies</h3>
+									</span>
+										<div class="description-block border-right">
+										<h5 class="description-header" id="requestHeader"> Request for --- </h5>
+									
+									<hr/>
+								</div>	
+			
+			
+			    </div>
+             
+              <div class="card-body">	
+				<!--Instructions -->
+                <div class="attachment-block info-box clearfix">
+                 <span class="info-box-icon"><i class="fa fa-exclamation-circle"></i></span>
+                  <div class="attachment-pushed m-0">
+                    <h4 class="attachment-heading">Instructions</h4>
+                    <div class="attachment-text" id="divInstructions">
+					                    1. Incomplete Application will be summarily rejected 
+					 2. After Submitting the application, Fee need to be paid under payment section 
+					 3.No application will be registered unless the prescribed fee is paid	
+                    </div>                 
+                  </div>                  
+                </div>
+				<!--Instructions-->
+				<!--Personal Details-->
+				<!--Course Details-->
+				<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Course Details</div>
+			
+					<div class="row" id="divregCourses" >
+				<div class="col-md-6"> 
+					<div class="table-responsive">
+						<label for="tblSupplementary"> Courses</label>
+						<table class="table" id="tblRegCourses">
+							
+						</table>
+					</div>	
+				</div>
+				<div class="col-md-6 well" id="displayDiv">
+					<div class="table-responsive">
+						<label for="displayCourses">Selected Courses </label>
+						<table class="table" id="tblSelectedRegCourses">
+							
+						</table>
+					</div>
+				</div>
+			</div>	
+			
+		
+				<div class="row">
+				
+					  <p class="col-sm-4 text-red" >Total number of courses </dt>
+					  <p class="col-sm-8 text-red" id="numPapers">1</dd>
+			
+				</div>
+								
+				<!--Exam Details-->
+				<!-- Fee Structure -->
+				<div class="external-event bg-gray ui-draggable ui-draggable-handle " style="position: relative;">Fee Details</div>
+				<div class="row pl-3">
+					<div class="col-md-12  well" id="displayDiv">
+					<div class="table-responsive">
+						<table class="table" id="displayTable">
+							<thead>
+								<tr>
+								  
+								   <th>Fee Head </th>
+								   <th>Amount</th>
+								  
+								</tr>
+								</thead>
+								
+						</table>
+					</div>
+				  </div>
+				</div>
+				 
+				<!-- Fee Structure -->
+				<!--Declaration-->
+				<div class="">
+				<div class="external-event bg-gray ui-draggable ui-draggable-handle" style="position: relative;">Declaration</div>
+				<form id="submitReg">
+				<div class="row">
+				
+				  <div class="col-12 pt-2">
+					<div class="icheck-primary">
+					  <input type="checkbox" id="cbxDeclaration" name="terms" value="agree" required>
+					  <label for="agreeTerms pr-2">
+					   I hereby declare that the entries made above are correct to the best of my knowledge.
+					  </label>
+					</div>
+				  </div>				  
+				</div>
+				<!--Declaration-->				
+            
+			  <div class="card-footer">
+					<div class="row">
+						<div class="col-md-3">
+							<button id="btnSubmitRegistration" type="submit" class="btn btn-info ">Register</button>
+						<!-- 	<a href="#" class="btn btn-info" id="btnSubmitRegistration">Submit</a> -->
+							
+						<!-- 	<button id="previewRegistration"  class="btn btn-info ">Preview</button> -->
+						</div>
+					</div>               			
+				</div>
+				
+				</form>
+            </div>
+			
+          </div>
+          <!-- /.col-md-12 -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.main content -->
+	
+	<script>
+	//global variables and fns
+
+/* base url for exam management */
+var BASE_URL = "/exam-management/api/v1/";
+var MARKS_CONFIG_URL = "/mark-config/api/v1/academics/marks-management/evaluation-types-program/program-id/";
+var ACADEMIC_YEAR_URL = "/academics/api/v1/academics/getDetailsByMasterId/masterId/83";
+
+	
+	/* fn to convert form data to json */
+	$.fn.serializeObject = function()
+	{
+	    var o = {};
+	    var a = this.serializeArray();
+	    $.each(a, function() {
+	        if (o[this.name] !== undefined) {
+	            if (!o[this.name].push) {
+	                o[this.name] = [o[this.name]];
+	            }
+	            o[this.name].push(this.value || '');
+	        } else {
+	            o[this.name] = this.value || '';
+	        }
+	    });
+	    return o;
+	 };
+
+ 
+ 	$('.datepicker').datepicker({
+	    //format: 'yyyy-mm-dd',	
+ 		//startDate : moment() , //0
+	    format: 'dd-mm-yyyy',
+		autoclose:true,
+		clearBtn:true,
+		pickerPosition: "bottom-left"
+		
+	});  
+	
+ 	
+	$('.datepicker-month-year').datepicker({
+	    format: 'M-yyyy',	
+	    startView: "months", 
+        minViewMode: "months",						   
+		autoclose:true,
+		clearBtn:true
+	});
+	
+
+    
+    
+    //getStudentInfo();
+   	function getStudentInfo()
+	{
+
+      $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		data:{"userCodes":$("#usercode").val()},
+	   		success: function(data)
+	   		{
+	   		  console.log(data);
+	   		  return data;
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+	 }
+    
+ $( document ).ready(function() {
+  
+
+  var scheduleDataTable;
+  var scheduleId;
+  var activeScheduleId;
+  var selectedRevaluationScheduleId;
+  var selectedSubjectsArray = []; 
+  var selectedConfigArray=new Array();
+  var selectedEvalType;
+  
+  var statusDataTable =  $('#tblRevaluationNotifications').DataTable({
+	       "language": {
+                    "emptyTable": "No Schedules  for Revaluation and Scrutiny found "
+                  },
+			"processing": true,
+			"destroy": true,
+			"ajax":BASE_URL+"revaluation/list/active/student-code/",
+			"columns": [
+				{"data":"academicYear"},
+				{ "data": "null","render": function (data, type, full, meta) {
+	                                          return (full.program + " / " + full.batch + " / " + full.semester)   
+		                                }
+				},
+				{ "data": "examName" },
+				{ "data": "examType" },
+				{ "data": "evalTypeName"},
+				{ "data": "lastDateApply","render": function(data){return moment(data).format('DD-MM-YYYY')}},
+				{ "data": null , "render": function(data){
+					return '<a data-toggle="collapse" href="#"  class=""small-box-footer text-danger" id="btnView"> <i class="fas fa-eye"></i></a>'
+					
+				}},
+				{
+					"data": null,
+					 "render": function (data, type, full, meta) {
+			               if(full.regId ==null) 
+		                   return '<a data-toggle="collapse" href="#"  class=""small-box-footer text-danger" id="btnEdit"> <i class="fas fa-edit"></i></a>'
+		                   else
+		                	   return "<p  class='btn btn-xs btn-danger' >Registration Done</p>";
+		                	   //return "Already Registered"; 
+			            }  
+				}
+				
+				/*{
+					"data": null,
+					"defaultContent":
+						'<a data-toggle="collapse" href="#"  class=""small-box-footer text-danger" id="btnEdit"> <i class="fas fa-edit"></i></a>' 
+				}*/
+		]
+		});
+  
+		  /*
+		   *  Action function to apply for exam list 
+		   */
+		    $('#tblRevaluationNotifications tbody').on('click', '#btnEdit', function () {
+		    	 
+		      var data = statusDataTable.row($(this).parents('tr')).data();
+		      $("#divViewSchedules").hide();
+		      $("#registrationForm").show();
+		     //   getFeeDetails(data.id);
+		      selectedConfigArray = data.feeSettings;
+		      selectedScheduleId = data.scheduleId;
+		      selectedRevaluationScheduleId = data.id;
+		      selectedProgramId = data.programId;
+		      selectedExamName = data.examName;
+		    
+		      selectedExamType = data.examType;
+		     selectedEvalType = data.evalTypeName;
+		      $("textarea#divInstructions").val(data.instructions)
+		      $("#requestHeader").text("Application for " + data.examName +" Exam  - "+data.evalTypeName)
+		       selectedSubjectsArray = []; 
+		      loadRegisteredSubjects(data);
+		    //  loadScheduleDetails(data);
+		  
+			});
+		    /*
+			   *  Action function to apply for exam list 
+			   */
+			    $('#tblRevaluationNotifications tbody').on('click', '#btnView', function () {
+			    	   
+			    	  var data = statusDataTable.row($(this).parents('tr')).data();
+			    			            
+		               
+		               $("#divViewSchedules").show();
+		               $("#registrationForm").hide();
+			 		   $("#applnType").text(data.evalTypeName+ "  Schedule");
+			 		   $("#academicYear").text(data.academicYear);
+			 		   $("#program").text(data.program);
+			 		   $("#batch_sem").text(data.batch + " - "+data.semester);
+			 		   $("#exam_type").text(data.examName);
+			 		   $("#exam_name").text(data.examName);
+			 		   $("#tentative_date").text( moment(data.lastDateApply).format('D/MM/YYYY'));
+			 		   $("#date_without_fine").text( moment(data.dateWithoutFine).format('D/MM/YYYY'));
+			 		   $("#date_with_fine").text( moment(data.dateWithFine).format('D/MM/YYYY'));
+			 		   $("#instructions").text(data.instructions);
+			 		   bindFeeDetails(data.feeSettings,data.programId);
+			 		   selectedConfigArray =  data.feeSettings.split(",");
+			    });
+			
+			$('#tblRevaluationNotifications tbody').on( 'click', 'tr', function () {
+		
+		        if ( $(this).hasClass('selected') ) {
+		            $(this).removeClass('selected');
+		        }
+		        else {
+		        	statusDataTable.$('tr.selected').removeClass('selected');
+		            $(this).addClass('selected');
+		        }
+		    } );
+    
+		
+
+	
+     /* to load registration form */
+     function   loadRegisteredSubjects(data){
+    	 $('#tblSelectedRegCourses').empty();
+		 $('#tblRegCourses').empty();
+		 let config = data.evalTypeName+"-Fee" ;
+		 selectedSubjectsArray = []; 
+		   
+    	 $.ajax({
+		      url: BASE_URL+"registration/subjects/"+data.scheduleId,
+		      method: 'GET',
+		      success: function(data)
+		      {
+		      	       data = data.data;
+		           
+		       if(data.length ==0)
+	   		   {
+	   		   toastr.error("No Course details found for this student!!");
+	   		   
+	   		   }
+	   		   else{
+	   			
+				       for ( var i = 0; i < data.length; i++ ){
+							var tr=$('<tr><td>'+data[i].courseName+ ' ( ' + data[i].courseId +' )</td><td><input  id="'+i+'" type="checkbox"  class="courses"  style:"margin-right: 20px"></td></tr>');
+							$('#tblRegCourses').append(tr);
+										
+							}
+						  $('.courses').unbind().bind('change',function()
+							{
+								var selectedId = $(this).attr('id') ;
+								
+									if(this.checked)
+									{
+										 selectedSubjectsArray.push({
+										  "courseId": data[selectedId].courseId,
+									      "courseName": data[selectedId].courseName,
+									      "isElective": data[selectedId].isElective
+										   });
+									}
+									else
+									{
+									  for( var i = 0; i < selectedSubjectsArray.length; i++){
+										if ( selectedSubjectsArray[i].courseId === data[selectedId].courseId) { 
+										 	selectedSubjectsArray.splice(i, 1);
+											}
+										}
+									}
+									displaySelectedCourses(selectedSubjectsArray);
+									bindFeeDetails(config,selectedSubjectsArray.length);
+																		
+								});
+							  
+							   }
+				
+	   		    bindFeeDetails(config,selectedSubjectsArray.length);
+	           },
+		      error:function(err)
+		      {
+		    		toastr.error("Registered Subjects not found for this exam ");
+		      }
+		      });
+		
+	}
+     
+     
+ 	function displaySelectedCourses(data)
+	{
+	
+		$('#tblSelectedRegCourses').empty();
+		for(let i=0;i<data.length;i++)
+		{
+			var tr=$('<tr><td>'+ data[i].courseName+ ' ( ' + data[i].courseId +' )</td></tr>');
+			$('#tblSelectedRegCourses').append(tr);
+		}
+		
+		
+	}
+ 	
+ 	
+ 	 function bindFeeDetails(config,numPapers)
+	 {
+		 console.log(config);
+	 var total = 0 ;
+	 $("#numPapers").text(numPapers);
+	 $.ajax(
+			{
+				"url":"/fees/getManyFeeHeadAmountMap",
+				"data":{"pgmId":selectedProgramId,"feeIdentifierList":String(selectedConfigArray)},
+				success:function(data)
+				{
+					console.log(data.length);
+					$('#displayTable').empty();
+						for(let i=0;i<data.length;i++)
+						{
+							 var tr;
+							if(data[i]['configKey'] != config){
+								console.log("inside");console.log(data[i]['configKey']);
+							  tr=$('<tr><td>'+data[i]['configKey']+'</td><td>---</td><td class="calculation" feeHeadId='+data[i]['feeHeadId']+'>'+data[i]['feeAmount']+'</td></tr>');
+							 total = total + data[i]['feeAmount'];
+							}
+							else{
+								tr=$('<tr><td>'+data[i]['configKey']+'</td><td>'+data[i]['feeAmount']+'( '+ numPapers+')'+'</td><td class="calculation" feeHeadId='+data[i]['feeHeadId']+' >'+data[i]['feeAmount']*numPapers+'</td></tr>');
+								total = total + data[i]['feeAmount']*numPapers;
+							}				      	    
+					       
+							$('#displayTable').append(tr);
+						}
+						
+						var tr=$("<tr class='text-red'><td>Total</td><td></td><td feeHeadId='+data[]+'>"+total+"</td></tr>");
+						$('#displayTable').append(tr);
+				},
+				error:function(e)
+				{
+					console.log("Error in calling ajax "+e);
+					toastr.error("Fee not set for this program ");
+				}
+			});
+			
+			
+	 }
+	
+ 	 
+ 	 /**
+ 	   * function to confirm for exam registration
+ 	   */
+
+ 	   $("#submitReg").submit(function(e){
+ 		   e.preventDefault();
+ 		   if(selectedSubjectsArray.length == 0 )
+ 			  {
+ 			  
+ 			  toastr.error("Kindly select the courses!!!");
+ 			  return;
+ 			  }
+ 		   
+ 	          var msg = {
+ 						 title : "Registration",
+ 						 msg : "Do you want to register for exam?"
+ 					}
+ 			  ConfirmDialog(msg, "SAVE").then(function(response) {
+ 								
+ 						examRegistration();
+ 										
+ 				}, function(error) {
+ 						
+ 					toastr.error("Exam Registration cancelled !!");
+ 						
+ 				});
+ 	      
+ 	   });
+ 	   
+ 		 /**
+ 		 * Submit the registration 
+ 		 */
+ 		  function examRegistration()
+ 		  {
+ 				//To-DO actual data
+ 				var map={};
+ 				var formData = [];
+ 				var fullDetailArray=new Array();
+ 			    var timestamp = Number(new Date());
+ 				var orderId = selectedExamName+"-"+selectedEvalType; //"Exam-"+selectedExamName+"-"+ $("#usercode").val()+ "-"	+ timestamp;
+ 				$('.calculation').each(function()
+ 				{
+ 					/*	private String transactionIdentifierRemarkOrProcess;
+ 						private String transactionIdentifierProcessId;
+ 						private Double transactionAmount;
+ 						private String studentUserCode;*/
+ 					var map={}
+ 					map['transactionIdentifierRemarkOrProcess']=orderId;
+ 					map['transactionIdentifierProcessId']=$(this).attr('feeHeadId');
+ 					map['transactionAmount']=$(this).text();
+ 					//map['studentUserCode']=$(this).text();
+ 					fullDetailArray.push(map);
+ 				});
+ 			
+ 		
+ 				var data={
+ 						  "revaluationId":selectedRevaluationScheduleId,
+ 						  "scheduleId":selectedScheduleId,
+ 						  "orderId":orderId,
+ 						  "paymentDetails":fullDetailArray.join(", "),
+ 						  "status": "SUBMITTED",
+ 						  "approvalStatus": "Pending",
+ 						//  "studentId":$("#usercode").val(),
+ 						   "subjects": selectedSubjectsArray
+ 						}
+ 							
+ 				 $.ajax({
+ 			         url: BASE_URL +"revaluation/create",
+ 			         method:"POST",
+ 			         data: data,
+ 			         success: function(data)
+ 			         {
+ 						 console.log(data);
+ 						 $('#displayTable').empty();
+ 						 $('#tblSelectedRegCourses').empty();
+ 						 $('#tblRegCourses').empty();
+ 						 $( "#cbxDeclaration" ).prop( "checked", false );
+ 						 $("#registrationForm").hide();
+ 						 debitStudentFee(fullDetailArray);
+ 						 toastr.success("Successfully Registered. Kindly pay fees to process the registration!!");
+ 			           },
+ 			           error: function(err)
+ 			           {
+ 			        	   if (err.status == 409) {
+ 	                     
+ 	                           toastr.error("You have already applied for revaluation  for this exam !!");
+ 	                          }
+ 			        	    else
+ 			                  toastr.error("Exam registration failed !!");
+ 			           }
+ 			           
+ 			         });
+ 				
+ 	    }
+ 		 
+ 		 
+ 		 
+ 		function debitStudentFee(fullDetailArray)
+ 		{
+ 		
+ 	        
+ 		    $.ajax({
+ 		           type: "POST",
+ 		            url: "/fees/generateFeeDebits-v2",
+ 		            data:{"transactionWrappers":fullDetailArray},
+ 						   
+ 		            success: function(data)
+ 		           {
+ 					
+ 					  toastr.success("Fee Debit generated");
+ 					
+ 		           },
+ 			       error: function(err)
+ 			           {
+ 			               toastr.error("Fee Debit failed !!");
+ 			           }
+ 		         });
+ 				
+ 		}
+ 		 function bindFeeDetails(selectedConfigArray,programId)
+ 		 {
+ 			 console.log(selectedConfigArray);
+ 			 console.log(programId);
+
+ 		    $.ajax(
+ 				{
+ 					"url":"/fees/getManyFeeHeadAmountMap",
+ 					"data":{"pgmId":programId,"feeIdentifierList":String(selectedConfigArray)},
+ 					success:function(data)
+ 					{
+ 						console.log(data.length);
+ 						$('#displayTable').empty();
+ 					
+ 							for(let i=0;i<data.length;i++)
+ 							{
+ 								 var tr=$('<tr><td>'+data[i]['configKey']+'</td><td>'+data[i]['feeAmount']+'</td></tr>');
+ 								 var tr1=$('<tr><td>'+data[i]['configKey']+'</td><td>'+data[i]['feeAmount']+'</td></tr>');
+ 									      	    
+ 						       
+ 								$('#displayTable').append(tr);
+ 								
+ 							}
+ 							
+ 							
+ 					},
+ 					error:function(e)
+ 					{
+ 						console.log("Error in calling ajax "+e);
+ 						toastr.error("Fee not set for this program ");
+ 					}
+ 				});
+ 				
+ 				
+ 		 }
+ 	});
+ var ConfirmDialog = function (data,type){
+
+ var TYPE;
+ var ICON ;
+ var BTN_CLASS;
+
+	 if ( type == 'SAVE'){
+		 TYPE = 'green';
+		 ICON =  'fa fa-save';
+		 BTN_CLASS = 'btn-success';
+	 }
+	 else if ( type == 'DELETE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-trash';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else if ( type == 'APPROVE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-thumbs-up';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else
+	 {
+		 TYPE = 'red';
+		 ICON =  'fa fa-warning';
+		 BTN_CLASS = 'btn-warning';	
+	 }
+	 var DialogPromise = function (resolve, reject) {
+	    
+	     $.confirm({
+	        title: data.title,
+	        content:data.msg,
+	        closeIcon : true,
+	        type: TYPE,
+	        icon: ICON,
+	        offsetTop: 40,	      
+	        bgOpacity :'0.7',
+	        buttons: {  
+	            ok: {
+	                text: "<b> Yes </b>",	            
+	                keys: ['enter'],
+	                action: function(){	                    
+	                     resolve(true); 	                    
+	                }
+	            },
+	            no: function(){
+	              text: "<b> No </b>",	                  
+	                    reject(false); 
+	            }
+	        }
+     });    
+    
+   };    
+    return  new  Promise (DialogPromise);
+ }
+    
+	</script>  
+   
+
+	
+	

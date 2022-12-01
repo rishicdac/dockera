@@ -1,0 +1,219 @@
+<script>
+
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Fee Head-Id"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTable2",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function getallpgsetups()
+{
+	$.ajax(
+	{
+		"url":"/fees/getallpgsetups",
+		"method":"GET",
+		success:function(data)
+		{
+			setUpDataTable(data,[{"pgsetupid":"ID"},{"pgprovidername":"Provider"},{"pgurl":"P-G url"},
+			{"mechantkey":"Merchant Key"},{"salt":"Salt"},{"successurl":"success url"},
+			{"failureurl":"failure url"},{"cancelurl":"cancel url"}],"gridTable",null);
+			onDataTableClick('gridTable',function()
+	   		{
+	   			$('#editpgsetupid').val(selectedRowFromDataTable[0]);
+	   			$('#editpgprovidername').val(selectedRowFromDataTable[1]);
+	   			$('#editpgurl').val(selectedRowFromDataTable[2]);
+	   			$('#editmechantkey').val(selectedRowFromDataTable[3]);
+	   			$('#editsalt').val(selectedRowFromDataTable[0]);
+	   			$('#editsuccessurl').val(selectedRowFromDataTable[4]);
+	   			$('#editfailureurl').val(selectedRowFromDataTable[5]);
+	   			$('#editcancelurl').val(selectedRowFromDataTable[6]);
+	   			$('#dialogEdit').modal({backdrop: 'static', keyboard: false});
+	   		});
+		}
+	});
+}
+$(document).ready(function()
+{
+	getallpgsetups();
+	$('#btnAddFeeHead').unbind().bind('click',function()
+	{
+		$('#dialogAdd').modal({backdrop: 'static', keyboard: false});
+	});
+	$('#addForm').on('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		$.ajax(
+		{
+			"url":"/fees/addpgsetup",
+			"method":"POST",
+			 data:formData,
+			 success:function(data)
+			 {
+				if(data)
+				{
+					showMessage("Settings  Added");
+					$('#dialogAdd').modal('toggle');
+					clearDataTable('gridTable');
+					getallpgsetups();	
+				}
+			}
+						
+		});	
+	}); 
+	$('#editForm').on('submit',function(event)
+	{
+		event.preventDefault();
+		var refundable=false;
+		var formData=$(this).serializeArray();
+	    $.ajax(
+		{
+			"url":"/fees/addpgsetup",
+			"method":"POST",
+			 data:formData,
+			 success:function(data)
+			{
+				if(data)
+				{
+					showMessage("Settings Saved");
+					$('#dialogEdit').modal('toggle');
+					clearDataTable('gridTable');
+					getallpgsetups();					
+				}
+			}
+						
+		});	
+	 }); 
+})
+</script>
+
+<div class="row">
+	<div class="col-xs-4"></div>
+	<div class="col-xs-4"></div>
+	<div class="col-xs-4">
+		<button class="btn btn-primary form-control"  id="btnAddFeeHead" value="Add Gateway">Add Payment Gateway</button>
+	</div>
+</div>
+
+<hr>
+
+<div class="table-responsive">
+	<table id="gridTable" class="table"></table>
+</div>
+
+<div class="modal fade" id="dialogAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Payment Gateway Details</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+	 <div class="modal-body">
+		<form id="addForm">
+			<div class="form-group">
+				<label for="accountName">Payment Gateway Provider Name</label>
+				<input type="text" class="form-control" name="pgprovidername" id="pgprovidername" required>
+			</div>
+			<div class="form-group">
+				<label for="accountName">Gateway Url</label>
+				<input type="text" class="form-control" name="pgurl" id="pgurl" required>
+			</div>
+			<div class="form-group">
+				<label for="accountName">Merchant Key</label>
+				<input type="text" class="form-control" name="mechantkey" id="mechantkey" required>
+			</div>
+			<div class="form-group">
+				<label for="accountName">salt</label>
+				<input type="text" class="form-control" name="salt" id="salt" required>
+			</div>	
+			<div class="form-group">
+				<label for="accountName">success url</label>
+				<input type="text" class="form-control" name="successurl" id="successurl" required>
+			</div>	
+			<div class="form-group">
+				<label for="accountName">failure url</label>
+				<input type="text" class="form-control" name="failureurl" id="failureurl" required>
+			</div>
+			<div class="form-group">
+				<label for="accountName">cancel url</label>
+				<input type="text" class="form-control" name="cancelurl" id="cancelurl" required>
+			</div>	
+			<button type="submit" class="btn btn-primary">Add</button>
+			</form>	
+		</div>
+		      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel">View/Modify Details(Careful if you are modifying)</h6>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+	 <div class="modal-body">
+		<form id="editForm">
+			<div class="form-group">
+				<label for="accountName">Entry Id</label>
+				<input type="text" class="form-control" name="pgsetupid" id="editpgsetupid" required readonly>
+			</div>
+			<div class="form-group">
+				<label for="accountName">Payment Gateway Provider Name</label>
+				<input type="text" class="form-control" name="pgprovidername" id="editpgprovidername" required>
+			</div>
+			<div class="form-group">
+				<label for="accountName">Gateway Url</label>
+				<input type="text" class="form-control" name="pgurl" id="editpgurl" required>
+			</div>
+			<div class="form-group">
+				<label for="accountName">Merchant Key</label>
+				<input type="text" class="form-control" name="mechantkey" id="editmechantkey" required>
+			</div>
+			<div class="form-group">
+				<label for="accountName">salt</label>
+				<input type="text" class="form-control" name="salt" id="editsalt" required>
+			</div>	
+			<div class="form-group">
+				<label for="accountName">success url</label>
+				<input type="text" class="form-control" name="successurl" id="editsuccessurl" required>
+			</div>	
+			<div class="form-group">
+				<label for="accountName">failure url</label>
+				<input type="text" class="form-control" name="failureurl" id="editfailureurl" required>
+			</div>
+			<div class="form-group">
+				<label for="accountName">cancel url</label>
+				<input type="text" class="form-control" name="cancelurl" id="editcancelurl" required>
+			</div>	
+			<button type="submit" class="btn btn-primary">save</button>
+			</form>	
+		</div>
+		      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,157 @@
+<script>
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Religion-Id"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTableRecords",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+var casteArray=new Array();
+function getReligionIdAndName(casteId)
+{
+	for(var i=0;i<casteArray.length;i++)
+	{
+		if(String(casteArray[i]['religionCasteId'])==String(casteId))
+		{
+			return casteArray[i];
+		}
+	}
+}
+$(document).ready(function()
+{
+	$.ajax(
+	{
+		"url":"/religion/getAllReligions",
+		"method":"GET",
+		 success:function(data)
+		{
+			console.log(data);
+			setUpDropDown("mappedReligion",data,"religionId","religionName");
+			setUpDropDown("editMappedReligion",data,"religionId","religionName");
+		}
+					
+	});
+	function loadAllReligionCaste()
+	{
+	    $.ajax(
+   		{
+   			"url":"/religion/getAllReligionCategoriesValidInvalid",
+   			"method":"GET",
+   			 success:function(data)
+   			{
+   				console.log(data);
+   				casteArray=data;
+   				setUpDataTable(data,[{"religionCasteId":"Caste ID"},{"religionCasteName":"Caste Name"},{"religionCasteStatus":"Status"}],"gridTable",null);
+   				onDataTableClick('gridTable',function()
+   				{
+   					$('#editReligionCasteId').val(selectedRowFromDataTable[0]);
+   					getRecordTimeLines(selectedRowFromDataTable[0],"Caste");
+   					if(selectedRowFromDataTable[2]!="invalid")
+   					{
+   						$('#btnSave').attr('disabled',true);
+   					}
+   					else
+   					{
+   						$('#btnSave').attr('disabled',false);
+   					}
+   					$('#editReligionCasteName').val(selectedRowFromDataTable[1]);
+   					var casteDetails=getReligionIdAndName(selectedRowFromDataTable[0]);
+   					console.log(casteDetails);
+   					$('#editMappedReligion').val(casteDetails['mappedReligion']['religionId']);
+   					$('#dialogEdit').modal({backdrop: 'static',
+   	   				     keyboard: false});
+   				});
+   			}
+   		});
+	}
+	loadAllReligionCaste();
+	$('#formReligionCasteEdit').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+	    $.ajax(
+   		{
+   			"url":"/religion/addReligionCategory",
+   			"method":"POST",
+   			 data:formData,
+   			 success:function(data)
+   			{
+   				console.log(data);
+   				showMessage("Caste Added");
+   				$('#dialogEdit').modal('toggle');
+   				clearDataTable('gridTable');
+   				loadAllReligionCaste();
+   			}
+   						
+   		});	
+	});	
+});
+</script>
+<div class="table-responsive cell-border well">
+	<table id="gridTable" class="table table-striped"></table>
+</div>
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Details/Edit Caste</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<p class="h5">Get the entry verified after editing</p>
+			<form id="formReligionCasteEdit" >
+			<div class="form-group">
+		   		<label for="categoryCode">Caste Id</label>
+		   		<input type="text" class="form-control" id="editReligionCasteId"  name="religionCasteId" readonly required>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="categoryCode">Caste Name</label>
+		   		<input type="text" class="form-control" id="editReligionCasteName"  pattern="^[a-zA-Z]+( [a-zA-Z]+)*$"  name="religionCasteName" required>
+		   	</div>
+			<div class="form-group">
+	    		<label for="religionCasteName">Master Religion</label>
+	    		<select  required id="editMappedReligion" name="mappedReligion" class="form-control">
+	    		
+	    		</select>
+	    	</div>
+	    	<div class="form-group">
+				<label for="religionStatus">Set Status</label>
+				<select class="form-control" id="religionCasteStatus" name="religionCasteStatus">
+					<option value="verified">Verified</option>
+				</select>
+			</div>
+			<button type="submit" id="btnSave" class="btn btn-primary">Save</button>
+		   	</form>
+		   	<hr>
+			<div id="accordion">
+	 			<h3>Record Flow History</h3>
+		  		<div>
+		   	 	<p>
+		   		 <div class="table-responsive">
+		    		<table class="table table-striped" id="gridTableRecords"></table>
+		    	</div>
+		    	</p>
+		  		</div>
+		   	</div>
+		</div>
+	    <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>

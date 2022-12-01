@@ -1,0 +1,166 @@
+<script>
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Id"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTable2",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function disableForm(formId)
+{
+	$('#'+formId+' input').attr('readonly','readonly');
+	$('#'+formId+' textarea').attr('readonly','readonly');
+	$('#'+formId+' select').attr('disabled',true);
+	$(':input[type="submit"]').prop('disabled', true);
+	$(':input[type="submit"]').attr('disabled', true);
+}
+function enableForm(formId)
+{
+	$('#'+formId+' input').attr('readonly',false);
+	$('#'+formId+' textarea').attr('readonly',false);
+	$('#'+formId+' select').attr('disabled',false);
+	$(':input[type="submit"]').prop('disabled', false);
+	$(':input[type="submit"]').attr('disabled', false);
+}
+$(document).ready(function()
+{
+	function loadFeeHeadGroups()
+	{
+	    $.ajax(
+   		{
+   			"url":"/fees/getAllFeeHeadGroups",
+   			//"data":{"status":"invalid"},
+   			"method":"GET",
+   			 success:function(data)
+   			{
+   				console.log(data);
+   				setUpDataTable(data,[{"sfsFeeHeadGroupId":"Group ID"},{"sfsFeeHeadGroupName":"Group Name"},{"sfsFeeHeadGroupDescription":"Description"},{"sfsFeeHeadGroupType":"FeeHeadGroupType"},{"sfsFeeHeadGroupStatus":"Status"}],"gridTableFeeHeadGroup",null);
+   				onDataTableClick('gridTableFeeHeadGroup',function()
+   				{
+   					var status=selectedRowFromDataTable[4];
+   					if(status!="invalid")
+   					{
+   						disableForm('formFeeHeadGroupEdit');
+   					}
+   					else
+   					{
+   						enableForm('formFeeHeadGroupEdit');
+   						$('#editsfsFeeHeadGroupId').attr('readonly','readonly');
+   					}
+   				    $('#editsfsFeeHeadGroupId').val(selectedRowFromDataTable[0]);
+   				 	$('#editsfsFeeHeadGroupId').attr('readonly','readonly');
+					$('#editsfsFeeHeadGroupName').val(selectedRowFromDataTable[1]);
+					$('#editsfsFeeHeadGroupDescription').val(selectedRowFromDataTable[2]);
+					$('#editsfsFeeHeadGroupType').val(selectedRowFromDataTable[3]);
+					getRecordTimeLines(selectedRowFromDataTable[0],"Fee-Groups");
+   					$('#dialogEdit').modal({backdrop: 'static',
+   	   				     keyboard: false});
+   				});
+   			}
+   		});
+	    
+	}
+	
+	loadFeeHeadGroups();
+	$('#buttonAddFeeHeadGroup').unbind().bind('click',function()
+	{
+		$('#formFeeHeadGroupAdd input[type="text"]').val('');
+		 $('#dialogAdd').modal({backdrop: 'static',
+		 keyboard: false});
+	});
+	$('#formFeeHeadGroupEdit').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"sfsFeeHeadGroupStatus","value":"checked"});
+	     $.ajax(
+   		{
+   			"url":"/fees/addFeeHeadGroup",
+   			"method":"POST",
+   			 data:formData,
+   			 success:function(data)
+   			{
+   				console.log(data);
+   				showMessage("Changes Saved");
+   				$('#dialogEdit').modal('toggle');
+   				clearDataTable('gridTableFeeHeadGroup');
+   				loadFeeHeadGroups();		   			}
+   		});	
+	});
+});
+</script>
+
+	<br>
+<div class="table-responsive cell-border">
+	<table id="gridTableFeeHeadGroup" class="table table-striped"></table>
+</div>
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Fee Head Group Details</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<form id="formFeeHeadGroupEdit" >
+            <div class="form-group">
+			<label for="editsfsFeeHeadGroupName">Group ID</label>
+		   		<input type="text" class="form-control" id="editsfsFeeHeadGroupId"  name="sfsFeeHeadGroupId">
+		   	</div>
+			<div class="form-group">
+			
+			<label for="sfsFeeHeadGroupName">Group Name</label>
+		   		<input type="text" class="form-control" id="editsfsFeeHeadGroupName"  name="sfsFeeHeadGroupName" required placeholder="Enter Group Name">
+		   		
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="sfsFeeHeadGroupDescription">Description</label>
+		   		<input type="text" class="form-control" id="editsfsFeeHeadGroupDescription"  name="sfsFeeHeadGroupDescription" placeholder="Description">
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="sfsFeeHeadGroupType">Group Type</label>
+		   		<select  class="form-control" id="editsfsFeeHeadGroupType"  name="sfsFeeHeadGroupType">
+		   			<option value="academic">Academic Fees</option>
+		   			<option value="examination">Examination Fees</option>
+		   			<option value="hostel">Hostel Fees</option>
+		   			<option value="others">Others</option>
+		   		</select>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="sfsFeeHeadGroupType">User Remarks</label>
+				<textarea class="form-control" id="sfsFeeHeadGroupUserRemarks" name="sfsFeeHeadGroupUserRemarks"></textarea>
+		   	</div>
+			<button type="submit" class="btn btn-primary">Checked</button>
+		   	</form>
+		   	<div id="accordion">
+ 		 	<h3>Record Flow History</h3>
+	  		<div>
+	   		 <p>
+	   			 <div class="table-responsive">
+	    			<table class="table table-striped" id="gridTable2"></table>
+	    		</div>
+	    	</p>
+	  		</div>
+	   </div>
+		</div>
+		<div class="modal-footer"> </div>
+    </div>
+  </div>
+</div>

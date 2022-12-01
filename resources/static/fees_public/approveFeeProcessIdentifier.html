@@ -1,0 +1,148 @@
+
+<script>
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Fee Category-Id"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTableRecords",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function getAllFeeProcessIdentifier()
+{
+	$.ajax(
+	{
+  		url:'/fees/getAllFeeProcessIdentifier',
+  	   	method:'GET',
+  	   	success:function(data)
+  	   	{
+  	   		console.log("All FeeProcessIdentifierBytype");
+  	   		console.log(data);
+  	   		setUpDataTable(data,[{"feeProcessIdentifierName":"FeeProcessIdentifierName"},{"feeProcessIdentifierType":"FeeProcessIdentifierType"},{"feeProcessIdentifierValidornot":"Status"},{"feeProcessIdentifierState":"State"},{"feeProcessIdentifierDesc":"Description"}],'gridTableFeeProcessIdentifier',null);
+  	   		onDataTableClick("gridTableFeeProcessIdentifier",function()
+  	   		{
+  	   		    $('#editfeeProcessIdentifierName').val(selectedRowFromDataTable[0]);
+  	   			getRecordTimeLines(selectedRowFromDataTable[0],"feeprocessidentifier");
+				$('#editfeeProcessIdentifierType').val(selectedRowFromDataTable[1]);
+				$('#editfeeProcessIdentifierState').val(selectedRowFromDataTable[3]);
+				$('#editfeeProcessIdentifierDesc').val(selectedRowFromDataTable[4]);
+				$('#dialogEdit').modal({backdrop: 'static',
+  				     keyboard: false});
+  	   		})
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	});
+}
+
+
+$(document).ready(function()
+{
+	getAllFeeProcessIdentifier();
+	$('#formFeeProcessIdentifierEdit').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+	     $.ajax(
+   		{
+   			"url":"/fees/saveFeeProcessIdentifier",
+   			"method":"POST",
+   			 data:formData,
+   			 success:function(data)
+   			{
+   				console.log(data);
+   				showMessage("Changes Saved");
+   				$('#dialogEdit').modal('toggle');
+   				clearDataTable('gridTableFeeProcessIdentifier');
+   				getAllFeeProcessIdentifier();
+   			}
+   		});	
+	});	
+});
+</script>
+
+
+<div class="table-responsive">
+	<table class="table table-bordered" id="gridTableFeeProcessIdentifier"></table>
+</div>
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Fee-Process-Identifier Details</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<form id="formFeeProcessIdentifierEdit" >
+			<div class="form-group">
+		   		<label for="feeProcessIdentifierName">FeeProcessIdentifierName</label>
+		   		<input type="text" class="form-control" id="editfeeProcessIdentifierName" pattern="[a-zA-Z0-9\s]+"  name="feeProcessIdentifierName" required readonly>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="feeProcessIdentifierName">Description</label>
+		   		<input type="text" class="form-control" id="editfeeProcessIdentifierDesc"   name="feeProcessIdentifierDesc" >
+		   	</div>
+		   	
+		   	<div class="form-group">
+		   		<label for="feeProcessIdentifierTYpe">Identifier Type</label>
+		   		<select class="form-control"class="form-control" id="editfeeProcessIdentifierType"  name="feeProcessIdentifierType">
+		   		 <option>Select</option>
+						   <option>Academic</option>
+						    <option>Examination</option>
+						    <option>Hostel</option>
+						    <option>Others</option>
+		   		</select>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="feeProcessIdentifierTYpe">Set State</label>
+		   		<select class="form-control"class="form-control" id="editfeeProcessIdentifierState"  name="feeProcessIdentifierState">
+		   		 	<option>open</option>
+					<option>closed</option>	   
+		   		</select>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="feeProcessIdentifierTYpe">Set Status</label>
+		   		<select class="form-control"class="form-control" id="feeProcessIdentifierValidornot"  name="feeProcessIdentifierValidornot">
+		   			<option value="valid">Approved</option>
+		   		    <option value="invalid">Invalidate</option>
+		   		 </select>
+		   	</div>
+			<button type="submit" id="btnSave" class="btn btn-primary">Save</button>
+			</form>
+			<hr>
+			<hr>
+			<div id="accordion">
+	 			<h3>Record Flow History</h3>
+		  		<div>
+		   	 	<p>
+		   		 <div class="table-responsive">
+		    		<table class="table table-striped" id="gridTableRecords"></table>
+		    	</div>
+		    	</p>
+		  		</div>
+	   		</div>
+		</div>
+		      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>

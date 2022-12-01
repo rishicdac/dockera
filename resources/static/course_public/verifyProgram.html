@@ -1,0 +1,166 @@
+<script>
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Fee Category-Id"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTableRecords",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function getAllActiveCourses()
+{
+	$.ajax(
+	{
+  		url:'/course/getAllCoursesValidInvalid',
+  	   	method:'GET',
+  	   	success:function(data)
+  	   	{
+  	   		console.log("All courses");
+  	   		console.log(data);
+  	   		setUpDataTable(data,[{"courseId":"Id"},{"courseCode":"Program Code"},
+  	   		{"courseTitle":"Program Name"},{"courseDuration":"Duration"},
+  	   		{"courseDurationUnit":"Duration Type"},{"courseExamCategory":"Exam Category"},
+  	   		{"courseStatus":"Status"},{"courseNoOfSems":"No of Sems"}],'gridTableCourses',null);
+  	   		onDataTableClick("gridTableCourses",function()
+  	   		{
+  	   			$('#dialogeEditCourse').modal('toggle');
+  	   			getRecordTimeLines(selectedRowFromDataTable[0],"program");
+  	   			$('#courseId').val(selectedRowFromDataTable[0]);
+  	   			$('#editcourseCode').val(selectedRowFromDataTable[1]);
+  	   			$('#editcourseTitle').val(selectedRowFromDataTable[2]);
+  	   			$('#editcourseDuration').val(selectedRowFromDataTable[3]);
+  	   			$('#editcourseDurationUnit').val(selectedRowFromDataTable[4]);
+  	   			$('#editcourseExamCategory').val(selectedRowFromDataTable[5]);
+  	   			$('#editcourseNoOfSems').val(selectedRowFromDataTable[7]);
+  	   		})
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	});
+}
+
+$(document).ready(function()
+{
+	getAllActiveCourses();
+	$('#formProgramEdit').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		//formData.push({"name":"courseStatus","value":"invalid"});
+        $.ajax(
+   		{
+   			"url":"/course/addCourse",
+   			"method":"POST",
+   			 data:formData,
+   			 success:function(data)
+   			{
+   				showMessage("Program Updated"); 
+   				clearDataTable('gridTableCourses');
+   				getAllActiveCourses();
+   				$('#dialogeEditCourse').modal('toggle');
+   				
+   			}
+   		});	
+	});	
+	$('#showAddModal').unbind().bind('click',function()
+	{
+		$('#dialogeAddCourse').modal({backdrop: 'static', keyboard: false});
+	});
+});
+</script>
+<div class="table-responsive">
+	<table class="table table-bordered" id="gridTableCourses"></table>
+</div>
+
+<div class="modal fade" id="dialogeEditCourse" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Program Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+	  </div>   
+	  <div class="modal-body">
+			<form id="formProgramEdit" >
+			<div class="form-group">
+	    		<label for="courseCode">Program ID</label>
+	    		<input required readonly type="text" class="form-control" id="courseId" name="courseId" >
+	    	</div>
+	    	<div class="form-group">
+	    		<label for="courseCode">Program Code</label>
+	    		<input required type="text" class="form-control" id="editcourseCode" name="courseCode"  placeholder="Enter Program Code">
+	    	</div>
+	    	<div class="form-group">
+	    		<label for="courseTitle">Program Name</label>
+	    		<input required type="text" class="form-control" id="editcourseTitle"  name="courseTitle" placeholder="Enter Program Name">
+	    	</div>
+	    	
+	    	<div class="form-group row">
+                <div class="col-sm-6">
+                 <label for="courseDuration">Program Duration</label>
+	    		<input required type="text" class="form-control" id="editcourseDuration"  name="courseDuration" placeholder="Enter Program Duration">
+                </div>
+                <div class="col-sm-6">
+                <label for="courseDurationUnit">Program Duration Unit</label>
+	                <select class="form-control" id="editcourseDurationUnit" name="courseDurationUnit">
+				      <option>Year</option>
+					  <option>Month</option>
+				      <option>Day</option>
+				    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="accountName">Program Exam Type</label>
+	            <select class="form-control" id="editcourseExamCategory" name="courseExamCategory">
+				  <option>Semester</option>
+				  <option>Year</option>
+				</select>
+            </div>
+            
+            <div class="form-group">
+	    		<label for="courseNoOfSems">No: of Semesters</label>
+	    		<input required type="number" class="form-control" id="editcourseNoOfSems"  name="courseNoOfSems" placeholder="Number of semesters">
+	    	</div>
+	    	<div class="form-group">
+	    		<label for="courseNoOfSems">Set Status</label>
+	    		<select class="form-control" name="courseStatus" id="courseStatus">
+	    			<option value="valid">Approved</option>
+	    			<option value="invalid">Invalidate</option>	
+	    		</select>
+	    	</div>
+	    	<button type="submit" id="btnSave" class="btn btn-primary">Save</button>
+	    	</form>
+	    		    	<div id="accordion">
+ 			<h3>Record Flow History</h3>
+	  		<div>
+	   	 	<p>
+	   		 <div class="table-responsive">
+	    		<table class="table table-striped" id="gridTableRecords"></table>
+	    	</div>
+	    	</p>
+	  		</div>
+	   		</div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>		
+	

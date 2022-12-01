@@ -1,0 +1,322 @@
+
+<script>
+var feeIdentifierArray=new Array();
+var paidIdentifierArray=new Array();
+var toBePaidArray=new Array();
+var fullTranArray=new Array();
+var feeIdenToAmoutMap={};
+var feeHeadsToIdenMap={};
+var fineDateDetailsToFeeIden={};
+var today;
+var fineDetailsMap={};
+var selectedStudentCode="";
+var feeIdentifierBalanceStatusMap={};
+var feeHeadIdToNameMap={};
+var feeHeadIdToAmountMap={};
+var SelectedOrMappedUser;
+
+function bindViews(p)
+{
+	for (var key in p)
+	{
+	    if (p.hasOwnProperty(key)) {
+	        $('#'+key).val(p[key]);
+	        $('#'+key).text(p[key]);
+	    }
+	}
+}
+
+function makeCalls()
+{
+	getAdmissionDetailsofStudent();
+	getStudentPersonalDetails();
+	getUserDetailsByUserCode();
+	getStudentClatDetails();
+	loadStudentQualificationsForDocs();
+	getBankDetails();
+}
+function getBankDetails()
+{
+	$.ajax(
+	{
+		"url":"/students/getStudentBankDetails",
+		"method":"GET",
+		data:{"studentBankUserCode":SelectedOrMappedUser},
+		success:function(data)
+		{
+			bindViews(data);		
+		}
+	});
+}
+function addQualificationToReport(data)
+{
+	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>inside qulification print"+data.length);
+	for(var i=0;i<data.length;i++)
+	{
+		 var tab="<tr><td colspan='2'><b>"+data[i]['studentQualificationIdentity']['mappedQualification']['qualificationName']+"</b></td></tr>"+
+		 " <tr><td>Board</td><td>"+data[i]['studentQualificationBoard']+"</td></tr>"+
+		 " <tr><td>Institution</td> <td>"+data[i]['studentQualificationInstitution'] +" </td></tr>"+
+		 " <tr><td>Passing Year</td> <td>"+data[i]['studentQualificationMonthYearPass'] +" </td></tr>"+
+		 " <tr><td>Percentage</td> <td>"+data[i]['studentQualificationPercentage'] +" </td></tr>"+
+		 " <tr><td>Grade</td> <td>"+data[i]['studentQualificationGradeClass'] +" </td></tr>"+
+		 " <tr><td>Marks Obtained</td> <td>"+data[i]['studentQualificationMarksObtained'] +"/"+ data[i]['studentQualificationTotalMarks'] + "</td></tr>";
+		
+		 $('#qualFieldsTable').append(tab);
+	}
+}
+function loadStudentQualificationsForDocs()
+{
+	$.ajax(
+	{
+		url:'/students/getAllStudentQualifications',
+	   	method:'GET',
+	   	data:{"userCode":SelectedOrMappedUser},
+	   	success:function(data)
+	   	{
+	   		addQualificationToReport(data);
+	 	},
+	   	error:function(err)
+	   	{
+	   		showMessage(err);
+	   	}
+	 });
+}
+function getUserDetailsByUserCode()
+{
+	$.ajax(
+	{
+		url:"/userManagement/getUserDetailsByUserCode",
+		data:{"userCodes":SelectedOrMappedUser},
+		success:function(data)
+		{
+			try
+			{
+				bindViews(data['data'][0]);
+			}
+			catch(e)
+			{
+				console.log("Error >>>>>>>>>>>>>>>> in function getUserIdFromUserCodes  ");				
+			}
+		}
+	});
+}
+function getAdmissionDetailsofStudent()
+{
+	$.ajax(
+	{
+		"url":"/students/getAdmissionDetailofStudent",
+		"method":"GET",
+		data:{"studentAdmissionUserCode":SelectedOrMappedUser},
+		success:function(data)
+		{
+			if(data)
+			{
+				bindViews(data);
+				console.log("Student admission darta")
+				console.log(data)
+				if(data['mappedStreamProgram'])
+					$('#streamName').text(data['mappedStreamProgram']['streamCode']+"("+data['mappedStreamProgram']['streamName']+")");
+				var pgmDetails=data['studentAdmissionProgram']['courseCode']+"("+data['studentAdmissionProgram']['courseTitle']+")";
+				var batchDet=data['studentAdmissionBatch']['batchCode'];
+				$('#studentProgramEnrolled').text(pgmDetails);
+				$('#studentBatch').text(batchDet);
+				
+			}
+		}
+	});
+}
+function getStudentClatDetails()
+{
+	$.ajax(
+	{
+		url:'/students/getClatDetails',
+	   	method:'GET',
+	   	data:{"userCodeStudentClat":SelectedOrMappedUser},
+	   	success:function(data)
+	   	{
+	   		console.log(data);
+	   		bindViews(data);
+	   	},
+	   	error:function(err)
+	   	{
+	   		showMessage(err);
+	   	}
+	 });	  
+}
+function getStudentPersonalDetails()
+{
+	$.ajax(
+	{
+		url:'/students/getPersonalDetails',
+	   	method:'GET',
+	   	data:{"userCode":SelectedOrMappedUser},
+	   	success:function(data)
+	   	{
+	   		console.log(data);
+	   		//fillPersonalDetails(data);
+	   		bindViews(data);
+	   		//$('#studentPersonalDob').val($('#studentPersonalDob').val().split('T')[0]);
+	   		var dob=$('#studentPersonalDob').val();
+	   		console.log(dob);
+	   		dob=dob.split('T')[0];
+	   		console.log(dob);
+	   		$('#studentPersonalDob').text("");
+	   		$('#studentPersonalDob').text(dob);
+	   	},
+	   	error:function(err)
+	   	{
+	   		showMessage(err);
+	   	}
+	 });	  
+}
+$(document).ready(function()
+{
+	$('#accordionFine').hide();
+	getAllPrograms();
+	$('#btnCallStudents').on('click',function()
+	{
+		var program=$('#selectProgram').val();
+		var batch=$('#selectBatch').val();
+		getUnverifiedStudents(program,batch);
+		$(this).hide();
+		$('#selectionPanel').hide();
+	});
+	$('#printReport').unbind().bind('click',function()
+	{
+		printReport2('reportDiv','Student Details');	
+	});
+});
+
+function getUnverifiedStudents(pgm,batch)
+{
+	$.ajax(
+	{
+		url:"/students/getUnverifiedStudents",
+		method:"get",
+		data:{"courseId":pgm,"batchId":batch,"status":$('#selectStatus').val()},
+		success:function(data)
+		{
+			console.log(data);
+			setUpDataTable(data,[{"studentCode":"Admission No"},{"studentPersonalStudentName":"Name"}],'gridTable',null);
+			onDataTableClick('gridTable',function()
+			{
+				SelectedOrMappedUser=selectedRowFromDataTable[0];
+				makeCalls();
+
+			});
+		}
+	});
+}
+function getAllPrograms()
+{
+		$.ajax(
+		{
+	   		url:'/course/getAllCourses',
+	   		method:'GET',
+	   		success:function(data)
+	   		{
+	   			setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   			$('#selectProgram').unbind().bind('change',function()
+	   			{
+	   				getAllActiveBatchesOfProgram($(this).val());
+	   			});
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+ }
+ function getAllActiveBatchesOfProgram(programId)
+ {
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatchesInAProgram',
+  	   	method:'GET',
+  	   	data:{"courseId":programId},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+  	   		setUpDropDown('selectBatch1',data,'batchId','batchCode');
+
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+
+</script>
+	<div class="row well" id="selectionPanel">
+		<div class="col-md-4">
+		    <label for="accountName">Select Program</label>
+		    <select class="form-control grouping" id="selectProgram"></select>
+		</div>
+		<div class="col-md-4">
+		    <label for="accountName">Select Batch</label>
+		    <select class="form-control grouping" id="selectBatch"></select>
+		</div>
+		<div class="col-md-4">
+		    <label for="selectStatus">Select Student Status</label>
+		    <select class="form-control grouping" id="selectStatus">
+		    <option value="invalid">invalid</option>
+	    	<option value="processing">Forwarded</option>
+		    <option value="valid">Approved</option>
+		    </select>
+		</div>
+	 </div> 
+<hr>
+<div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4"><button id="btnCallStudents" class="btn btn-primary form-control">Apply</button></div>
+		<div class="col-md-4"></div>
+</div>
+<hr>
+<div class="table-responsive cell-border well" id="gridTableDiv">
+	<table id="gridTable" class="table table-striped"></table>
+</div>
+<u><h4 id="head"></h4></u>
+<div id="accordion">
+ </div>
+ <hr>
+<div class="row">
+<div class="col-xs-8"></div><div class="col-xs-4"><button id="printReport">Print</button></div>
+</div>
+<div class="table-responsive" id="reportDiv">
+	<table class="table" >
+		<thead><tr><td colspan="2"><b>Student Details</b></td></tr></thead>
+		<tbody>
+		<tr><td>Name</td><td id="studentPersonalStudentName"></td></tr>
+		<tr><td>Aadhar</td><td id="studentPersonalAadhar"></td></tr>
+		<tr><td>Email</td><td id="email"></td></tr>
+		<tr><td>Mobile</td><td id="mobile"></td></tr>
+		<tr><td>Gender</td><td id="studentPersonalGender"></td></tr>
+		<tr><td>DOB</td><td id="studentPersonalDob"></td></tr>
+		<tr><td>Passport</td><td id="studentPersonalPassport"></td></tr>
+		</tbody>
+		<tr><td colspan="2"><b>Admission Details</b></td></tr>
+		<tr><td>Admission Type</td><td id=studentAdmissionType></td></tr>
+		<tr><td>Program Enrolled</td><td id=studentProgramEnrolled></td></tr>
+		<tr><td>Batch</td><td id=studentBatch></td></tr>
+		<tr><td>Reg No</td><td id=studentRegNo></td></tr>
+		<tr><td>Roll No</td><td id=studentAdmissionRollNo></td></tr>
+		<tr><td>Stream</td><td id=streamName></td></tr>
+		<tr><td>Division</td><td id=studentDivision></td></tr>
+		<tr><td colspan="2"><b>CLAT Details</b></td></tr>
+		<tr><td>CLAT Admit Card No</td><td id=clatApplicationNo></td></tr>
+		<tr><td>CLAT Score</td><td id=clatRollNo></td></tr>
+		<tr><td>CLAT Rank</td><td id=clatRank></td></tr>
+		<tr id="qualFields"><td colspan="2"><b>Qualifications</b></td></tr>
+		<tr><td colspan="2"><table class="table" id="qualFieldsTable"></table></td></tr>
+		<tr><td colspan="2"><b>Bank Details</b></td></tr>
+		<tr><td>Bank</td><td id=studentBankName></td></tr>
+		<tr><td>Account Holder Name</td><td id=studentBankAccountHolderName></td></tr>
+		<tr><td>Account No</td><td id=studentBankAccountNumber></td></tr>
+		<tr><td>Branch</td><td id=studentBankBranch></td></tr>
+		<tr><td>IFSC</td><td id=studentBankIFSC></td></tr>
+	</table>
+</div>
+
+ 

@@ -1,0 +1,249 @@
+<script>
+	var selectedUserArray=new Array();
+	var selectedRolesArray=new Array();
+	var fullRoleMap={};
+	var fullUserMap={};
+	var defaultRole="";
+	$(document).ready(function()
+	{
+		function getAllRoles()
+		{
+			$.ajax(
+			{
+				url:"/userManagement/getRoles",
+				success:function(data)
+				{
+					if(data)
+					{
+						data=data.data;
+						for(let i=0;i<data.length;i++)
+						{
+							fullRoleMap[data[i]['id']]=data[i];
+						}
+						prepareRolesCheckListView(data,'roleTable');
+						$( "#accordion" ).accordion({collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+					}
+				}
+			});
+		}
+		getAllRoles();
+		$('#btnSave').unbind().bind('click',function()
+		{
+			if((selectedUserArray.length>0) && (selectedRolesArray.length>0) && (defaultRole!=""))
+			{
+				$.ajax(
+				{
+					url:"/userManagement/bulkRoleAssign",
+					data:{"selectedRolesArray":selectedRolesArray,"selectedUserArray":selectedUserArray,"defaultRole":defaultRole},
+					method:"post",
+					success:function(data)
+					{
+						if(data.result)
+						{
+							if(data.result=="success")
+							{
+								showMessage("Mapping Done")
+							}
+							else
+							{
+								showMessage("Mapping Failed. Contact Admin");
+							}
+						}	
+					}
+					
+				});				
+			}
+			else
+			{
+				showMessage("Select atleast one user,one role and default role");
+			}
+		});
+		function prepareSelectedUserView()
+		{
+			var displayArray=new Array();
+			for(let i=0;i<selectedUserArray.length;i++)
+			{
+				if(fullUserMap[selectedUserArray[i]])
+				{
+					displayArray.push(fullUserMap[selectedUserArray[i]]);
+				}
+			}
+			setUpDataTable(displayArray,[{"id":"id"},{"usercode":"user code"},{"email":"email"},{"mobile":"mobile"}],"selectedUserTable",null);
+			onDataTableClick('selectedUserTable',function()
+			{
+				var userId=selectedRowFromDataTable[0];
+				removeFromSelectedUserArray(userId);
+				prepareSelectedUserView();
+			});	
+		}
+		function addToSelectedUserArray(elem)
+		{
+			if(selectedUserArray.indexOf(elem)==-1)
+			{
+				selectedUserArray.push(elem)
+			}
+		}
+		function addToselectedRolesArray(elem)
+		{
+			if(selectedRolesArray.indexOf(elem)==-1)
+			{
+				selectedRolesArray.push(elem)
+			}
+		}
+		function removeFromselectedRolesArray(elem)
+		{
+			selectedRolesArray = $.grep(selectedRolesArray, function(value) 
+			{
+				return value != elem;
+			});
+		}
+		function removeFromSelectedUserArray(elem)
+		{
+			selectedUserArray = $.grep(selectedUserArray, function(value) 
+			{
+				return value != elem;
+			});
+		}
+		function getUsersByType(ut)
+		{
+			$.ajax(
+			{
+				url:"/userManagement/getUserByType",
+				data:{"userType":ut},
+				success:function(data)
+				{
+					if(data)
+					{
+						data=data.data;
+						for(let i=0;i<data.length;i++)
+						{
+							fullUserMap[data[i]['id']]=data[i];
+						}
+						setUpDataTable(data,[{"id":"id"},{"usercode":"user code"},{"email":"email"},{"mobile":"mobile"}],"userTable",null);
+						onDataTableClick('userTable',function()
+						{
+							var userId=selectedRowFromDataTable[0];
+							addToSelectedUserArray(userId);
+							prepareSelectedUserView();
+						});	
+					}
+				}
+			});
+		}
+		function prepareRolesCheckListView(data,table)
+		{
+			$('#'+table).empty();
+			var tr=$('<tr><td>Role Name</td><td>Assign</td><td>Default</td></tr>');
+			$('#'+table).append(tr);
+			for(let i=0;i<data.length;i++)
+			{
+				var tr=$('<tr><td>'+data[i]['role_name']+'</td><td><input type="checkbox" class="rolesel form-check-input" id="'+data[i]['id']+'"></td><td><input type="checkbox" class="defaultrolesel form-check-input" id="default-'+data[i]['id']+'"></td></tr>');
+				$('#'+table).append(tr);
+			}
+			$('.rolesel').unbind().bind('change',function()
+			{
+				if(this.checked)
+				{
+					addToselectedRolesArray($(this).attr('id'));
+				}
+				else
+				{
+					removeFromselectedRolesArray($(this).attr('id'));
+				}
+			});
+			$('.defaultrolesel').unbind().bind('change',function()
+			{
+				if(this.checked)
+				{
+					var defaultRoleTemp=$(this).attr('id');
+					defaultRole=defaultRoleTemp.replace('default-','');
+					if(selectedRolesArray.indexOf(defaultRole)==-1)
+					{
+						defaultRole="";	
+						$('.defaultrolesel').each(function()
+						{
+							$(this).prop('checked',false);	
+						});	
+						showMessage("Check this Role and then make it default");
+					
+					}
+					else
+					{
+						$('.defaultrolesel').each(function()
+						{
+							if($(this).attr('id')==defaultRoleTemp)
+							{
+								
+							}
+							else
+							{
+								$(this).prop('checked',false);	
+							}
+						});					
+					}
+				}
+				else
+				{
+					defaultRole="";
+				}
+			});
+		}
+
+		$('#usertype').unbind().bind('change',function()
+		{
+			var usertype=$(this).val();
+			if(usertype!="")
+			{
+				getUsersByType(usertype);
+			}
+		});
+	});
+</script>
+<div class="row">
+	<div class="col-md-2"></div>
+	<div class="col-md-8">
+		<label class="label">Select User Type</label>
+		<select id="usertype" class="form-control">
+			<option val="">select</option>
+			<option>student</option>
+			<option>employee</option>
+			<option>guardian</option>
+			<option>admin</option>
+		</select>
+	</div>	
+	<div class="col-md-2"></div>
+</div>
+<hr>
+<div class="row">
+	<div class="col-md-12">
+		<div id="accordion">
+	 	 <h3>Role Selection</h3>
+		  <div>
+			<div class="table-responsive">
+				<table class="table table-striped" id="roleTable"></table>
+			</div>
+		  </div>
+	  	</div>
+  	</div>
+</div>
+<hr>
+<div class="row">
+	<div class="col-md-6">
+	<hr>
+		<div class="table-responsive">
+			<table class="table table-striped" id="userTable"></table>
+		</div>
+	</div>
+	<div class="col-md-6">
+	<hr>
+		<div class="table-responsive">
+			<table class="table" id="selectedUserTable"></table>
+		</div>
+	</div>
+</div>
+<hr>
+<div class="row">
+	<div class="col-md-3"></div>
+	<div class="col-md-6"><button id="btnSave" class="btn btn-warning form-control">Map Role</button></div>
+	<div class="col-md-3"></div>
+</div>	

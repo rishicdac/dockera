@@ -1,0 +1,112 @@
+<script src="/students_public/xlconvertor.js"/></script> 
+ <script>
+ $(document).ready(function(){
+	 var jsonData;
+     $("#regfile").change(function(evt){
+           var selectedFile = evt.target.files[0];
+           var reader = new FileReader();
+           reader.onload = function(event) {
+             var data = event.target.result;
+             var workbook = XLSX.read(data, {
+                 type: 'binary'
+             });
+             workbook.SheetNames.forEach(function(sheetName) 
+            {
+                 var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                 jsonData = XL_row_object;//JSON.stringify(XL_row_object);
+                 console.log(jsonData);
+                 setUpDataTable(jsonData,[{"M":"descr"},{"N":"result"}],"gridTable",null);
+               })
+           };
+           reader.onerror = function(event) {
+             console.error("File could not be read! Code " + event.target.error.code);
+           };
+
+           reader.readAsBinaryString(selectedFile);
+     });
+     
+     $('.regupdate').unbind().bind('click',function(e)
+    {
+    	if(jsonData)
+    	{
+    		var formData=new Array();
+    		for(let i=0;i<jsonData.length/2;i++)
+    		{
+    			var map={};
+    			map["ip"]=$('#ip').val();
+    			map["descr"]=jsonData[i]['M'];
+    			map["result"]=jsonData[i]['N'];
+    			formData.push(map);
+    			
+    		}
+    		console.log(formData)
+    		$.ajax(
+			{
+				"url":"/students/todeleteurl",////
+				"method":"POST",
+				"data":{"reprows":formData},
+				success:function(data)
+				{
+					if(data)
+					{
+						showMessage(data);
+				   		var formData2=new Array();
+			    		for(let i=parseInt(jsonData.length/2);i<jsonData.length;i++)
+			    		{
+			    			console.log(">>");
+			    			console.log(i);
+			    			var map={};
+			    			map["ip"]=$('#ip').val();
+			    			map["descr"]=jsonData[i]['M'];
+			    			map["result"]=jsonData[i]['N'];
+			    			formData2.push(map);
+			    			
+			    		}
+			    		
+			    		$.ajax(
+						{
+							"url":"/students/todeleteurl",////
+							"method":"POST",
+							"data":{"reprows":formData2},
+							success:function(data)
+							{
+						
+									showMessage(data);
+			
+							}
+						});
+					}
+					else
+					{
+						showMessage("Operation Failed. Contact Admin")
+					}
+				}
+			});
+    	}
+    	else
+    	{
+    		showMessage("Upload file containing Admission No and Registration No");
+    	}
+    });
+});
+ </script>
+ <div class="row">
+	 <div class="form-group">
+	    <label>Enter System Ip</label>
+	 	<input type="text" name="ip" id="ip" class="form-control"></input> 
+	 </div>
+ </div>
+ 
+ <div class="row">
+	 <div class="form-group">
+	    <label>Upload Excel File:M for desc and N for fail/pass </label>
+	 	<input type="file" name="regfile" id="regfile"></input> 
+	 </div>
+ </div>
+ <div class="row">
+ 	<div class="col-md-4"></div><div class="col-md-4"><button type="button" class="btn btn-warning regupdate">Submit Data</button></div><div class="col-md-4"></div>
+ </div>
+ <div class="table-responsive">
+  <table class="table" id="gridTable"></table>
+ </div>
+ 

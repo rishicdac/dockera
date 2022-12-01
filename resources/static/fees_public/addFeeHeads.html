@@ -1,0 +1,332 @@
+<script>
+
+var editFeeHeadId;
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Fee Head-Id"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTable2",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function getAllFeeGroups()
+{
+	$.ajax(
+	{
+		"url":"/fees/getAllFeeHeadGroups",
+		"method":"GET",
+		success:function(data)
+		{
+			try
+			{
+				console.log(data);
+				setUpDropDown('selectFeeGroup',data,'sfsFeeHeadGroupId','sfsFeeHeadGroupName');
+				setUpDropDown('editselectFeeGroup',data,'sfsFeeHeadGroupId','sfsFeeHeadGroupName');
+			}
+			catch(e)
+			{
+				showMesage("Error in processing information.contact Admin");
+			}
+		}
+		
+	});		
+}
+function disableForm(formId)
+{
+	$('#'+formId+' input').attr('readonly','readonly');
+	$('#'+formId+' textarea').attr('readonly','readonly');
+	$('#'+formId+' select').attr('disabled',true);
+	$(':input[type="submit"]').prop('disabled', true);
+	$(':input[type="submit"]').attr('disabled', true);
+	$(':input[type="checkbox"]').prop('disabled', true);
+	$(':input[type="checkbox"]').attr('disabled', true);
+}
+function enableForm(formId)
+{
+	$('#'+formId+' input').attr('readonly',false);
+	$('#'+formId+' textarea').attr('readonly',false);
+	$('#'+formId+' select').attr('disabled',false);
+	$(':input[type="submit"]').prop('disabled', false);
+	$(':input[type="submit"]').attr('disabled', false);
+	$(':input[type="checkbox"]').prop('disabled', false);
+	$(':input[type="checkbox"]').attr('disabled', false);
+}
+function getAllFeeHeads()
+{
+	$.ajax(
+	{
+		"url":"/fees/getAllFeeHeadsValidInvalid",
+		"method":"GET",
+		success:function(data)
+		{
+			setUpDataTable(data,[{"sfsFeeHeadId":"ID"},{"sfsFeeHeadName":"Fee Head Name"},{"sfsFeeHeadGroupName":"Mapped Fee Group"},{"accountName":"Mapped Account"},{"sfsFeeHeadStatus":"Status"},{"sfsFeeHeadrefundable":"Refundable"},{"sfsFeeHeadGroupId":"Fee Group ID"},{"accountId":"Mapped AccountID"}],"gridTable",null);
+			onDataTableClick('gridTable',function()
+	   		{
+	   			$('#sfsFeeHeadId').val(selectedRowFromDataTable[0]);
+	   			$('#editsfsFeeHeadName').val(selectedRowFromDataTable[1]);
+	   			$('#editselectFeeGroup').val(selectedRowFromDataTable[6]);
+	   			var status=selectedRowFromDataTable[4];
+	   			$('#editmappedAccount').val(selectedRowFromDataTable[7]);
+	   			var refun=selectedRowFromDataTable[5];
+	   			console.log(refun)
+	   			if(refun.trim()=="false")
+	   			{
+	   				$('#editsfsFeeHeadrefundable').prop("checked", false);
+	   				$('#editsfsFeeHeadrefundable').attr("checked", false);
+	   			}
+	   			else
+	   			{
+	   				$('#editsfsFeeHeadrefundable').attr("checked", true);
+	   				$('#editsfsFeeHeadrefundable').prop("checked", true);
+	   			}
+	   			if(status!="invalid")
+	   			{
+	   				disableForm('formEdit');
+	   			}
+	   			else
+	   			{
+	   				enableForm('formEdit');
+	   				$('#sfsFeeHeadId').attr('readonly','readonly');
+	   			}
+	   			$('#dialogEdit').modal({backdrop: 'static',
+	   		     keyboard: false});
+	   			getRecordTimeLines(selectedRowFromDataTable[0],"Fee-Heads")
+	   		});
+		}
+	});
+}
+$(document).ready(function()
+{
+	getAllFeeGroups();
+	getAllFeeHeads();
+	$.ajax(
+	{
+		"url":"/accounts/getAllAccountsNotStudenNotSubjectt",
+		"method":"GET",
+		success:function(data)
+		{
+			try
+			{
+				console.log(data)
+				console.log("------------ of length-----")
+				console.log(data.length)
+				for(var i=0;i<data.length;i++)
+				{
+					var accObj=data[i];
+					var opt=$('<option value="'+accObj["accountId"] +'">'+accObj["accountName"]+'</option>')
+					var opt2=$('<option value="'+accObj["accountId"] +'">'+accObj["accountName"]+'</option>')
+					$('#mappedAccount').append(opt);
+					$('#editmappedAccount').append(opt2);
+				}
+			}
+			catch(e)
+			{
+				showMesage("Error in processing account information.contact Admin");
+			}
+		}
+	});
+	$('#btnAddFeeHead').unbind().bind('click',function()
+	{
+		$('#addForm input').val('');
+		$('#feeHeadName').val('');
+		$('#selectFeeGroup').val('');
+		$('#mappedAccount').val('');
+		 $('#dialogAdd').modal({backdrop: 'static',
+		 keyboard: false});
+	});
+	
+	$('#addForm').on('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		var refundable=false;
+		var rem=$('#userRemarks').val();
+		if($('#sfsFeeHeadrefundable').is(":checked"))
+		{
+			refundable=true;
+		}
+		formData.push({"name":"sfsFeeHeadrefundable","value":refundable});
+		formData.push({"name":"sfsFeeHeadStatus","value":"invalid"});
+		$.ajax(
+		{
+			"url":"/fees/addFeeHead",
+			"method":"POST",
+			 data:formData,
+			 success:function(data)
+			{
+				if(data)
+				{
+					showMessage("Fee Head Added");
+					$('#dialogAdd').modal('toggle');
+					clearDataTable('gridTable');
+					getAllFeeHeads();	
+				}
+			}
+						
+		});	
+	}); 
+	 $('#formEdit').on('submit',function(event)
+	 {
+		event.preventDefault();
+		var refundable=false;
+		if($('#editsfsFeeHeadrefundable').is(":checked"))
+		{
+			refundable=true;
+		}
+		var formData=$(this).serializeArray();
+		formData.push({"name":"sfsFeeHeadStatus","value":"invalid"});
+		formData.push({"name":"sfsFeeHeadrefundable","value":refundable});
+		console.log(formData);
+        $.ajax(
+		{
+			"url":"/fees/addFeeHead",
+			"method":"POST",
+			 data:formData,
+			 success:function(data)
+			{
+				if(data.sfsFeeHeadId)
+				{
+					showMessage("Fee Head updated. Get it Verified");
+					$('#dialogEdit').modal('toggle');
+					clearDataTable('gridTable');
+					getAllFeeHeads();					
+				}
+			}
+						
+		});	
+	 }); 
+})
+</script>
+
+<div class="row">
+	<div class="col-xs-4"></div>
+	<div class="col-xs-4"></div>
+	<div class="col-xs-4">
+		<button class="btn btn-primary form-control"  id="btnAddFeeHead" value="Add Fee Head">Add Fee Head</button>
+	</div>
+</div>
+
+<hr>
+
+<div class="table-responsive">
+	<table id="gridTable" class="table"></table>
+</div>
+
+<div class="modal fade" id="dialogAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Fee Head</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<form id="addForm">
+					<div class="form-group">
+						<label for="accountName">Fee Head Name</label>
+						<input type="text" class="form-control" name="sfsFeeHeadName" id="feeHeadName" aria-describedby="accountHelp" placeholder="Enter Fee Head Name" required>
+					</div>
+					<div class="form-group">
+						<label for="selectFeeGroup">Select Fee Group</label>
+						<select class="form-control" id="selectFeeGroup" name="mappedSfsFeeHeadGroup">
+						  <option value="">Select Account</option>
+						</select>
+					</div>
+					 <div class="form-group">
+						<label for="accPLHeadProfity">Select Associated Account</label>
+						<select class="form-control" id="mappedAccount" name="mappedAccount">
+						  <option value=''>Select Account</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="userRemarks">Remarks</label>
+						<textarea row="3" class="form-control" id="sfsFeeHeadUserRemarks" name="sfsFeeHeadUserRemarks">
+						</textarea>
+					</div>
+					<div class="form-group">
+						<label class="checkbox-inline"><input id="sfsFeeHeadrefundable" type="checkbox" value="">Refundable?</label>
+					</div>
+					<button type="submit" class="btn btn-primary">Add</button>
+			</form>	
+		</div>
+		      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Details/Edit Fee Heads</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<p class="h3">Fee Head Details</p>
+			<form id="formEdit" >
+			<div class="form-group">
+		   		<label for="categoryCode">Fee Head ID</label>
+		   		<input type="text" class="form-control" id="sfsFeeHeadId"  name="sfsFeeHeadId" readonly>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="categoryCode">Fee Head Name</label>
+		   		<input type="text" class="form-control" id="editsfsFeeHeadName"  name="sfsFeeHeadName"  required>
+		   	</div>
+			<div class="form-group">
+				<label for="selectFeeGroup">Select Fee Group</label>
+				<select class="form-control" id="editselectFeeGroup" name="mappedSfsFeeHeadGroup">
+				  <option value=''>Select Account</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="accPLHeadProfity">Select Associated Account</label>
+				<select class="form-control" id="editmappedAccount" name="mappedAccount">
+				  <option value=''>Select Account</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="userRemarks">Remarks</label>
+				<textarea row="3" class="form-control" id="editsfsFeeHeadUserRemarks" name="sfsFeeHeadUserRemarks">
+				</textarea>
+			</div>
+			<div class="form-group">
+				<label class="checkbox-inline"><input id="editsfsFeeHeadrefundable" type="checkbox" value="">Refundable?</label>
+			</div>
+		   	<button type="submit" class="btn btn-primary">Save</button>
+		   	</form>
+		   	
+		 <div id="accordion">
+ 		 <h3>Record Flow History</h3>
+	  		<div>
+	   		 <p>
+	   			 <div class="table-responsive">
+	    			<table class="table table-striped" id="gridTable2"></table>
+	    		</div>
+	    	</p>
+	  		</div>
+	   </div>
+		</div>
+		      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>

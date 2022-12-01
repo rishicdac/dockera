@@ -1,0 +1,290 @@
+<script>
+var studentArray=new Array();
+function trimString(str)
+{
+	var str1=str.replace(/ /g,'').replace(/\//g,'-').replace(/#/g,'-').replace(/ /g,'');
+	console.log("Converted string is "+str1)
+	return str1;
+}
+function setUpStudentList(data)
+{
+	$('#studentTableBody').empty();
+	for(var i=0;i<data.length;i++)
+	{
+		var stud=data[i];
+		studentArray.push(stud['studentCode']);
+		var tr=$('<tr><td>'+stud["studentCode"]+'</td><td>'+stud["studentName"]+'</td><td><input  studId="'+stud['studentCode']+'"  id="'+trimString(stud['studentCode'])+'" type="checkbox" class="studentList" style:"margin-right: 20px"  checked></td></tr>')
+		$('#studentTableBody').append(tr);
+		setUpCheckBox();
+		$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+	}
+}
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Fee Head-Id"},{"sfmftlRemarks":"User Comments"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTable2",null);
+				$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function setUpCheckBox()
+{
+	function addToArray(stud)
+		{
+		   if(studentArray.indexOf(String(stud)) !== -1)
+		   {
+		   }
+		   else
+		   {
+			   studentArray.push(String(stud));  
+		   }
+		}
+		function removeFromArray(stud)
+		{
+		   if(studentArray.indexOf(String(stud)) !== -1)
+		   {
+			   stud=String(stud)
+			   studentArray = jQuery.grep(studentArray,function(value) 
+			   {
+				   return value != stud;
+			   }); 
+		   }
+		}
+	$('.studentList').unbind().bind('change',function()
+	{
+		var studId=$(this).attr('studId');
+		if(this.checked)
+		{
+			addToArray(studId);
+		}
+		else
+		{
+			removeFromArray(studId);
+		}
+	});
+	$('#selectall').unbind().bind('change',function()
+	{
+		if(this.checked)
+		{
+			$('.studentList').each(function()
+			{
+				$(this).prop("checked",true);
+				addToArray($(this).attr('studid'));
+			})
+		}
+		else
+		{
+			$('.studentList').prop("checked",false);
+			studentArray=[];
+		}
+	});
+}
+function getAllPrograms()
+{
+	$.ajax(
+	{
+   		url:'/course/getAllCourses',
+   		method:'GET',
+   		success:function(data)
+   		{
+   			setUpDropDown("selectProgram",data,"courseId","courseCode");
+   			$('#selectProgram').unbind().bind('change',function()
+   			{
+   				getAllActiveBatchesOfProgram($(this).val());
+   			});
+   		},
+   		error:function(err)
+   		{
+   			showMessage(err);
+   		}
+   	});
+ }
+ function getAllActiveBatchesOfProgram(programId)
+ {
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatchesInAProgram',
+  	   	method:'GET',
+  	   	data:{"courseId":programId},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+  	   		setUpDropDown('selectBatch1',data,'batchId','batchCode');
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+ function getStudents(pgm,batch,sem,status)
+ {
+ 	$.ajax(
+ 	{
+ 		url:"/students/getStudentsByPgmBatchSemStatus-V1",
+ 		method:"get",
+ 		data:{"programId":pgm,"batchId":batch,"semester":sem,"status":status},
+ 		success:function(data)
+ 		{
+ 			setUpStudentList(data);
+ 			$('#finalDiv1').show();
+ 			$('#finalDiv2').show();
+ 			$('#finalDiv').show();
+ 		}
+ 	});
+ }
+$(document).ready(function()
+{
+	getAllPrograms();
+	$('#btnCallStudents').on('click',function()
+	{
+		var program=$('#selectProgram').val();
+		var batch=$('#selectBatch').val();
+		var sem=$('#selectSemester').val();
+		var status=$('#selectStatus').val();
+		$('#selectalldiv').show();
+		getStudents(program,batch,sem,status);
+		getRecordTimeLines(batch,"semester-shift");
+		
+	});
+	$('#sendnotification').unbind().bind('click',function()
+	{
+		if(studentArray.length>0)
+		{
+			$.ajax(
+			{
+				url:"/students/shiftSemester",
+				data:{"batchId":$('#selectBatch').val(),"studenUserCodes":String(studentArray),"fromSemester":$('#selectSemester').val(),"toSemester":$('#toSemester').val(),"userRemarks":$('#userRemarks').val()},
+				type:"POST",
+				success:function(data)
+				{
+					showMessage("Update saved");
+					refreshContent();
+					console.log(data);
+				}
+			});
+		}
+		else
+		{
+			showMessage("No student selected for sending notification");
+		}
+	});
+});
+</script>
+
+<div class="row well" id="selectionPanel">
+	<div class="col-md-3">
+	    <label for="accountName">Select Program</label>
+	    <select class="form-control grouping" id="selectProgram"></select>
+	</div>
+	<div class="col-md-3">
+	    <label for="accountName">Select Batch</label>
+	    <select class="form-control grouping" id="selectBatch"></select>
+	</div>
+	<div class="col-md-3">
+	    <label for="accountName">From Semester:</label>
+	    <select class="form-control grouping" id="selectSemester">
+	    	<option value="semester1">semester 1</option>
+	    	<option value="semester2">semester 2</option>
+	    	<option value="semester3">semester 3</option>
+	    	<option value="semester4">semester 4</option>
+	    	<option value="semester5">semester 5</option>
+	    	<option value="semester6">semester 6</option>
+	    	<option value="semester7">semester 7</option>
+	    	<option value="semester8">semester 8</option>
+	    	<option value="semester9">semester 9</option>
+	    	<option value="semester10">semester 10</option>
+	    	<option value="course_completed">course completed</option>
+	    	<option value="course_discontinued">course discontinued</option>
+	    
+	    </select>
+	</div>
+	<div class="col-md-3">
+	    <label for="selectStatus">Select Student Status</label>
+	    <select class="form-control grouping" id="selectStatus">
+	    <option value="valid">Approved</option>
+	    <option value="invalid">invalid</option>
+    	<option value="processing">Forwarded</option>
+	    
+	    </select>
+	</div>
+ </div> 
+ <hr>
+ <div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4"><button id="btnCallStudents" class="btn btn-primary form-control">Apply</button></div>
+		<div class="col-md-4"></div>
+</div>
+ <hr>
+
+		<div class="table-responsive">
+			<div class="form-check" style="display:none" id="selectalldiv">
+			  <input class="form-check-input" type="checkbox" value="" id="selectall" checked pull-right>
+			  <label class="form-check-label" for="selectall">
+			   Select/Deselect All
+			  </label>
+			</div>
+			<table class="table">
+				<tbody id="studentTableBody"></tbody>
+			</table>
+		</div>
+		<hr>
+		<hr>
+	 <div class="row" id="finalDiv1" style="display:none">
+	 	<div class="col-md-12">
+	 	    <label for="accountName">To Semester:</label>
+		    <select class="form-control grouping" id="toSemester">
+		    	<option value="semester1">semester 1</option>
+		    	<option value="semester2">semester 2</option>
+		    	<option value="semester3">semester 3</option>
+		    	<option value="semester4">semester 4</option>
+		    	<option value="semester5">semester 5</option>
+		    	<option value="semester6">semester 6</option>
+		    	<option value="semester7">semester 7</option>
+		    	<option value="semester8">semester 8</option>
+		    	<option value="semester9">semester 9</option>
+		    	<option value="semester10">semester 10</option>
+		    	<option value="course_completed">course completed</option>
+		    	<option value="course_discontinued">course discontinued</option>
+		    
+		    </select>
+	 	</div>
+	 </div>
+ <hr>
+  <div class="row" id="finalDiv2" style="display:none">
+	<div class="col-md-12">
+		<label for="accountName">Remarks</label>
+	    <textarea class="form-control" id="userRemarks" name="userRemarks"></textarea>
+	</div>
+</div>
+<hr>
+ 
+ <div class="row" id="finalDiv" style="display:none">
+		<div class="col-md-4"></div>
+		<div class="col-md-4"><button id="sendnotification" class="btn btn-primary form-control">Apply semester change</button></div>
+		<div class="col-md-4"></div>
+</div>
+<div id="accordion">
+	 <h3>Batch Sem change History</h3>
+ 		<div>
+  		 <p>
+  			 <div class="table-responsive">
+   			<table class="table table-striped" id="gridTable2"></table>
+   		</div>
+   	</p>
+ 		</div>
+  </div>

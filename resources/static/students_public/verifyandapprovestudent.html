@@ -1,0 +1,4156 @@
+ 	<style>
+	.remarkbtn 
+{
+
+  position: fixed;
+  z-index: 2;
+  top:85%;
+  right: 0;
+  background-color: #509796;
+  overflow-x: visible;
+  transition: 0.5s;
+ 
+}
+.remarkcontent
+{
+  width:100%;	
+  position: fixed;
+  z-index: 1;
+  height: 80%;
+  top: 0;
+  left: 28%;
+  right:10%;
+  background-color: #FFFFFF;
+  overflow-x: scroll;
+  overflow-y: scroll;
+  transition: 0.8s;
+ }
+ .alert-warning {
+    color: #1F2D3D;
+    background: #ffffff;
+    border-color: #edb100;
+}
+</style>
+
+<div>
+  <a id="remarksShow" style="display:none" class="btn btn-primary remarkbtn" data-toggle="collapse" href="#remarkWindow" role="button" aria-expanded="false"
+    aria-controls="multiCollapseExample1"><i class="fa fa-tags"></i>Remarks</a>
+ </div>
+<!--/ Collapse buttons -->
+
+<!-- Collapsible content -->
+<div class="row remarkcontent collapse multi-collapse"  id="remarkWindow" >
+  <div class="form-group">
+    <div class="table-responsive">
+	    <table class="table" style:"word-wrap: break-word">
+	      <thead>
+		    <tr>
+		      <th scope="col">Comments</th>
+		    </tr>
+		  </thead>
+		  <tbody id="oldMessages"></tbody>
+	    </table>
+     </div>
+	<hr>
+	<div id="enterRemarks">
+   	<label for="exampleFormControlTextarea1">Remarks/Comments</label>
+    <textarea class="form-control" id="spcomment" name="spcomment"></textarea>
+ 	 <a class="btn btn-primary" data-toggle="collapse" id="messageSubmission" role="button" aria-expanded="false"
+   	  aria-controls="multiCollapseExample1"><i class="fa fa-tags"></i>Save comment</a>
+   	 <a class="btn btn-primary" data-toggle="collapse" href="#remarkWindow" role="button" aria-expanded="true"
+   	 aria-controls="multiCollapseExample1"><i class="fa fa-tags"></i>Close</a>
+   	 </div>
+   </div>
+   <hr>
+   <hr>
+   <hr>
+   <hr>
+   <hr>
+   <hr>
+   <br>
+   <br>
+</div>
+<script>
+var rooturl="https://ams.nuals.ac.in";
+function getRecordTimeLines(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Student Admission Code"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTableStudentPersonal",null);
+				$( "#accordion1" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function getRecordTimeLines2(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Student Admission Code"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTableStudentClat",null);
+				$( "#accordion2" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function getRecordTimeLines3(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Student Admission Code"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTableStudentAdmission",null);
+				$( "#accordion3" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function getRecordTimeLines4(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Student Admission Code"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTable4",null);
+				$( "#accordion4" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function getRecordTimeLines5(processId,processName)
+{
+	$.ajax(
+	{
+		"url":"/masterdata/getMasterDataRecordTimeLines",////
+		"method":"GET",
+		"data":{"processId":processId,"processName":processName},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['mdtlDate']=data[i]['mdtlDate'].split('T')[0];
+				}
+				setUpDataTable(data,[{"mdtlProcessId":"Student Admission Code"},{"activityLog":"Record Log"},{"mdtllUserCode":"By User"},{"mdtltlStatus":"Status Set"},{"mdtlDate":"on"}],"gridTable5",null);
+				$( "#accordion5" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+			}
+		}
+	});
+}
+function fillMessageWindow(data)
+{
+	$('#oldMessages').empty();
+	try
+	{
+		for(let i=0;i<data.length;i++)
+		{
+			var div=$('<tr><td><div id="div-'+String(i)+'" class="alert alert-warning msg" role="alert">'+data[i]['spcommenteduser']+' : '+ data[i]['spcomment']+'<sub>'+data[i]['spcommentdate']+'</sub></div></td></tr>');
+			$('#oldMessages').append(div).show();
+			$('.alert-warning').css("background","");
+			$('.alert-warning').css("border-color","")
+		//	$('#div-'+String(i)).css("background","")
+		//	$('#div-'+String(i)).css("border-color","")
+		}
+		$('#enterRemarks').focus();
+	}
+	catch(e)
+	{
+		alert(e);
+	}
+}
+function getStudentPinNotes()
+{
+	$.ajax(
+	{
+		url:"/students/getStudentPinNotes",
+		type:"GET",
+		data:{"spstudentcode":SelectedOrMappedUser},
+		success:function(data)
+		{
+			console.log(data);
+			fillMessageWindow(data);
+		}
+	}); 
+}
+	function submitpinNotes()
+	{
+		$.ajax(
+		{
+			url:"/students/addStudentPinNotes",
+			type:"post",
+			data:{"spcomment":$('#spcomment').val(),"spstudentcode":SelectedOrMappedUser},
+			success:function(data)
+			{
+				$('#spcomment').val('');
+				getStudentPinNotes();
+			}
+		});
+				
+	}
+	$('#messageSubmission').on('click',function()
+	{
+		submitpinNotes();
+	})
+</script>
+ 	<div class="row well">
+		<div class="col-md-4">
+		    <label for="accountName">Select Program</label>
+		    <select class="form-control grouping" id="selectProgram1"></select>
+		</div>
+		<div class="col-md-4">
+		    <label for="accountName">Select Batch</label>
+		    <select class="form-control grouping" id="selectBatch1"></select>
+		</div>
+		<div class="col-md-4">
+		    <label for="selectStatus">Select Student Status</label>
+		    <select class="form-control grouping" id="selectStatus">
+		    <option value="invalid">invalid</option>
+	    	<option value="processing">Verified</option>
+		    <option value="valid">Approved</option>
+		    </select>
+		</div>
+	 </div> 
+ <hr>
+<div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4"><button id="btnCallStudents" class="btn btn-primary form-control">Apply</button></div>
+		<div class="col-md-4"></div>
+</div>
+<hr>
+<div id="starter" class="table-responsive cell-border well">
+	<table id="gridTable" class="table table-striped"></table>
+</div>
+ <script>
+var userCodeToUserIdMap={};
+var userCodeToUserDetailsMap={};
+var selectedRoleArray=new Array();
+var selectedMenuArray=new Array();
+var selectedMobileRoleArray=new Array();
+var courseMap=new Array();
+var userMapFromGuardianSearch={};
+var globalProgramCode;
+var globalBatchCode;
+var globalAdmittedCategory;
+var existingUser=false;
+var oldCourseId;
+var oldBatchId;
+var oldCategoryId;
+var dateDiffe;
+var fileFormData;
+var studentDocMap={};
+
+function setCleanDateFormat(inDate)
+{
+	//12/10/2019
+	inDate=String(inDate);
+	var outDate=inDate.split("/")[2]+"-"+inDate.split("/")[0]+"-"+inDate.split("/")[1];
+	return outDate;
+}
+function getAllValidCommunity()
+{
+	$.ajax(
+	{
+		"url":"/religion/getAllValidCommunity",
+		"method":"GET",
+		success:function(data)
+		{
+			setUpDropDown('selectCommunity',data,'religionCommunityId','religionCommunityName');
+		}
+	});
+
+}
+function checkAndInsert(userCode)
+{
+	  $.ajax(
+	  {
+		 url:"/accounts/getAccountByName",
+		 data:{"accNo":userCode},
+		 success:function(data)
+		 {
+			if((data.accountId==null)||(data.accountId==undefined)||(data.accountId=='undefined'))
+			{
+			  var accountData=new Array();
+			  accountData.push({"name":"accountName","value":userCode});
+			  accountData.push({"name":"accountLedgerType","value":"student"});
+			  accountData.push({"name":"crDrType","value":"cr"});
+			  $.ajax(
+			  {
+				url:"/accounts/addAccount",
+				method:'post',
+				data:accountData,
+				success:function(data)
+				{
+							
+				}
+			  });
+			}
+		 }
+	  });
+}
+function getAllQualifications()
+{
+	$.ajax(
+	{
+		"url":"/students/getAllEducationalQualifications",
+		"method":"GET",
+		success:function(data)
+		{
+			setUpDropDown('qualificationId',data,'qualificationId','qualificationName');
+		}
+	});
+}
+function loadAllActiveFeeCategories()
+{
+    $.ajax(
+	{
+		"url":"/fees/getAllActiveFeeCategories",
+		"method":"GET",
+		 success:function(data)
+		 {
+		   setUpDropDown('mappedFeeCategory',data,'sfsFeeCategoryId','sfsFeeCategoryName');
+		 }
+	});
+}
+function getAdmissionDetailsofStudent()
+{
+	$.ajax(
+	{
+		"url":"/students/getAdmissionDetailofStudent",
+		"method":"GET",
+		data:{"studentAdmissionUserCode":SelectedOrMappedUser},
+		success:function(data)
+		{
+			if(data)
+			{
+				fillAdmissionDetails(data);
+				getDownloadFileDetails(SelectedOrMappedUser);
+			}
+		}
+	});
+}
+function getDownloadFileDetails(studCode)
+{
+	if(studCode)
+	{
+		$.ajax(
+		{
+			"url":"/students/getStudentUploadsByStudentCode",
+			"method":"GET",
+			data:{"userCode":studCode},
+			success:function(data)
+			{
+				if(data)
+				{
+					for(let i=0;i<data.length;i++)
+					{
+						studentDocMap[data[i]['uploadlink']]=data[i]['fileName'];
+					}
+				}
+			}
+		});
+	}
+}
+
+function enableFields()
+{
+	$("#divStudentPersonal :input").attr("disabled", false);
+	$('#formStudentPersonal  input').attr('readonly',false);
+	$('#formAdmissionSave :input').attr('readonly',false);
+	$('#formClatSave :input').attr('readonly',false);
+	$('#formStudentBank :input').attr('readonly',false);
+	$('#addGuardianForm1 input').attr('readonly', false);
+	$('#studentGuardianAddForm input').attr('readonly',false);
+	$('#formStudentEducation input').attr('readonly',false);
+	$('#buttonPersonalSubmit').attr('disabled',false);
+	$('#buttonAdmissionSave').attr('disabled',false);
+	$('#buttonClatDetails').attr('disabled',false);
+	$('#buttonBankSave').attr('disabled',false);
+	$('#showAddModalGuardian').attr('disabled',false);
+	$('#buttonGuardianCheck').attr('disabled',false);
+	//$('#showAddModal').attr('disabled',false);
+	$('#btnedu1').attr('disabled',false);
+	$('#btngmisc1').attr('disabled',false);	
+
+}
+
+function disableFields()
+{
+	$('#formStudentPersonal input').attr('readonly', 'readonly');
+	$('#formAdmissionSave input').attr('readonly', 'readonly');
+	//$('#formClatSave input').attr('readonly', 'readonly');
+	$('#formStudentBank input').attr('readonly', 'readonly');
+	$('#addGuardianForm1 input').attr('readonly', 'readonly');
+	$('#studentGuardianAddForm input').attr('readonly', 'readonly');
+	$('#formStudentEducation input').attr('readonly', 'readonly');
+	$('#buttonPersonalSubmit').attr('disabled',true);
+	$('#buttonAdmissionSave').attr('disabled',true);
+	$('#buttonClatDetails').attr('disabled',true);
+	$('#buttonBankSave').attr('disabled',true);
+	$('#showAddModalGuardian').attr('disabled',true);
+	$('#buttonGuardianCheck').attr('disabled',true);
+	$('#showAddModal').attr('disabled',true);
+	$('#btnedu1').attr('disabled',true);
+	$('#btngmisc1').attr('disabled',true);
+	
+	
+}
+function fillAdmissionDetails(data)
+{
+	try
+	{
+	    if (data["studentAdmissionType"] == 'FS')
+	    {
+	    	$('#fnDocs').show();
+	    	$('#fnDocsHead').show();
+	    	$('#nriDocs').hide();
+	    	$('#nriDocsHead').hide();
+	    }
+	    else if (data["studentAdmissionType"] == 'NRIS') 
+	    {
+	    	$('#fnDocs').hide();
+	    	$('#fnDocsHead').hide();
+	    	$('#nriDocs').show();
+	    	$('#nriDocsHead').show();
+	          
+	    }
+	    else
+	    {
+	    	$('#fnDocs').hide();
+	    	$('#fnDocsHead').hide();
+	    	$('#nriDocs').hide();
+	    	$('#nriDocsHead').hide();
+	    
+	    }
+		if(data['studentAdmissionStatus']=="valid")
+		{
+			showMessage("Selected student is in approved status. Showing read-only data");
+			//disableFields();		
+		}
+		$('#selectProgram').val(data["studentAdmissionProgram"]["courseId"]);
+		$('#selectBatch').val(data["studentAdmissionBatch"]["batchId"]);
+		globalBatchCode=$('#selectBatch').val();
+		$('#studentAdmissionActiveSem').val(data["studentAdmissionActiveSem"]);
+		$('#mappedFeeCategory').val(data['mappedFeeCategory']['sfsFeeCategoryId']);
+		$('#admittedCategory').val(data['admittedCategory']['categoryId']);
+		$('#studentAdmissionRollNo').val(data["studentAdmissionRollNo"]);
+		if(data["studentRegNo"])
+			$('#studentRegNo').val(data["studentRegNo"]);
+		else
+			$('#studentRegNo').val('');
+		if(data["studentAdmissionDistanceToInstitute"])
+			$('#studentAdmissionDistanceToInstitute').val(data["studentAdmissionDistanceToInstitute"]);
+		else
+			$('#studentAdmissionDistanceToInstitute').val('');
+		var radioId=data["studentAdmissionType"];
+		oldCourseId=data["studentAdmissionProgram"]["courseId"];
+		oldBatchId=data["studentAdmissionBatch"]["batchId"];
+		oldCategoryId=data['admittedCategory']['categoryId'];
+		if(data['studentAdmissionDateTime'])
+			$('#studentAdmissionDateTime').val(data['studentAdmissionDateTime'].split('T')[0]);
+		else
+			$('#studentAdmissionDateTime').val('');
+		if(data['studentAdmissionStatus']=="valid")
+		{
+			existingUser=true;		
+		}
+		if(data["studentAdmissionInterUniversity"])
+		{
+			if(data["studentAdmissionInterUniversity"]==true)
+			{
+				$('#studentAdmissionInterUniversity').prop('checked',true);
+				$('#interUniversityDiv').show();
+			}
+			else
+			{
+				$('#studentAdmissionInterUniversity').prop('checked',false);
+				$('#interUniversityDiv').hide();
+			}
+		}
+		$('#studentAdmissionInterUniversityOldRollNo').val(data["studentAdmissionInterUniversityOldRollNo"]);
+		$('#studentAdmissionInterUniversityAdmissionNo').val(data["studentAdmissionInterUniversityAdmissionNo"]);
+		$('#studentAdmissionInterUniversityOldUniversity').val(data["studentAdmissionInterUniversityOldUniversity"]);
+		$('#studentAdmissionInterUniversityOldProgramName').val(data["studentAdmissionInterUniversityOldProgramName"]);
+		$('#studentAdmissionInterUniversitySemestersCompleted').val(data['studentAdmissionInterUniversitySemestersCompleted']);
+		$('#'+radioId).prop('checked',true);
+		
+		var admittedCat=$('#admittedCategory').val();
+		var pgmCode=$('#selectProgram').val();
+		var btchCode=$('#selectBatch').val();
+		getBatchReservationDataForBatch(pgmCode,btchCode,admittedCat);
+		$('#admissionNo').val(data["studentAdmissionUserCode"]);
+		
+	}
+	catch(e)
+	{
+		console.log(e);
+	}
+}
+function fillBankDetails(data)
+{
+	$('#studentBankName').val(data["studentBankName"]);
+	$('#studentBankAccountHolderName').val(data["studentBankAccountHolderName"]);
+	$('#studentBankAccountNumber').val(data["studentBankAccountNumber"]);
+	$('#studentBankBranch').val(data["studentBankBranch"]);
+	$('#studentBankIFSC').val(data["studentBankIFSC"]);
+}
+function getBankDetails()
+{
+	$.ajax(
+	{
+		"url":"/students/getStudentBankDetails",
+		"method":"GET",
+		data:{"studentBankUserCode":SelectedOrMappedUser},
+		success:function(data)
+		{
+			fillBankDetails(data);		
+		}
+	});
+}
+function getGuardianDetailsFromUserCode(userCode)	
+{	$.ajax(
+	{
+		url:'/students/getGuardianDetailsByGuardianCode',
+		method:'get',
+		data:{'userCode':userCode},
+		success:function(data)
+		{
+			if(data)
+			{
+				data=data[0];
+				console.log(data);
+				var note='This User is mapped as Guardian to student '+data['studentGuardianIdentity']["mappedStudentPersonal"]["studentPersonalStudentName"]+' with studentCode:'+data['studentGuardianIdentity']["mappedStudentPersonal"]["studentCode"]+'.Modifying this user-data will have global effect';
+				$('#guardNotification').text(note);
+				$('#guardianName').val(data["guardianName"]);
+				$('#guardianRelation').val(data["guardianRelation"]);
+				$('#guardianQualification').val(data["guardianQualification"]);
+				$('#guardianOccupation').val(data["guardianOccupation"]);
+				$('#guardianOrganization').val(data["guardianOrganization"]);
+				$('#guardianAnnualIncome').val(data["guardianAnnualIncome"]);
+				$('#guardianOfficialAddress').val(data["guardianOfficialAddress"]);
+				$('#guardianResidentialAddress').val(data["guardianResidentialAddress"]);
+				$('#guardianLandLine').val(data["guardianLandLine"]);
+				if(data["guardianIsLocal"]==false)
+				{
+					$('#guardianIsLocal').prop('checked',false);	
+				}
+				else
+				{
+					$('#guardianIsLocal').prop('checked',true);
+				}
+				
+			}
+		},
+		error:function(err)
+		{
+			alert("Error in data submission  "+err);
+		}
+	   	});
+}
+function setUpRoleMapping()
+{
+  
+}
+function containsObject(obj, list) {
+    var i;
+    for(i = 0; i < list.length; i++)
+    {
+        if (list[i] === obj) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function fillUserAccordian()
+{
+	var userCodeArray=new Array();
+	for (var key in userCodeToUserDetailsMap) 
+	{
+		if(!containsObject(userCodeToUserDetailsMap[key], userCodeArray))
+		{
+		   userCodeArray.push(userCodeToUserDetailsMap[key]);
+		}
+	}
+	$('#gridTableUserDetails').empty();
+	if ($.fn.DataTable.isDataTable( '#gridTableUserDetails' ) ) {
+	 clearDataTable("gridTableUserDetails");
+	}
+	setUpDataTable(userCodeArray,[{"usercode":"User Id"},{"username":"UserName"},{"type":"User Type"},{"email":"Email"},{"mobile":"Mobile"}],"gridTableUserDetails",null);
+	onDataTableClick("gridTableUserDetails",function()
+	{	
+		selectedRoleArray=[];
+		$('#dialogRoleMap').modal({backdrop: 'static', keyboard: false});	
+		$('#selectedUserId').val(selectedRowFromDataTable[0]);
+		$('#selectedUser').val(selectedRowFromDataTable[1]);
+		$.ajax(
+		{
+			 "url"     : "/userManagement/getRolesForUserMapping",
+			 "method"  :  "get",
+			 "dataType":  "json",
+			 "data"    :  {"userId":userCodeToUserIdMap[$('#selectedUserId').val()]},
+			 "success" :  function(data)
+			 {
+				 $('#userRoleMappingDiv').empty();
+				 var roles=data.roles;
+				 var tab=$('<table>',{"class":"table table-bordered table-striped table-condensed"});
+				 var th1=$('<th>',{"text":"Select","text-align":"center"});
+				 var th2=$('<th>',{"text":"Role","text-align":"center"});
+				 var th3=$('<th>',{"text":"Default","text-align":"center"});
+				 tab.append(th1);
+				 tab.append(th2);
+				 tab.append(th3);
+				 for(var i=0;i<roles.length;i++)
+				 {
+				 	var roleId=parseInt(roles[i].id);
+				 	var span=$('<span>',{"id":"roleLink"+roles[i].id,"text":roles[i].role_name,"class":"menuli","roleId":roles[i].id});
+				 	var cb=$('<input>',{"type":"checkbox","roleId":roles[i].id,"class":"roleCb","style":" margin-right: 20px","id":"roleCb"+roles[i].id});
+				 	var rad = $('<input/>').attr({ type: 'radio', name:'rad',radRoleId:roles[i].id,value:roles[i].id}).addClass("rad");
+				 	if(roles[i].user_id)
+				 	{
+				 		cb.prop('checked',true);
+				 		if(jQuery.inArray(roleId,selectedRoleArray)==-1)
+				 		{
+				 			selectedRoleArray.push(roleId);
+				 		}
+				 	}
+				 	var tr=$('<tr>');
+				 	var td1=$('<td>',{"text-align":"center"});
+				 	var td2=$('<td>',{"text-align":"center"});
+				 	var td3=$('<td>',{"text-align":"center"});
+				 	td1.append(cb);
+				 	td2.append(span);
+				 	td3.append(rad);
+				 	tr.append(td1);
+				 	tr.append(td2);
+				 	tr.append(td3);
+				 	tab.append(tr);
+				 	$('#userRoleMappingDiv').append(tab);
+				 }
+				 $('.rad').unbind().bind('click',function()
+				 {
+				 	var roleSelected=$(this).val();
+				 	var isChecked = $('#roleCb'+roleSelected).prop('checked')?true:false;
+				 	if(isChecked==false)
+				 	{
+				 		if(jQuery.inArray(roleSelected,selectedRoleArray)==-1)
+				 		{
+				 			selectedRoleArray.push(roleSelected);
+				 		}
+				 		$('#roleCb'+roleSelected).prop('checked',true);
+				 		}
+				 })
+				 $('.roleCb').unbind().bind('change',function()
+				 {
+				 	if($(this).is(":checked"))
+				 	{
+				 		if(jQuery.inArray($(this).attr('roleId'),selectedRoleArray)==-1)
+				 		{
+				 			selectedRoleArray.push(parseInt($(this).attr('roleId')));
+				 		}
+				 	}
+				 	else
+				 	{
+				 		elemToBeRemoved=parseInt($(this).attr('roleId'))
+				 		selectedRoleArray = jQuery.grep(selectedRoleArray,function(value)
+				 		{
+				 			return value != elemToBeRemoved;
+				 		});
+				 	}
+				 });
+			}
+		});
+		//userRoleMobileMappingDiv
+		$.ajax(
+		{
+			 "url"     : "/userManagement/getRolesForUserMappingMobile",
+			 "method"  :  "get",
+			 "dataType":  "json",
+			 "data"    :  {"userId":userCodeToUserIdMap[$('#selectedUserId').val()]},
+			 "success" :  function(data)
+			 {
+				 $('#userRoleMobileMappingDiv').empty();
+				 var roles=data.roles;
+				 var tab=$('<table>',{"class":"table table-bordered table-striped table-condensed"});
+				 var th1=$('<th>',{"text":"Select","text-align":"center"});
+				 var th2=$('<th>',{"text":"Role","text-align":"center"});
+				 var th3=$('<th>',{"text":"Default","text-align":"center"});
+				 tab.append(th1);
+				 tab.append(th2);
+				 tab.append(th3);
+				 for(var i=0;i<roles.length;i++)
+				 {
+					var roleId=parseInt(roles[i].id);
+					var span=$('<span>',{"id":"roleLink"+roles[i].id,"text":roles[i].role_name,"class":"menuli","roleId":roles[i].id});
+					var cb=$('<input>',{"type":"checkbox","roleId":roles[i].id,"class":"roleCbMobile","style":" margin-right: 20px","id":"roleCbMobile"+roles[i].id});
+					var radMobile = $('<input/>').attr({ type: 'radio', name:'radMobile',radMobileRoleId:roles[i].id,value:roles[i].id}).addClass("radMobile");
+					if(roles[i].user_id)
+					{
+						cb.prop('checked',true);
+						if(jQuery.inArray(roleId,selectedMobileRoleArray)==-1)
+						{
+							selectedMobileRoleArray.push(roleId);
+						}
+					}
+					var tr=$('<tr>');
+					var td1=$('<td>',{"text-align":"center"});
+					var td2=$('<td>',{"text-align":"center"});
+					var td3=$('<td>',{"text-align":"center"});
+					td1.append(cb);
+					td2.append(span);
+					td3.append(radMobile);
+					tr.append(td1);
+					tr.append(td2);
+					tr.append(td3);
+					tab.append(tr);
+					$('#userRoleMobileMappingDiv').append(tab);
+				 }
+				 $('.radMobile').unbind().bind('click',function()
+				 {
+					var roleSelected=$(this).val();
+					var isChecked = $('#roleCbMobile'+roleSelected).prop('checked')?true:false;
+					if(isChecked==false)
+					{
+						if(jQuery.inArray(roleSelected,selectedMobileRoleArray)==-1)
+						{
+							selectedMobileRoleArray.push(roleSelected);
+						}
+						$('#roleCbMobile'+roleSelected).prop('checked',true);
+						}
+				 })
+				 $('.roleCbMobile').unbind().bind('change',function()
+				 {
+					if($(this).is(":checked"))
+					{
+						if(jQuery.inArray($(this).attr('roleId'),selectedMobileRoleArray)==-1)
+						{
+							selectedMobileRoleArray.push(parseInt($(this).attr('roleId')));
+						}
+					}
+					else
+					{
+						elemToBeRemoved=parseInt($(this).attr('roleId'))
+						selectedMobileRoleArray = jQuery.grep(selectedMobileRoleArray,function(value)
+						{
+							return value != elemToBeRemoved;
+						});
+					}
+				 });
+			}
+		});
+	});
+}
+$('#editForm').on('submit',function(event)
+		{
+		event.preventDefault();
+		var radioValue = $("input[name='rad']:checked").val();
+		if((!radioValue)&&(selectedRoleArray.length>0))
+		{
+		    alert("Select a default Role");
+			return(false);
+		}
+		var radioValue2 = $("input[name='radMobile']:checked").val();
+		if((!radioValue2)&&(selectedMobileRoleArray.length>0))
+		{
+		    alert("Select a default Role");
+			return(false);
+		}		
+		var defaultRoleMap={};
+		for(var i=0;i<selectedRoleArray.length;i++)
+		{
+			if(selectedRoleArray[i]==parseInt(radioValue))
+			{
+				defaultRoleMap[selectedRoleArray[i]]=true;
+			}
+			else
+			{
+				defaultRoleMap[selectedRoleArray[i]]=false;
+			}
+		}
+		var defaultRoleMapMobile={};
+		for(var i=0;i<selectedMobileRoleArray.length;i++)
+		{
+			if(selectedMobileRoleArray[i]==parseInt(radioValue2))
+			{
+				defaultRoleMapMobile[selectedMobileRoleArray[i]]=true;
+			}
+			else
+			{
+				defaultRoleMapMobile[selectedMobileRoleArray[i]]=false;
+			}
+		}
+		$.ajax(
+		{
+			url : "/userManagement/userRoleMapping",
+			method   : "POST",
+			datatype : "json",
+			data : {"selectedUserId":userCodeToUserIdMap[$('#selectedUserId').val()],"selectedRoleArray":selectedRoleArray,"defaultRoleMap":JSON.stringify(defaultRoleMap)},
+			success : function(data)
+			{
+				if(data)
+				{
+				 //$('#dialogRoleMap').modal('toggle');
+				}
+			}
+		});
+		$.ajax(
+		{
+			url : "/userManagement/userRoleMappingMobile",
+			method   : "POST",
+			datatype : "json",
+			data : {"selectedUserId":userCodeToUserIdMap[$('#selectedUserId').val()],"selectedRoleArray":selectedMobileRoleArray,"defaultRoleMap":JSON.stringify(defaultRoleMapMobile)},
+			success : function(data)
+			{
+				if(data)
+				{
+				 $('#dialogRoleMap').modal('toggle');
+				 
+				}
+			}
+		});
+	});
+function getRolesForMapping()
+{
+	$.ajax(
+	{
+		"url":"/userManagement/getRolesForUserMapping",
+		"method":"GET",
+		"data":{userId:1},
+		success:function(data)
+		{
+			setUpDropDown('qualificationId',data,'qualificationId','qualificationName');
+		}
+	});
+}
+function getUserIdFromUserCode(userCode)
+{
+	$.ajax(
+	{
+		"url":"userManagement/getUserDetailsByUserCode",
+		data:{"userCodes":userCode},
+		success:function(data)
+		{
+			data=data.data;
+			$('#studentEmail').val(data[0]['email']);
+			currentEmail=data[0]['email'];
+			$('#studentMobile').val(data[0]['mobile']);
+			currentMobile=data[0]['mobile'];
+			coreUserId=data[0]['id'];
+			currentUserCode=data[0]['usercode'];
+		}
+	});
+}
+function getUserIdFromUserCodes(userCodeArray,userType)
+{
+	$.ajax(
+	{
+		"url":"userManagement/getUserDetailsByUserCode",
+		data:{"userCodes":userCodeArray},
+		success:function(data)
+		{
+			try
+			{
+				console.log(data);
+				data=data.data;
+				for(var i=0;i<data.length;i++)
+				{
+					userCodeToUserIdMap[data[i]['usercode']]=data[i]['id'];
+					var userDet={'usercode': data[i]['usercode'],'username':data[i]['username'],'email':data[i]['email'],'mobile':data[i]['mobile'] ,'type':userType};
+					userCodeToUserDetailsMap[data[i]['usercode']]=userDet;
+				}
+				if ($.fn.DataTable.isDataTable('#gridTableUserDetails' ) )
+				{
+					clearDataTable('gridTableUserDetails');
+				}
+				fillUserAccordian();
+			}
+			catch(e)
+			{
+				console.log("Error >>>>>>>>>>>>>>>> in function getUserIdFromUserCodes  ");				
+			}
+		}
+	});
+}
+function setUpGuardianView()
+{
+	$('#accordionGuardian').empty();
+	if(SelectedOrMappedUser!=null)
+	{
+		$.ajax(
+		{
+			url:'/students/getGuardianFullDetails',
+			method:'get',
+			data:[{"name":"userCode","value":SelectedOrMappedUser}],
+			success:function(data)
+			{
+				var guardianCodeArray=new Array();
+				for(var i=0;i<data.length;i++)
+				{
+					guardianCodeArray.push(data[i]['studentGuardianIdentity']["guardianCode"]);	
+				}
+				getUserIdFromUserCodes(guardianCodeArray,"Guardian");
+				setUpDataTable(data,[{"guardianRelation":"Relation"},{"guardianCode":"user id"},{"guardianName":"Name"}],'guardianTable',null);
+				onDataTableClick('guardianTable',function()
+				{
+				    console.log(selectedRowFromDataTable);	 
+				    $(".editableMember").prop('readonly',true);
+				    $(".editableMember").attr('readonly',true);
+				    var guardianId=selectedRowFromDataTable[1];
+				    $.ajax(
+				    {
+				    	"url":"/students/getGuardianDetailsByGuardianCode",
+				    	"method":"get",
+				    	"data":[{"name":"userCode","value":guardianId}],
+				    	"success":function(data)
+				    	{
+				    		try
+				    		{
+					    		if(data!=null)
+					    		{
+					    			data=data[0];
+					    			$('#editGuardianCode').val(data["guardianCode"]);
+					    			$('#editGuardianName').val(data["guardianName"]);
+					    			$('#editGuardianRelation').val(data["guardianRelation"]);
+					    			$('#guardianPassPort1').val(data['guardianPassPort']);
+					    			$('#guardianPassPortPlaceOfIssue1').val(data['guardianPassPortPlaceOfIssue']);
+					    			$('#guardianPassPortDateOfIssue1').val(data['guardianPassPortDateOfIssue']);
+					    			$('#guardianPassPortDateOfExpiry1').val(data['guardianPassPortDateOfExpiry']);
+					    			$('#editGuardianQualification').val(data["guardianQualification"]);
+					    			//$('#editGuardianOccupation').val(data["guardianOccupation"]);
+					    			$('#editGuardianOccupation').val(data["guardianOccupation"]);
+					    			$('#editGuardianOrganization').val(data["guardianOrganization"]);
+					    			$('#editGuardianAnnaualIncome').val(data["guardianAnnaualIncome"]);
+					    			$('#editGuardianOfficialAddress').val(data["guardianOfficialAddress"]);
+					    			$('#editGuardianResidentialAddress').val(data["guardianResidentialAddress"]);
+					    			$('#editguardianLandLine').val(data["guardianLandLine"]);
+					    			//alert(data["guardianIsLocal"]);
+					    			if(data["guardianIsLocal"]==false)
+					    			{
+					    				$('#editguardianIsLocal').prop('checked',false);
+					    			}
+					    			else
+					    			{
+					    				$('#editguardianIsLocal').prop('checked',true);	
+					    			}
+					    			if(data["isGuardianSponsor"]==false)
+					    			{
+					    				$('#editisGuardianSponsor').prop('checked',false);
+					    			}
+					    			else
+					    			{
+					    				$('#editisGuardianSponsor').prop('checked',true);	
+					    			}
+					    			if(data["isGuardianSponsor"]==null)
+					    			{
+					    				$('#editisGuardianSponsor').prop('checked',false);
+					    			}
+					    			$('#formEditGuardianUser').unbind().bind('submit',function(e)
+					    			{
+					    				e.preventDefault();
+					    				var formData=$(this).serializeArray();
+					    				var isLocal=false;
+					    				var isGuardian=false;
+					    				if($('#editguardianIsLocal').prop('checked')==true)
+					    				{
+					    					isLocal=true;
+					    				}
+					    				if($('#editisGuardianSponsor').prop('checked')==true)
+					    				{
+					    					isGuardian=true;
+					    				}
+					    				
+					    				formData.push({"name":"guardianIsLocal","value":isLocal});
+					    				formData.push({"name":"isGuardianSponsor","value":isGuardian});
+					    				formData.push({"name":"mappedStudentPersonal","value":SelectedOrMappedUser});
+					    				
+				   			   			$.ajax(
+		   	   	   			   			{
+		   	   	   			   				url:'/students/addGuardianDetails',
+		   	   	   			   				method:'post',
+		   	   	   			   				data:formData,
+		   	   	   			   				success:function(data)
+		   	   	   			   				{
+		   	   	   			   					if(typeof data["studentGuardianIdentity"]!="undefined")
+		   	   	   			   					{
+		   	   	   			   						showMessage("Guardian Details Updated");
+		   	   	   			   						$('#editGuardianDialog').modal('hide');
+		   	   	   			   					}
+		   	   	   			   				}
+		   	   	   			   			});
+					    			});
+					    		}
+				    		}
+				    		catch(e)
+				    		{
+				    			showMessage("Error processing Guardian Data");
+				    		}
+				    	}
+				    });
+				    $.ajax(
+				    {
+				    	"url":"userManagement/getUserByUserCode",
+				    	"method":"GET",
+				    	"data":{"userId":guardianId},
+				    	"success":function(data)
+				    	{
+				    		try
+				    		{
+					    		if(data!=null)
+					    		{
+					    			console.log(data);
+					    			data=data.data[0];
+					    			$('#editEmail').val(data["email"]);
+					    			$('#editMobile').val(data["mobile"]);
+					    			$('#editUserCode').val(data["usercode"]);
+					    			
+					    		}
+				    		}
+				    		catch(e)
+				    		{
+				    			showMessage("Error processing Guardian Data");
+				    		}
+				    	}
+				    });
+				    $('#editGuardianDialog').modal({backdrop: 'static', keyboard: false});
+					//getGuardianFullDetails(); 
+				});
+			},
+			error:function(err)
+			{
+				alert("Error in data submission  "+err);
+			}
+ 	   	});				
+	}
+}
+var SelectedOrMappedUser="";	
+  $( function() {
+    $( "#tabs" ).tabs({'activate': function(event, ui)
+    {
+    	var selectedTab = $("#tabs").tabs('option','active');
+    	//alert(selectedTab);
+    	if(selectedTab==2)
+    	{
+    		loadStudentQualificationsForDocs(SelectedOrMappedUser);
+    	}
+    }});
+  });
+  
+  function disableContent()
+  {
+	  $("#divStudentAdd :input").attr("disabled", true);
+  }
+  
+  function getExistingStudentUserDetails(userId)
+  {
+	console.log("Inside fun getExistingStudentUserDetails with userId "+userId);	  
+  }
+  
+  function fillPersonalDetails(pd)
+  {
+	  //formStudentPersonal
+	  try
+	  {
+		  var dobToPresent="";
+		 if(pd['studentPersonalDob'])
+		 {
+			var dob=String(pd['studentPersonalDob'].split('T')[0]);
+			dobToPresent=dob.split('-')[2]+"/"+dob.split('-')[1]+"/"+dob.split('-')[0];
+		 }
+		 var dobDate=new Date(dobToPresent);
+		 var tDate=new Date();
+		 var age=diff_years(tDate,dobDate);
+		 if(pd['studentPersonalAgeOnAdmission'])
+		 	$('#ageOnAdmission').val(pd['studentPersonalAgeOnAdmission']);
+		 else
+			 $('#ageOnAdmission').val('');
+		 if(pd['studentPersonalStudentName'])
+		 	$('#studentPersonalStudentName').val(pd['studentPersonalStudentName']);
+		 else
+			 $('#studentPersonalStudentName').val('');
+		 if(pd['studentPersonalAadhar'])
+		 	$('#studentPersonalAadhar').val(pd['studentPersonalAadhar']);
+		 else
+			 $('#studentPersonalAadhar').val('');
+		 if(pd['studentPersonalGender'])
+		 	$('#studentPersonalGender').val(pd['studentPersonalGender']);
+		 else
+			$('#studentPersonalGender').val('');
+		 $('#studentPersonalDob').val(dobToPresent);
+		 if(pd['studentPersonalMotherTounge'])
+			 $('#mt').val(pd['studentPersonalMotherTounge']);
+		 else
+			 $('#mt').val('');
+		 
+		 if(pd['studentPersonalMappedReligion'])
+			 $('#selectReligion').val(pd['studentPersonalMappedReligion']['religionId']);
+		 else
+			 $('#selectReligion').val('');
+		 
+		 if(pd['studentPersonalMappedCategory'])
+		 	$('#selectCategory').val(pd['studentPersonalMappedCategory']['categoryId']);
+		 else
+			 $('#selectCategory').val('');
+		 if(pd['studentPersonalMappedCaste'])
+			 $('#selectReligionCaste').val(pd['studentPersonalMappedCaste']['religionCasteId']);
+		 else
+			 $('#selectReligionCaste').val('');
+		 if(pd['studentPersonalPermanentAddress'])
+		 	$('#studentPersonalPermanentAddress').val(pd['studentPersonalPermanentAddress']);
+		 else
+			 $('#studentPersonalPermanentAddress').val('');
+		 if(pd['studentPersonalCommunicationAddress'])
+			 $('#studentPersonalCommunicationAddress').val(pd['studentPersonalCommunicationAddress']);
+		 else
+			 $('#studentPersonalCommunicationAddress').val('');
+		 
+		 if(pd['studentPersonalBloodGroup'])
+			 $('#studentPersonalBloodGroup').val(pd['studentPersonalBloodGroup']);
+		 else
+			 $('#studentPersonalBloodGroup').val('');
+		 
+		 if(pd['studentPersonalAllergyDetails'])
+			 $('#studentPersonalAllergyDetails').val(pd['studentPersonalAllergyDetails']);
+		 else
+			 $('#studentPersonalAllergyDetails').val('');
+		 if(pd['studentPersonalSpeciallyAbled']==null || pd['studentPersonalSpeciallyAbled']==false)
+		 {
+			 $('#idStudentPersonalSpeciallyAbled').attr('checked',false)
+			 $('#idStudentPersonalSpeciallyAbled').prop('checked',false)
+		 }
+		 else
+		 {
+			 $('#idStudentPersonalSpeciallyAbled').attr('checked',false)
+			 $('#idStudentPersonalSpeciallyAbled').prop('checked',false)
+		 }
+		 if(pd['studentPersonalSpeciallyAbledDetails'])
+			 $("#studentPersonalSpeciallyAbledDetails").val(pd['studentPersonalSpeciallyAbledDetails']);
+		 else
+			 $("#studentPersonalSpeciallyAbledDetails").val('');
+		 if(pd['studentPersonalPassport'])
+			 $('#studentPersonalPassport').val(pd['studentPersonalPassport']);
+		 else
+			 $('#studentPersonalPassport').val('');
+		 $('#studentPersonalCountry').val(pd['studentPersonalCountry']); 
+		 
+		 if(pd['studentPersonalMappedCommunity'])
+			 $("#selectCommunity").val(pd['studentPersonalMappedCommunity']['religionCommunityId']);
+		 else
+			 $("#selectCommunity").val('');
+	  }
+	  catch(e)
+	  {
+		  console.log("Error in processin personal data>>>>>>"+e);
+	  }
+	  $("#tabs").tabs("option", "active", 0); 
+  }
+  function fillClatDetails(pd)
+  {
+	 if(pd['clatApplicationNo']) 
+	 	$('#clatApplicationNo').val(pd['clatApplicationNo']);
+	 else
+		 $('#clatApplicationNo').val('');
+	 if(pd['clatRollNo'])
+	 	$('#clatRollNo').val(pd['clatRollNo']);
+	 else
+		$('#clatRollNo').val('');
+	 if(pd['clatRank'])
+	 	$('#clatRank').val(pd['clatRank']);
+	 else
+		$('#clatRank').val('');
+  }
+  function getStudentPersonalDetails(studentId)
+  {
+	$.ajax(
+	{
+  		url:'/students/getPersonalDetails',
+  	   	method:'GET',
+  	   	data:{"userCode":SelectedOrMappedUser},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		$('#remarksShow').show();
+  	   		getRecordTimeLines(SelectedOrMappedUser,"student-personal");
+	  	   	getRecordTimeLines2(SelectedOrMappedUser,"student-clat");
+	  		getRecordTimeLines3(SelectedOrMappedUser,"student-admission");
+	  		getRecordTimeLines4(SelectedOrMappedUser,"student-guardian");
+	  		getRecordTimeLines5(SelectedOrMappedUser,"student-qualification");
+  	   		fillPersonalDetails(data);
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+  function fillQualificationDetails(data)
+  {
+	$('#editstudentCode').val(data['studentQualificationIdentity']['mappedStudentPersonal']['studentCode']);
+	$('#editqualificationId').val(data["studentQualificationIdentity"]["mappedQualification"]["qualificationId"]);
+	$('#editqualificationName').val(data["studentQualificationIdentity"]["mappedQualification"]["qualificationName"]);
+	$('#editstudentQualificationBoard').val(data["studentQualificationBoard"]);
+	$('#editstudentQualificationInstitution').val(data["studentQualificationInstitution"]);
+	//$('#editstudentQualificationPercentage').val(data["studentQualificationPercentage"]);
+	$('#editstudentQualificationRegNo').val(data["studentQualificationRegNo"]);
+	$('#editstudentQualificationGradeClass').val(data["studentQualificationGradeClass"]);
+	$('#editstudentQualificationMarksObtained').val(data["studentQualificationMarksObtained"]);
+	console.log("YEP>>>");
+	console.log(data["studentQualificationMonthYearPass"]);
+	if(data["studentQualificationMonthYearPass"])
+	{
+		$('#editstudentQualificationMonthYearPassID').val(data["studentQualificationMonthYearPass"]);
+	}
+	$('#editstudentQualificationTotalMarks').val(data["studentQualificationTotalMarks"]);
+	if(data["studentQualificationLastQualification"]==true)
+		$('#editstudentQualificationLastQualification').prop("checked", true);
+	else
+		$('#editstudentQualificationLastQualification').prop("checked", false);
+	
+	if(data["studentQualificationBreakInLastQualification"]==true)
+		$('#editstudentQualificationBreakInLastQualification').prop("checked", true);
+	else
+		$('#editstudentQualificationBreakInLastQualification').prop("checked", false);
+	if(data["studentQualificationTCNo"])
+		$('#editstudentQualificationTCNo').val(data["studentQualificationTCNo"]);
+	if(data["studentQualificationBreakReasonAndDetails"])
+		$('#editstudentQualificationBreakReasonAndDetails').val(data["studentQualificationBreakReasonAndDetails"]);
+	else
+		$('#editstudentQualificationBreakReasonAndDetails').val('');
+	if(data["studentQualificationTCIssuedDate"].split('T')[0])
+		$('#editstudentQualificationTCIssuedDate').val(data["studentQualificationTCIssuedDate"].split('T')[0]);
+	else
+		$('#editstudentQualificationTCIssuedDate').val('');
+  }
+  function getEducationDetailsByStudentCodeAndQualificationCode(studentCode,qualificationCode)
+  {
+		$.ajax(
+		{
+	  		url:'/students/getEducationDetailsByStudentCodeAndQualificationCode',
+	  	   	method:'GET',
+	  	   	data:{"userCode":studentCode,"qualificationCode":qualificationCode},
+	  	   	success:function(data)
+	  	   	{
+	  	   		console.log(data);
+	  	   		fillQualificationDetails(data);
+	  	   	},
+	  	   	error:function(err)
+	  	   	{
+	  	   		showMessage(err);
+	  	   	}
+	  	 });	  
+  }
+  
+  function getAllActiveBatches()
+  {
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatches',
+  	   	method:'GET',
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+   	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+  function getAllSemsForTheBatch(batchId)
+  {
+	  $.ajax(
+	  {
+		 url:'/batch/getAllSemestersInABatch',
+		 method:'GET',
+		 data:{"batchId":batchId},
+		 success:function(data)
+		 {
+			try
+			{
+				if(data && data.length>0)
+				{
+					$('#studentAdmissionActiveSem').empty();
+					for(var i=0;i<data.length;i++)
+					{
+						$('#studentAdmissionActiveSem').append('<option>'+data[i]['semesterIdentity']['semesterCode']+'</option>');	
+					}
+				}
+			}
+			catch(e)
+			{
+				showError("Error in Processing Data.Contact Admin");
+			}
+		 	//setUpDropDown('activeSem',data,'semesterCode','semesterCode');
+		 }
+	  });
+  }
+  function fillReservationData(data)
+  {
+	 $('#reservTableBody').empty();
+	 var str='<tr><td>'+data['batchReservationMaxSeats']+'</td><td>'+data['batchReservationOccupiedSeats']+'</td></tr>' 
+	 $('#reservTableBody').append(str); 
+	 $( "#accordion1" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+  }
+  function getBatchReservationDataForBatch(courseId,batchId,categoryId)
+  {
+	  console.log("Firing ajax "+categoryId);
+	  $.ajax(
+	  {
+		 url:'/batch/getBatchReservationDataForBatch',
+		 method:'GET',
+		 data:{"courseId":courseId,"batchId":batchId,"categoryId":categoryId},
+		 success:function(data)
+		 {
+			 fillReservationData(data);
+		 }
+	  });
+  }
+  function getAllActiveBatchesOfProgram(programId)
+  {
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatchesInAProgram',
+  	   	method:'GET',
+  	   	data:{"courseId":programId},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+  	   		setUpDropDown('selectBatch1',data,'batchId','batchCode');
+  	   		$('#selectBatch').unbind().bind('change',function()
+  	   		{
+  	   			getAllSemsForTheBatch($(this).val());
+  	   			globalBatchCode=$(this).val();
+  	   		});
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+  function getStudentClatDetails(studentId)
+  {
+	$.ajax(
+	{
+  		url:'/students/getClatDetails',
+  	   	method:'GET',
+  	   	data:{"userCodeStudentClat":studentId},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		fillClatDetails(data);
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+  function updateReservation(pgmId,btchId,catId,op)
+  {
+	$.ajax(
+	{
+		"url":"/batch/updateReservationOccupancy",
+		"method":"GET",
+		data:{"courseId":pgmId,"batchId":btchId,"categoryId":catId,"op":op},
+		success:function(data)
+		{
+			console.log(data);
+		}
+	});
+  }
+  function disableUploads()
+  {
+  	$('.file').attr('disabled',true);
+  	$('.file').hide();
+  	$('.upload').attr('disabled',true);
+  	$('.upload').hide();
+  }
+  function enableUploads()
+  {
+  	$('.file').attr('disabled',false);
+  	$('.file').show();
+  	$('.upload').attr('disabled',false);
+  	$('.upload').show();
+  } 	
+  
+  function setUpEduFileUpload(data)
+  {
+  	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+  	if((typeof data!='undefined'))//&&(typeof data[0]['studentQualificationBoard']!='undefined'))
+  	{
+		//console.log(data[0]['studentQualificationBoard']);
+		//console.log(data[0]['studentQualificationIdentity']['mappedQualification']);//[qualificationName]
+		$('#eduFileTable').empty();
+		for(var i=0;i<data.length;i++) 	
+	  	{
+			var qualId=data[i]['studentQualificationIdentity']['mappedQualification']['qualificationId'];
+			var inst=data[i]['studentQualificationInstitution'];
+			var qualiName=data[i]['studentQualificationIdentity']['mappedQualification']['qualificationName'];		
+			var showString=qualiName+ '(' + data[i]["studentQualificationBoard"]+') from '+inst;
+			var tr=$('<tr><td>' +showString	+'</td><td><button class="getFile"  spec="'+qualId+'" ext="jpg" doc="'+showString+'"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>')
+			$('#eduFileTable').append(tr);
+	  	}
+  	}
+	//studentAdStatus=data['studentAdmissionStatus'];
+	/*if(studentAdStatus=="valid"||studentAdStatus=="processing")
+	{
+		disableUploads();
+	}
+	else
+	{
+		enableUploads();
+	}*/
+	fileRetreive();	
+	$('.upload').unbind().bind('click',function()
+	{
+		
+		var doc=$(this).attr('doc');
+		var spec=$(this).attr('spec');
+		//alert(spec)
+		var docName=$(this).attr('doc');
+		var fileName;
+		if(spec)
+		{
+			fileName=spec+docName;
+		}
+		else
+		{
+			fileName=docName;
+		}
+		var pgm=globalProgramCode;
+		if(!pgm)
+		{
+			pgm=$('#selectProgram').val();
+		}
+		var batch=globalBatchCode;
+		if(!batch)
+		{
+			batch=$('#selectBatch').val();
+		}
+		var urlGen=String(pgm)+"/"+String(batch)+"/"+String(SelectedOrMappedUser.replace(/\//g,'-').replace(/#/g,'-'));
+		console.log("url generated "+urlGen);
+		fileFormData.append('fileUrl',urlGen);
+		fileFormData.append('fileName',fileName);
+		$.ajax(
+		{
+			"url" : "/students_public/saveDocs",
+			"method" : "POST",						
+			data : fileFormData,
+			processData: false, // Don't process the files
+			contentType: false, 
+			cache:false,
+			enctype:"multipart/form-data",
+			success : function(data) 
+			{
+				if(data=="success")
+				{
+					showMessage("File saved successfully");
+				}
+			},
+			error : function(e)
+			{
+			}
+		});
+	});
+ 
+	$('.avatar').unbind().bind('change', function(){
+		console.log("File change event");
+		if(validateFileSize(this,1024))
+		{
+			readURL(this,'avatarDisplay');
+		}
+	 });
+	$('.file').unbind().bind('change', function(){
+		var ext=$(this).attr('ext');
+		var files = $(this).get(0).files;
+		if (files.length > 0)
+		{
+			fileFormData = new FormData();
+			fileFormData.forEach(function(val, key, fD){
+			    // here you can add filtering conditions
+			    fileFormData.delete(key)
+			    });
+			// loop through all the selected files
+			for (var i = 0; i < files.length; i++) {
+			var file = files[i];
+			fileType = file["type"];
+			var fullFileName=file.name;
+			if(fullFileName.match(/\./g).length>1)
+			{
+				showMessage("Invalid File Type.Correct your file name or upload only file with extension "+ext);
+				$(this).val('');
+				return false;
+			}
+			else
+			{
+				var uploadExt=file.name.split('.')[1];
+				if(uploadExt==ext)
+				{
+					fileFormData.append('file', file, file.name);
+				}
+				else
+				{
+					showMessage("Invalid File Type.Correct your file name or upload only file with extension "+ext);
+					$(this).val('');
+				}
+				//fileFormData.append()
+			}
+			}
+		  }
+	 });
+  }
+  function loadStudentQualificationsForDocs()
+  {
+	$.ajax(
+	{
+  		url:'/students/getAllStudentQualifications',
+  	   	method:'GET',
+  	   	data:{"userCode":SelectedOrMappedUser},
+  	   	success:function(data)
+  	   	{
+  	   		setUpEduFileUpload(data);
+  	 	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });
+  }
+  
+  function loadStudentQualifications()
+  {
+	$.ajax(
+	{
+  		url:'/students/getAllStudentQualifications',
+  	   	method:'GET',
+  	   	data:{"userCode":SelectedOrMappedUser},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	  	    setUpDataTable(data,[{"studentCode":"Student ID"},{"studentPersonalStudentName":"Student"},{"qualificationId":"Qualification Id"},{"qualificationName":"qualification"}],'gridTableStudentQualification',null);
+  	  	    loadStudentQualificationsForDocs(SelectedOrMappedUser);
+  	  		onDataTableClick('gridTableStudentQualification',function()
+  	  		{
+  	  			console.log(selectedRowFromDataTable);	 
+  	  			$(".editableMember").prop('readonly',true);
+  	  			$(".editableMember").attr('readonly',true);
+  	  			var studentCode=selectedRowFromDataTable[0];
+  	  			var qualificationCode=selectedRowFromDataTable[2];
+  	  		 	$('#dialogEudcationEdit').modal({backdrop: 'static', keyboard: false});
+				getEducationDetailsByStudentCodeAndQualificationCode(studentCode,qualificationCode);
+  	  		});  
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });
+  }
+  function diff_years(dt2, dt1) 
+  {
+     var diff =(dt2.getTime() - dt1.getTime()) / 1000;
+     diff /= (60 * 60 * 24);
+     return Math.abs(Math.round(diff/365.25));
+  }
+  
+  function getAllValidBoardOfExam()
+  {
+	  $.ajax(
+	  {
+		 url:"/students/getAllBoardOfExaminations",
+		 success:function(data)
+		 {
+			 setUpDropDown('studentQualificationBoard',data,'board_exam_name','board_exam_name');
+			 setUpDropDown('editstudentQualificationBoard',data,'board_exam_name','board_exam_name');
+			 
+		 }
+	  });
+	  
+  }
+  function fileRetreive()
+  {
+	  $('.getFile').unbind().bind('click',function()
+	  {
+		 var doc=$(this).attr('doc');
+		 var ext=$(this).attr('ext')
+		 var spec=$(this).attr('spec');
+		 var docName=$(this).attr('doc');
+		 console.log(doc)
+		 console.log(ext)
+		 console.log(spec)
+		 console.log(docName)
+		 var fileName;
+		 if(typeof spec!='undefined')
+		 {
+			console.log("No Spec")
+			fileName=spec+docName;
+		 }
+		 else
+		 {
+			console.log("Spec is present")
+			fileName=docName;
+		 }
+		var pgm=globalProgramCode;
+		console.log("checking pgm "+pgm);
+		if(!pgm)
+		{
+			pgm=$('#selectProgram').val();
+		}
+		var batch=globalBatchCode;
+		console.log("checking batch "+batch);
+		if(!batch)
+		{
+			batch=$('#selectBatch').val();
+		}
+		var checkUrl=String(pgm)+"/"+String(batch)+"/"+String(SelectedOrMappedUser.replace(/\//g,'-').replace(/#/g,'-'))+"/"+fileName;
+		var urlGen=rooturl+"/filerepo_public/minioFiles/nuals/"+String(pgm)+"/"+String(batch)+"/"+String(SelectedOrMappedUser.replace(/\//g,'-').replace(/#/g,'-'))+"/"+fileName+"."+ext;
+		if(studentDocMap[checkUrl])
+		{
+			urlGen=rooturl+"/filerepo_public/minioFiles/nuals/"+checkUrl+"."+studentDocMap[checkUrl];	
+		}
+		console.log("confirming");
+		console.log(urlGen);
+		$('#imageFile').remove();
+		$('#objectDiv').empty();
+		var imgf=$('<object  class="img-responsive" style="width: 450px; height: 450px;" id="imageFile"></object >')
+		$('#objectDiv').append(imgf);
+		$('#imageFile').removeAttr('data');
+		$('#imageFile').removeAttr('src');
+		 $('#imageFile').attr('data',urlGen);
+		 $('#imageModal').modal();
+	  });	  
+  }
+  $(document).ready(function()
+  {
+	  $('input[type=radio][name=studentAdmissionType]').unbind().bind('change',function() 
+	{
+	    if (this.value == 'FS')
+	    {
+	    	$('#fnDocs').show();
+	    	$('#fnDocsHead').show();
+	    	$('#nriDocs').hide();
+	    	$('#nriDocsHead').hide();
+	    }
+	    else if (this.value == 'NRIS') 
+	    {
+	    	$('#fnDocs').hide();
+	    	$('#fnDocsHead').hide();
+	    	$('#nriDocs').show();
+	    	$('#nriDocsHead').show();
+	          
+	    }
+	    else
+	    {
+	    	$('#fnDocs').hide();
+	    	$('#fnDocsHead').hide();
+	    	$('#nriDocs').hide();
+	    	$('#nriDocsHead').hide();
+	    
+	    }
+	});
+	  fileRetreive();
+	  $('#accordionDocDiv').accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+	  $('#accordionDoc').accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+	  $('#studentPersonalCountry').val('Indian');
+	  getAllValidBoardOfExam();
+	  $( "#guardianPassPortDiv" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+	  $( "#guardianPassPortDiv1" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+	  getAllValidCommunity();
+	  getAllActiveBatches();
+	  $('.dp').datepicker({
+		    format: 'yyyy-mm-dd',							   
+			autoclose:true,
+			clearBtn:true
+	  });
+	 $('#btnCallStudents').on('click',function()
+	 {
+				var program=$('#selectProgram1').val();
+				//$('#selectProgram').attr("disabled", true);
+				var batch=$('#selectBatch1').val();
+				//$('#selectBatch').attr("disabled", true);
+				getUnverifiedStudents(program,batch);
+				$('#buttonPersonalSubmit').attr("disabled", false);
+				//$(this).hide();
+	 });
+	  
+	 function getUnverifiedStudents(pgm,batch)
+	 {
+	 	$.ajax(
+	 	{
+	 		url:"/students/getUnverifiedStudents",
+	 		method:"get",
+	 		data:{"courseId":pgm,"batchId":batch,"status":$('#selectStatus').val()},
+	 		success:function(data)
+	 		{
+	 			console.log(data);
+	 			/*if(dataTableFormed)
+	 			{
+	 				clearDataTable('gridTable');
+	 			}*/
+	 			setUpDataTable(data,[{"studentCode":"Admission No"},{"studentPersonalStudentName":"Name"}],'gridTable',null);
+	 			//dataTableFormed=true;
+	 			onDataTableClick('gridTable',function()
+	 			{
+	 				var userCode=selectedRowFromDataTable[0];
+	 				selectedUserCode=userCode;
+	 				SelectedOrMappedUser=userCode;
+	 				console.log("User Code is>>>>>>>>>>>>>>> "+userCode);
+	 				getUserIdFromUserCode(userCode);
+	 				$('#dialog').modal('toggle');
+	 				//getStudentQualifications(userCode);
+	 				getStudentPersonalDetails(userCode);
+	 				getStudentClatDetails(userCode);
+	 				getAdmissionDetailsofStudent(userCode);
+	 				getBankDetails(selectedUserCode);
+	 				loadStudentQualifications();
+	 				setUpGuardianView();
+	 				getStudentPinNotes();
+	 				//enableFields();	
+	 				//getGuardianDetailsFromUserCode(selectedUserCode);
+	 				$("#tabs" ).tabs();
+	 				//$("#tabs").tabs("option", "active", 0);//saveStudentBankDetails
+	 				$("#tabs").show();
+	 			});
+	 		}
+	 	});
+	 }
+	  
+	  $('#studentAdmissionInterUniversity').on('change',function()
+	  {
+	        if(this.checked) {
+	       		$('#interUniversityDiv').show();     
+	        }
+	        else
+	        {
+	        	$('#interUniversityDiv').hide();
+	        }
+	  });
+	  
+	  $('.modal').on('show.bs.modal', function () {
+		$("body").css('overflow', 'auto');
+	  }).on("hidden", function () {
+	          $("body").css('overflow', 'auto');
+	  });
+	  
+	  
+	  $("input[required]").parent("label").addClass("required");
+	   $('#idStudentPersonalSpeciallyAbled').change(function() {
+	        if(this.checked) {
+	       		$('.abled').show();     
+	        }
+	        else
+	        {
+	        	$('.abled').hide();
+	        }
+	  });
+	   
+	  /*$('#studentQualificationMonthYearPassID').datepicker({
+		    format: 'dd/mm/yyyy',							   
+			autoclose:true,
+			clearBtn:true
+	  })*/
+	  var d = new Date();
+	  var n = d.getFullYear();
+	  $('#studentQualificationMonthYearPassID').empty();
+	  for(let i=n;i>(n-80);i--)
+	  {
+		  var op=$('<option value="'+i+'">'+String(i)+'</option>');
+		  $('#studentQualificationMonthYearPassID').append(op);
+		  
+	  }
+	  for(let i=n;i>(n-80);i--)
+	  {
+		  console.log(">>>>>>>>>>>>>>>>>>>>  adding years to qualification")
+		  var op=$('<option value="'+i+'">'+String(i)+'</option>');
+		  $('#editstudentQualificationMonthYearPassID').append(op);
+		  
+	  }
+	  $('#studentPersonalDob').datepicker({
+		    format: 'dd/mm/yyyy',							   
+			autoclose:true,
+			clearBtn:true
+		}).on('changeDate',function(e)
+		{
+			console.log(e);
+			var d=e.date;
+			console.log(">>>>>>>>>>>>>");
+			console.log(d);
+			var dToday=new Date();
+			dateDiffe=dToday-d;
+			console.log(">>>>>>>>>>>>>>>>>  "+dateDiffe);
+			console.log(diff_years(dToday,d));
+			if((diff_years(dToday,d)<15) || dateDiffe<0 )
+			{
+				alert("Wrong Date Selection. Age Criteria does not match");	
+			}
+			else
+			{
+				//$('#ageOnAdmission').val(diff_years(dToday,d));	
+			}
+		});
+	   $('#copyAdd').change(function() {
+	        if(this.checked)
+			{
+				$('#studentPersonalCommunicationAddress').val($('#studentPersonalPermanentAddress').val())
+	        }
+	        else
+			{
+				$('#studentPersonalCommunicationAddress').val("");
+			}
+	    });
+	  $('#startWindowClose').unbind().bind('click',function()
+	  {
+		 alert("Cannot process request without required fields");
+		 $( "#tabs" ).tabs( "disable", 1 );
+		 $( "#tabs" ).tabs( "disable", 2 );
+		 $( "#tabs" ).tabs( "disable", 3 );
+		 $( "#tabs" ).tabs( "disable", 4 );
+		 $( "#tabs" ).tabs( "disable", 5 );
+		 $( "#tabs" ).tabs( "disable", 6 );
+		 $( "#tabs" ).tabs( "disable", 7 );
+		 $( "#tabs" ).tabs( "disable", 0 );
+		 $(".tabDivs").find("input, button, submit, textarea, select").attr("disabled", "disabled");
+		 $(".tabDivs").find("input, button, submit, textarea, select").prop("disabled", "disabled");
+	  });
+	  $('#formStudentBank').unbind().bind('submit',function(event)
+	  {
+		 event.preventDefault();
+		 var formData=$(this).serializeArray();
+		 formData.push({"name":"studentBankUserCode","value":SelectedOrMappedUser});
+		 $.ajax(
+		 {
+			url:'/students/saveStudentBankDetails',
+			method:'POST',
+			data:formData,
+			success:function(data)
+			{
+				if(typeof data["studentBankUserCode"]!="undefined" && data["studentBankUserCode"]!=null)
+				{
+					showMessage("Bank Details Added");
+					$("#tabs").tabs("option", "active", 5);//saveStudentBankDetails
+				}
+				else
+				{
+					showMessage("Something went wrong. Try again or contact Admin");
+				}
+			}
+		});
+	  });
+	  
+	  $('#showAddModal').unbind().bind('click',function()
+	  {
+		  $('#dialogEudcationAdd input[type="text"]').val('');
+		  $('#studentQualificationBreakReasonAndDetails').val('');
+		  $('#studentQualificationTotalMarks').val('');
+		  $('#studentQualificationMarksObtained').val('');
+		  $('#dialogEudcationAdd').modal({backdrop: 'static', keyboard: false});
+		  $('#studentQualificationLastQualification').unbind().bind('change',function()
+		  {
+			  if(this.checked)
+			  {
+				  console.log("Checked")
+				  $('#tcDetailsDiv').show();
+			  }
+			  else
+			  {
+				  $('#tcDetailsDiv').hide();
+			  }
+		  })
+	  });
+	 /* $('#showAddModalGuardian').unbind().bind('click',function(){
+		  $('#gEmail1').val("");
+		  $('#gMobile1').val("");
+		  $('#tbody2').empty();
+		  $('#dialogGuardianAdd1').modal('show');
+	  });*/
+	  $('.editable').unbind().bind('click',function()
+	  {
+		  var elem=$(this).attr("support");
+		  console.log($("#"+elem).prop('readonly'));
+		  if($("#"+elem).prop('readonly')==true)
+		  {
+			  $("#"+elem).attr("readonly", false);
+			  $("#"+elem).prop("readonly", false);			  
+		  }
+		  else
+		  {
+			  $("#"+elem).attr("readonly", true);
+			  $("#"+elem).prop("readonly", true);			  
+		  }
+	  })
+	 // getAllActiveBatches();
+	  getAllQualifications();
+	  loadAllActiveFeeCategories();
+	  $( "#accordionGuardian" ).accordion({ collapsible: true});
+	 
+	 $('#formStudentEducation').unbind().bind('submit',function(event)
+	 {
+		event.preventDefault();
+		var lastQ=false;
+		var breakinq=false;
+		if($('#studentQualificationLastQualification').prop("checked")==true)
+		{
+			lastQ=true;
+		}
+		if($('#studentQualificationBreakInLastQualification').prop("checked")==true)
+		{
+			breakinq=true;
+		}
+		var formData=$(this).serializeArray();
+		var dob=$('#studentQualificationMonthYearPassID').val();
+		//dob=dob.split('/')[2]+"-"+dob.split('/')[1]+"-"+dob.split('/')[0];
+		formData.push({"name":"studentQualificationMonthYearPass","value":dob});
+		formData.push({"name":"mappedStudentPersonal","value":SelectedOrMappedUser});
+		formData.push({"name":"studentQualificationLastQualification","value":lastQ});
+		formData.push({"name":"studentQualificationBreakInLastQualification","value":breakinq});
+		formData.push({"name":"studentQualificationStatus","value":"valid"});
+		$.ajax(
+		{
+			url:'/students/addStudentQualification',
+			method:'post',
+			data:formData,
+			success:function(data)
+			{
+				if(typeof data["studentQualificationIdentity"]!="undefined")
+				{
+					showMessage("Student Details Saved");
+                    $('#formStudentEducation input[type="text"]').val('');
+					try
+					{
+						if ($.fn.DataTable.isDataTable('gridTableStudentQualification') ) 
+						{
+							clearDataTable('gridTableStudentQualification');
+						}
+						
+					}
+					catch(e)
+					{
+						console.log("Error while clearing data table");
+					}
+					loadStudentQualifications();
+					$('#dialogEudcationEdit').modal('hide');
+					$('#dialogEudcationAdd').modal('hide');
+				}
+			},
+			error:function(err)
+			{
+				alert("Error in data submission  "+err);
+			}
+ 	   	});	
+	 });
+	 
+	 $('#formEditQualificationDetails').unbind().bind('submit',function(event)
+	 {
+		event.preventDefault();
+		var lastQ=false;
+		var breakinq=false;
+		if($('#editstudentQualificationLastQualification').prop("checked")==true)
+		{
+			lastQ=true;
+		}
+		if($('#editstudentQualificationBreakInLastQualification').prop("checked")==true)
+		{
+			breakinq=true;
+		}
+		var formData=$(this).serializeArray();
+		formData.push({"name":"mappedStudentPersonal","value":SelectedOrMappedUser});
+		formData.push({"name":"studentQualificationLastQualification","value":lastQ});
+		formData.push({"name":"studentQualificationBreakInLastQualification","value":breakinq});
+		formData.push({"name":"studentQualificationStatus","value":"valid"});
+		$.ajax(
+		{
+			url:'/students/addStudentQualification',
+			method:'post',
+			data:formData,
+			success:function(data)
+			{
+				if(typeof data["studentQualificationIdentity"]!="undefined" && data["studentQualificationIdentity"]!=null)
+				{
+					showMessage("Student Details Saved");
+					clearDataTable('gridTableStudentQualification'); 		
+					loadStudentQualifications();
+					$('#dialogEudcationEdit').modal('hide');
+				}
+			},
+			error:function(err)
+			{
+				alert("Error in data submission  "+err);
+			}
+	 	   	});	
+		});
+	 		$('#formStudentPersonal').unbind().bind('submit',function(event)
+	 		{
+		 		event.preventDefault();
+		 		if($('#idStudentPersonalSpeciallyAbled').val()=="on")
+		 		{
+		 			$('#idStudentPersonalSpeciallyAbled').val(true)
+		 		}
+		 		else
+		 		{
+		 			$('#idStudentPersonalSpeciallyAbled').val(false)
+		 		}
+		 		if($('#ageOnAdmission').val()=="")
+		 		{
+		 			alert("Age on admission missing");
+		 			return false;
+		 		}
+				var formData=new Array();
+				if($('#selectCommunity').val()=='')
+				{
+					$('#selectCommunity').remove();
+				}
+				if($('#selectReligion').val()=='')
+				{
+					$('#selectReligion').remove();
+				}
+				if($('#selectReligionCaste').val()=='')
+				{
+					$('#selectReligionCaste').remove();
+				}
+				formData=$(this).serializeArray();
+				var dob=$('#studentPersonalDob').val();
+				dob=dob.split('/')[2]+"-"+dob.split('/')[1]+"-"+dob.split('/')[0];
+				//formData.push({"name":"studentPersonalStudentName","value":$('#studentPersonalStudentName').val()});
+				//formData.push({"name":"studentPersonalAadhar","value":$('#studentPersonalAadhar').val()});
+				formData.push({"name":"studentPersonalDob","value":dob});
+				//formData.push({"name":"studentPersonalGender","value":$('#studentPersonalGender').val()});
+				//formData.push({"name":"studentPersonalMappedReligion","value":$('#selectReligion').val()});
+				//formData.push({"name":"studentPersonalMappedCategory","value":$('#selectCategory').val()});
+				//formData.push({"name":"studentPersonalMappedCaste","value":$('#selectReligionCaste').val()});
+				//formData.push({"name":"studentPersonalMotherTounge","value":$('#mt').val()});
+				formData.push({"name":"studentCode","value":SelectedOrMappedUser});
+				
+				$.ajax(
+				{
+					url:'/students/addPersonalDetails',
+					method:'post',
+					data:formData,
+					success:function(data)
+					{
+						if(typeof data["studentCode"]!="undefined" && data["studentCode"]!=null)
+						{
+							showMessage("Student Details Saved");
+							$("#tabs").tabs("option", "active", 1);//saveStudentBankDetails
+							//$("#divStudentPersonal :input").attr("disabled", true);
+							$('#buttonClatDetails').attr("disabled", false);
+							$('#buttonAdmissionSave').attr("disabled", false);
+							$('#formAdmissionSave input').attr('readonly',false);
+							$('#formClatSave input').attr('readonly',false);
+							$("#formClatSave input").prop("disabled", false);
+							$("#formAdmissionSave input").attr("disabled", false);
+						}
+					},
+					error:function(err)
+					{
+						alert("Error in data submission  "+err);
+					}
+		 	   	});	
+		 	  });
+	
+	  $('#formAdmissionSave').unbind().bind('submit',function(event)
+	  {
+		event.preventDefault();  
+		var formData=new Array();
+		formData=$(this).serializeArray();
+		var interUni=false;
+		if($('#studentAdmissionInterUniversity').prop("checked")==true)
+		{
+		    interUni=true;
+		}
+	  	else
+	  	{
+	  		interUni=false;
+	  	}
+		formData.push({"name":"studentAdmissionUserCode","value":SelectedOrMappedUser});
+		formData.push({"name":"studentAdmissionInterUniversity","value":interUni});
+		//formData.push({"name":"studentAdmissionStatus","value":"invalid"});
+		$.ajax(
+		{
+			url:'/students/addStudentAdmissionDetails',
+			method:'post',
+			data:formData,
+			success:function(data)
+			{
+				if(data)
+				{
+					
+					if(existingUser==true)
+					{
+						updateReservation(oldCourseId,oldBatchId,oldCategoryId,"min");
+					}
+					//$("#formAdmissionSave :input").prop("disabled",true);
+					if(data["studentAdmissionUserCode"])
+					{
+						var selectedUserCode=data["studentAdmissionUserCode"];
+						console.log(data)
+						$('#buttonAdmissionSave').attr("disabled", true);
+						//if(data["studentAdmissionStatus"]!="valid")
+							showMessage("Student Details Saved.Continue with next verification");
+							$('html, body').animate({ scrollTop: $('#starter').offset().top }, 'slow');
+						var program=$('#selectProgram1').val();
+						var batch=$('#selectBatch1').val();
+						getUnverifiedStudents(program,batch);
+						$('#buttonPersonalSubmit').attr("disabled", false);
+						if(data["studentAdmissionStatus"]=="valid")
+						{
+							var pgmId=data["studentAdmissionProgram"]["courseId"];
+							var btchId=data["studentAdmissionBatch"]["batchId"];
+							var catId=data["admittedCategory"]["categoryId"];
+							updateReservation(pgmId,btchId,catId);
+							$.ajax(
+							{
+								url:"/userManagement/ActivateOrInactivateUserByUserCode",
+								method:'post',
+								data:{"usercode":selectedUserCode,"active":true},
+								success:function(data)
+								{
+									if(data)
+									{
+
+										$.ajax(
+										{
+											url:"/fees/getFeeProcessingEntriesByStatus",
+											method:'get',
+											data:{"programId":globalProgramCode,"batchId":globalBatchCode,"feeStatus":"verified"},
+											success:function(data)
+											{
+												if(data)
+												{
+													$('#feeProcessTableBody').empty();
+													if(data.length>0)
+													{
+														for(var i=0;i<data.length;i++)
+														{
+															var tr=$('<tr><td>'+data[i]["feeCollectionUniqueName"]+'</td><td><input type="checkbox" id="'+data[i]["feeCollectionUniqueName"]+'" class="feeProcessCheck" name="feeProcess" value="'+data[i]["feeCollectionUniqueName"]+'"></td></tr>');
+															$('#feeProcessTableBody').append(tr);
+														}
+														$('.feeProcessCheck').on('change',function()
+														{
+															var feeName=$(this).attr('id');
+															if ($(this).is(':checked'))
+															{
+																if(jQuery.inArray(feeName, selectedFeeProcessArray) == -1)
+																{
+																	selectedFeeProcessArray.push(feeName);
+																}
+															}
+															else
+															{
+																selectedFeeProcessArray = $.grep(selectedFeeProcessArray, function(value) 
+																{
+																	  return value != feeName;
+																});	
+															}
+														});
+														
+														$('#btnFeeProcess').unbind().bind('click',function()
+														{
+															$(this).attr("disabled", true);
+															$.ajax(
+															{
+																url:"/fees/processFeeOfStudentDuringAdmission",
+																method:'get',
+																data:{"feeProcessArray":String(selectedFeeProcessArray),"userCode":selectedUserCode},
+																success:function(data)
+																{
+																	console.log(data);	
+																}
+															});
+														});
+													}										
+												}
+											}
+										});
+									}
+									
+								}
+							});
+							checkAndInsert(selectedUserCode);
+						}
+					}
+				}
+			},
+			error:function(err)
+			{
+				alert("Error in data submission  "+err);
+			}
+ 	   	});	
+ 	  });
+	  $('#addGuardianForm1').unbind().bind('submit',function(e)
+	  {
+		  e.preventDefault();
+		/*if(($('#gEmail1').val()=="")||$('#gMobile1').val()=="")
+		{
+			showMessage("Enter value in nay of the fields");
+			return; 
+		}*/
+		var formData=new Array();
+		
+		formData.push({"name":"email","value":$('#gEmail1').val()});
+		formData.push({"name":"mobile","value":$('#gMobile1').val()});
+		$.ajax(
+		{
+			url:'/userManagement/getUser',
+			method:'GET',
+			data:formData,
+			success:function(data)
+			{
+				console.log(data);
+				var userData=data.data;
+				if(userData.length>0)
+				{
+					showMessage("Guardian Already Exists.Check in User management");
+   	   				$('#tbody1').empty();
+	   	  			userData.forEach(function(user)
+	   	  			{
+	   	  				console.log(">>>");
+  	   						console.log(user["usercode"]);
+	   	  				$('#tableExistingGuardian').append($('<tbody>',{"id":"tbody2"}));
+	   	  				var tr=$('<tr>');
+	   	  				var td0=$('<td>',{'text':user["usercode"]});
+	   	  				var td1=$('<td>',{'text':user["email"]});
+	   	  				var td2=$('<td>',{'text':user["mobile"]});
+	   	  				userMapFromGuardianSearch['email']=user["email"];
+	   	  				userMapFromGuardianSearch['mobile']=user["mobile"];
+	   	  				userMapFromGuardianSearch['usercode']=user["usercode"];
+	   	  				userMapFromGuardianSearch['id']=user["id"];
+	   	  				var td3=$('<td><button guardId="'+user["id"]+'" id="'+user["usercode"]+'" type="button" class="btn btn-primary userSelect2">Select</button></td>')
+	   	  				tr.append(td0);
+	   	  				tr.append(td1);
+	   	  				tr.append(td2);
+	   	  				tr.append(td3);
+	   	  				$('#tbody2').append(tr);
+	   	  			});
+	   	  			$('.userSelect2').unbind().bind('click',function()
+	   	  			{
+	   	  				var selectedUserId=$(this).attr("id");
+	   	  				//SelectedOrMappedUser=selectedUserId;
+	   	  				var userIdSel=$(this).attr("userId");
+	   	  			    userCodeToUserIdMap[selectedUserId]=userIdSel;
+	   	  				getUserIdFromUserCodes([selectedUserId],"Guardian"); 
+	   	  				//$('#dialogGuardianAdd2').modal({backdrop: 'static', keyboard: false});
+	   	  				$('#dialogGuardianAdd1').modal('hide');
+	   	  				$('#dialogGuardianAdd2').modal('show');
+	   	  				$('#gEmail').val(userMapFromGuardianSearch['email']);
+	   	  				$("#gEmail").prop("readonly", true);
+	   	  				$('#gMobile').val(userMapFromGuardianSearch['mobile']);
+	   	  				$("#gMobile").prop("readonly", true);
+	   	  				$('#buttonGuardianSave').hide();
+	   	  				$('#buttonGuardianSave2').show();
+	   	  				getGuardianDetailsFromUserCode(selectedUserId);
+	   	  			});
+   	   			}
+   	   			else
+   	   			{
+   	   				$('#gEmail').val($('#gEmail1').val());
+   	   				$("#gEmail").prop("readonly", true);
+   	   				$('#gMobile').val($('#gMobile1').val());
+   	   				$("#gMobile").prop("readonly", true);
+   	   				
+   	   				$('#guardianPassPort').val('');
+   	   				$('#guardianPassPortPlaceOfIssue').val('');
+   	   				$('#guardianPassPortDateOfIssue').val('');
+   	   				$('#guardianPassPortDateOfExpiry').val('');
+   	   				
+   	   				$('#guardNotification').val("");
+   	   				//$('#dialogGuardianAdd2').modal({backdrop: 'static', keyboard: false});
+   	   				$('#dialogGuardianAdd1').modal('hide');
+   	   				$('#dialogGuardianAdd2').modal('show');
+   	   				$('#buttonGuardianSave').show();
+	  				$('#buttonGuardianSave2').hide();
+	  				$('#guardianName').val("");
+	  				$('#guardianPassPort').val("");
+	  				$('#guardianOccupation').val("");
+	  				$('#guardianOrganization').val("");
+	  				$('#guardianAnnualIncome').val("");
+	  				$('#guardianOfficialAddress').val("");
+	  				$('#guardianResidentialAddress').val("");
+	  				$('#guardianLandLine').val("");
+   	   			}
+   	   				
+			},
+			error:function(e)
+			{
+				showMessage("Error in user process. Contact Admin")
+			}
+		})
+	 }); 
+	 $('#buttonGuardianSave').unbind().bind('click',function()
+	 {
+		var formData=new Array();
+		formData.push({"name":"email","value":$('#gEmail').val()});
+		formData.push({"name":"mobile","value":$('#gMobile').val()});
+		formData.push({"name":"userType","value":"guardian"});
+		$.ajax(
+		{
+	   		url:'/userManagement/getUser',
+	   		method:'GET',
+	   		data:formData,
+	   		success:function(data)
+   	   		{
+   	   			console.log(data);
+   	   			var userData=data.data;
+   	   			if(userData.length>0)
+   	   			{
+   	   				showMessage("Guardian Already Exists.Check in User management");
+				}
+   	   			else
+   	   			{
+   	   				$.ajax(
+   	   				{
+   	   		   	    	url:'/userManagement/addUser',
+   	   		   	     	method:'post',
+   	   		   	     	data:formData,
+   	   		   	     	success:function(data)
+   	   		   	     	{
+   	   		   	     		var isLocalGuardian=false;
+   	   		   	     		if($('#guardianIsLocal').val()=="on")
+   	   		   	     		{
+   	   		   	     			isLocalGuardian=true;	
+   	   		   	     		}
+   	   		   	     	   	var user=data["createdUser"];
+   	   		   	     	   	console.log(user);
+   	   		   	     	   	var globalGuardianId=user["id"];
+
+   	   		   	     	   	var guardianId=user["usercode"];
+   	   		   	     		var formData1=new Array();
+   	   			   	 		formData1.push({"name":"guardianName","value":$('#guardianName').val()});
+   	   			   			formData1.push({"name":"guardianRelation","value":$('#guardianRelation').val()});
+   	   			   			formData1.push({"name":"guardianQualification","value":$('#guardianQualification').val()});
+   	   			   			formData1.push({"name":"guardianOccupation","value":$('#guardianOccupation').val()});
+   	   			   			formData1.push({"name":"guardianOrganization","value":$('#guardianOrganization').val()});
+   	   			   			formData1.push({"name":"guardianAnnaualIncome","value":$('#guardianAnnualIncome').val()});
+   	   			   			formData1.push({"name":"guardianOfficialAddress","value":$('#guardianOfficialAddress').val()});
+   	   			   			formData1.push({"name":"guardianResidentialAddress","value":$('#guardianResidentialAddress').val()});
+   	   			   			formData1.push({"name":"mappedStudentPersonal","value":SelectedOrMappedUser});
+   	   			   			formData1.push({"name":"guardianIsLocal","value":isLocalGuardian});
+   	   			   			formData1.push({"name":"guardianLandLine","value":$('#guardianLandLine').val()});
+   	   			   			formData1.push({"name":"gaurdianCode","value":guardianId});
+   	   			   		    formData1.push({"name":"guardianPassPort","value":$('#guardianPassPort').val()});
+   	   			   			formData1.push({"name":"guardianPassPortPlaceOfIssue","value":$('#guardianPassPortPlaceOfIssue').val()});
+   	   			   			formData1.push({"name":"guardianPassPortDateOfIssue","value":$('#guardianPassPortDateOfIssue').val()});
+   	   						formData1.push({"name":"guardianPassPortDateOfExpiry","value":$('#guardianPassPortDateOfExpiry').val()});
+   	   			   		    
+   	   			   			$.ajax(
+   	   			   			{
+   	   			   				url:'/students/addGuardianDetails',
+   	   			   				method:'post',
+   	   			   				data:formData1,
+   	   			   				success:function(data)
+   	   			   				{
+   	   			   					if(typeof data["studentGuardianIdentity"]!="undefined")
+   	   			   					{
+   	   			   						showMessage("Guardian Details Saved");
+   	   			   						userCodeToUserIdMap[guardianId]=globalGuardianId;
+   	   			   						try
+   	   			   						{
+   	   			   					if ($.fn.DataTable.isDataTable( '#guardianTable' ) ) {
+   	   			   						clearDataTable('guardianTable');
+	   	   			   				}
+   	   			   					if ($.fn.DataTable.isDataTable( '#gridTableUserDetails' ) ) {
+   	   			   						clearDataTable('gridTableUserDetails');
+	   	   			   				}		
+   	   			   						}
+   	   			   						catch(e)
+   	   			   						{
+   	   			   							console.log("Error while clearing grid after guardian save"+e);
+   	   			   						}
+   	   			   						getUserIdFromUserCodes(guardianId,"Guardian");
+   	   			   						setUpGuardianView();
+   	   			   						$('#dialogGuardianAdd2').modal('hide');
+   	   			   					}
+   	   			   				},
+   	   			   				error:function(err)
+   	   			   				{
+   	   			   					alert("Error in data submission  "+err);
+   	   			   				}
+   	   			   	 	   	});
+   	   		   	     	 },
+   	   		   	     	 error:function(err)
+   	   		   	     	 {
+   	   		   	     	 	alert("Error in data submission  "+err);
+   	   		   	     	 }
+   	   		   	    });		   	   				
+   	   			}
+		  	},
+			error:function(e)
+			{
+				showMessage("Error in user process. Contact Admin")
+			}
+		});
+ 	  });
+
+	 $('#buttonGuardianSave2').unbind().bind('click',function()
+	 {
+	    var isLocalGuardian=false;
+ 	    if($('#guardianIsLocal').val()=="on")
+ 	    {
+ 	    	isLocalGuardian=true;	
+ 	    }
+ 	    var guardianId=userMapFromGuardianSearch["usercode"];
+ 	    var formData1=new Array();
+	  	formData1.push({"name":"guardianName","value":$('#guardianName').val()});
+	  	formData1.push({"name":"guardianRelation","value":$('#guardianRelation').val()});
+		formData1.push({"name":"guardianQualification","value":$('#guardianQualification').val()});
+		formData1.push({"name":"guardianOccupation","value":$('#guardianOccupation').val()});
+		formData1.push({"name":"guardianOrganization","value":$('#guardianOrganization').val()});
+		formData1.push({"name":"guardianAnnualIncome","value":$('#guardianAnnualIncome').val()});
+		formData1.push({"name":"guardianOfficialAddress","value":$('#guardianOfficialAddress').val()});
+		formData1.push({"name":"guardianResidentialAddress","value":$('#guardianResidentialAddress').val()});
+		formData1.push({"name":"mappedStudentPersonal","value":SelectedOrMappedUser});
+		formData1.push({"name":"guardianIsLocal","value":isLocalGuardian});
+		formData1.push({"name":"gaurdianCode","value":guardianId});
+		formData1.push({"name":"guardianPassPort","value":$('#guardianPassPort1').val()});
+		formData1.push({"name":"guardianPassPortPlaceOfIssue","value":$('#guardianPassPortPlaceOfIssue1').val()});
+	   	formData1.push({"name":"guardianPassPortDateOfIssue","value":$('#guardianPassPortDateOfIssue1').val()});
+		formData1.push({"name":"guardianPassPortDateOfExpiry","value":$('#guardianPassPortDateOfExpiry1').val()});
+	   		
+  		$.ajax(
+  		{
+  			url:'/students/updateGuardianUser',
+  			method:'post',
+  			data:formData1,
+  			success:function(data)
+  			{
+  				var globalGuardianId=userMapFromGuardianSearch['id'];
+  				if(typeof data["studentGuardianIdentity"]!="undefined")
+  				{
+  					showMessage("Guardian Details Saved");
+  					userCodeToUserIdMap[guardianId]=globalGuardianId;
+  					try
+  					{
+  						clearDataTable('guardianTable');
+  						clearDataTable('gridTableUserDetails');
+  					}
+  					catch(e)
+  					{
+  						console.log("Error while clearing grid after guardian save")
+  					}
+  					getUserIdFromUserCodes(guardianId,"Guardian");
+  					setUpGuardianView();
+  					$('#dialogGuardianAdd2').modal('hide');
+  				}
+  			},
+  			error:function(err)
+  			{
+  				alert("Error in data submission  "+err);
+  			}
+  	 	  });
+ 	  });	 
+	  $('#formClatSave').unbind().bind('submit',function(event)
+	  {
+		event.preventDefault(); 
+		var formData=new Array();
+		formData=$(this).serializeArray();
+		formData.push({"name":"userCodeStudentClat","value":SelectedOrMappedUser});
+		$.ajax(
+		{
+			url:'/students/addClatDetails',
+			method:'post',
+			data:formData,
+			success:function(data)
+			{
+				if(typeof data["userCodeStudentClat"]!="undefined")
+				{
+					showMessage("Student CLAT Details Saved");
+					$("#tabs").tabs("option", "active", 2);
+					$('#eduSubmit').attr("disabled", false);
+					$("#formClatSave input").prop("disabled", true);
+				}
+			},
+			error:function(err)
+			{
+				showMessage("Error in data submission  "+err);
+			}
+ 	   	});	
+ 
+	 });
+	 //get All Courses
+	 		$.ajax({
+   	   		url:'/course/getAllCourses',
+   	   		method:'GET',
+   	   		success:function(data)
+   	   		{
+   	   			courseMap=data;	
+   	   			setUpDropDown("course",data,"courseId","courseCode");
+   	   			setUpDropDown("selectProgram",data,"courseId","courseCode");
+   	   			setUpDropDown("selectProgram1",data,"courseId","courseCode");
+   	   			$('#selectProgram').unbind().bind('change',function()
+   	   			{
+   	   				globalProgramCode=$(this).val();
+   	   				getAllActiveBatchesOfProgram($(this).val());
+   	   				
+   	   			});
+	   			$('#selectProgram1').unbind().bind('change',function()
+	   	   	   	{
+	   	   	   		globalProgramCode=$(this).val();
+	   	   	   		getAllActiveBatchesOfProgram($(this).val());
+	   	   	   				
+	   	   	   	});
+   	   		},
+   	   		error:function(err)
+   	   		{
+   	   			showMessage(err);
+   	   		}
+   	   		});
+
+	 	 	$.ajax({
+   	   		url:'/category/getAllCategories',
+   	   		method:'GET',
+   	   		success:function(data)
+   	   		{
+   	   			console.log("All courses");
+   	   			console.log(data);
+   	   			setUpDropDown("selectCategory",data,"categoryId","categoryCode");
+   	   			setUpDropDown("admittedCategory",data,"categoryId","categoryCode");
+   	   			$('#admittedCategory').unbind().bind('change',function()
+   	   			{
+   	   				console.log("Chnage event fired")
+   	   				var admittedCat=$(this).val();
+   	   				var pgmCode=$('#selectProgram').val();
+   	   				var btchCode=$('#selectBatch').val();
+   	   				getBatchReservationDataForBatch(pgmCode,btchCode,admittedCat);
+   	   				
+   	   			})
+   	   		},
+   	   		error:function(err)
+   	   		{
+   	   			showMessage(err);
+   	   		}
+   	   		});
+	 
+			$.ajax({
+ 	   		url:'/religion/getAllReligions',
+ 	   		method:'GET',
+ 	   		success:function(data)
+ 	   		{
+ 	   			console.log("All courses");
+ 	   			console.log(data);
+ 	   			setUpDropDown("selectReligion",data,"religionId","religionName");
+ 	   		},
+ 	   		error:function(err)
+ 	   		{
+ 	   			showMessage(err);
+ 	   		}
+ 	   		});
+	//selecReligionCategory
+		$.ajax({
+ 	   		url:'/religion/getAllReligionCategories',
+ 	   		method:'GET',
+ 	   		success:function(data)
+ 	   		{
+ 	   			setUpDropDown("selectReligionCaste",data,"religionCasteId","religionCasteName");
+ 	   		},
+ 	   		error:function(err)
+ 	   		{
+ 	   			showMessage(err);
+ 	   		}
+ 	   		});
+	 
+	  $('#dialog').modal({backdrop: 'static',
+		    keyboard: false});
+	  //$( "#studentPersonalDob" ).datepicker();
+	  
+	  $('#formAddStudentUser').unbind().bind('submit',function(event)
+	  {
+		 event.preventDefault();
+		 if($('#email').val()=="" && $('#mobile').val()=="" && $('#usercode').val()=="" )
+		 {
+			 showMessage("Enter atleast one identification criteria");
+		 }
+		 else
+		 {
+			 var formData=$(this).serializeArray();
+			 formData.push({"name":"active","value":"false"});
+			 $.ajax(
+			 {
+	   	   		url:'/userManagement/getUser',
+	   	   		method:'GET',
+	   	   		data:formData,
+	   	   		success:function(data)
+	   	   		{
+	   	   			console.log(data);
+	   	   			var userData=data.data;
+	   	   			if(userData.length>0)
+	   	   			{	
+	   	   			showMessage("Already user exists with the entered information. Select user to continue");
+	   	   			$('#tbody1').empty();
+	   	   				userData.forEach(function(user)
+		   	  			{
+	   	   					$('#tableExistingUser').append($('<tbody>',{"id":"tbody1"}));
+		   	  				var tr=$('<tr>');
+		   	  				var td0=$('<td>',{'text':user["usercode"]});
+		   	  				var td1=$('<td>',{'text':user["email"]});
+		   	  				var td2=$('<td>',{'text':user["mobile"]});
+		   	  				var td3=$('<td><button userId="'+user["id"]+'" id="'+user["usercode"]+'" type="button" class="btn btn-primary userSelect">Select</button></td>')
+		   	  				tr.append(td0);
+		   	  				tr.append(td1);
+		   	  				tr.append(td2);
+		   	  				tr.append(td3);
+		   	  				$('#tbody1').append(tr);
+		   	  			});
+		   	  			$('.userSelect').unbind().bind('click',function()
+		   	  			{
+		   	  				var selectedUserId=$(this).attr("id");
+		   	  				SelectedOrMappedUser=selectedUserId;
+		   	  				var userIdSel=$(this).attr("userId");
+		   	  			    userCodeToUserIdMap[selectedUserId]=userIdSel;
+		   	  				getUserIdFromUserCodes([selectedUserId],"Student"); 
+		   	  				getExistingStudentUserDetails(SelectedOrMappedUser);
+		   	  				$('#dialog').modal('toggle');
+		   	  				$('#badgeUserId').text("Mapping to User Id: "+SelectedOrMappedUser);
+		   	  				getStudentPersonalDetails(SelectedOrMappedUser);
+		   	  				getStudentClatDetails(SelectedOrMappedUser);
+		   	  				getAdmissionDetailsofStudent();
+		   	  				setUpGuardianView();	
+		   	  				loadStudentQualifications();
+		   	  				getBankDetails();
+		   	  			});
+	   	   		    }
+	   	   			else
+	   	   			{
+	   	   				formData.push({"name":"userType","value":"student"});
+	   	   			    $.ajax({
+	   	     	   		url:'/userManagement/addUser',
+	   	     	   		method:'post',
+	   	     	   		data:formData,
+	   	     	   		success:function(data)
+	   	     	   		{
+	   	     	   			$('#dialog').modal('toggle');
+	   	     	   			var user=data["createdUser"];
+	   	     	   			console.log(user);
+	   	     	   			showMessage("User created with User Id "+user["usercode"]);
+	   	     	   			$('#badgeUserId').text("Mapping to User Id: "+user["usercode"]);
+	   	     	   			SelectedOrMappedUser=user["usercode"];
+	   	     	   			userCodeToUserIdMap[user["usercode"]]=user["id"];
+	   	     	   			getUserIdFromUserCodes([user["usercode"]],"Student");
+	   	     	   		},
+	   	     	   		error:function(err)
+	   	     	   		{
+	   	     	   			alert("Error in data submission  "+err);
+	   	     	   		}
+	   	     	   	});
+	   	   			}
+	   	   		},
+	   	   		error:function(data)
+	   	   		{
+	   	   			
+	   	   		}
+			});
+	  	 }
+	 });
+  	 
+  	 $('#subCat').hide();
+  	 $('#lsubCat').hide();
+  	 $('#cat').on('change',function()
+  	 {
+  		
+  	 if($(this).val()=='ksebc')
+  	 {
+  		$('#lsubCat').show();
+  		$('#subCat').show();	 
+  			 
+  	 }
+  	 else
+  		 {
+  		 
+  			$('#subCat').hide();
+  			$('#lsubCat').hide();
+  			
+  		 }
+  	 })
+  	 
+  	$('input[type=radio][name=studentType]').change(function() {
+  		
+  	    if (this.value == 'IS') {
+  	        $('#tabs').show();
+  	        $('#tabs2').hide();
+  	        $('#tabs3').hide();
+  	    }
+  	    else if (this.value == 'FS') {
+  	        $('#tabs').hide();
+  	        $('#tabs2').show();
+  	        $('#tabs3').show();
+  	    }
+  	    else if (this.value == 'FSS') {
+  	        $('#tabs').show();
+  	        $('#tabs2').hide();
+  	        $('#tabs3').hide();
+  	    }
+  	});
+ //box-shadow: 1px 1px 1px rgba(200, 0, 0, 0.85);
+  })
+ </script>
+
+<style>
+:required::after {
+    content:" *";
+    color: red;
+  }
+
+.modal { overflow-y: auto; }
+</style>
+
+<!-- <div class="modal fade" id="dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Student Selection Filter</h5>
+         <button id="startWindowClose" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+	  </div>
+      <div class="modal-body">
+
+	 <hr>
+	 <div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4"><button id="btnCallStudents" class="btn btn-primary form-control">Apply</button></div>
+		<div class="col-md-4"></div>
+	</div>
+	<div class="table-responsive cell-border well">
+		<table id="gridTable" class="table table-striped"></table>
+	</div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>-->
+
+  <div class="modal fade" id="dialogEudcationEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Qualification Info(You may edit this info)</h5>
+        		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+	  </div>   
+	   <div class="modal-body">
+        	<form id="formEditQualificationDetails">
+			 <div class="form-group">
+				<h3>Qualification Info </h3>
+				<p></p>
+				<hr>
+				<label for="editstudentCode"><b>Student Code</b></label>
+				<input type="text"  class="form-control"   name="studentCode" id="editstudentCode" readonly>
+				<hr>
+				<br>
+				<div class="input-group">
+					<label for="editqualificationId"><b>Qualification-Id </b></label>	
+					<div class="input-group">
+					 <input  type="text" class="form-control editableMember" name="mappedQualification" id="editqualificationId" readonly >
+    				</div>
+				<label for="editqualificationName"><b>Qualifying Examination </b></label>	
+				<div class="input-group">
+					 <input  type="text" class="form-control editableMember" name="qualificationName" id="editqualificationName" readonly >
+    			</div>
+    			</div>
+    			<br>
+  				<label for="editstudentQualificationBoard"><b>Board of Qualifying Exam</b></label>
+  				<div class="input-group">
+					<select name="studentQualificationBoard" id="editstudentQualificationBoard"  class="form-control">
+					</select>
+    				 <span   class="input-group-addon"><i class="far fa-edit editable" support="editstudentQualificationBoard"></i></span>
+  				</div>
+				<br>  	
+				
+				<label for="editstudentQualificationInstitution"><b>Institution</b></label>
+  				<div class="input-group">
+					 <input type="text"  class="form-control editableMember" name="studentQualificationInstitution" id="editstudentQualificationInstitution" readonly >
+    				 <span   class="input-group-addon"><i class="far fa-edit editable" support="editstudentQualificationInstitution"></i></span>
+  				</div>
+  				<br>
+				
+				<label for="studentQualificationMarksObtained"><b>Marks/CGPA Obtained</b></label>	
+				 <div class="input-group">
+					<input type="number"  class="form-control"  placeholder="Marks/CGPA Obtained"  name="studentQualificationMarksObtained" id="editstudentQualificationMarksObtained" readonly>
+					<span  class="input-group-addon"><i class="far fa-edit editable" support="editstudentQualificationMarksObtained"></i></span>
+				 </div>	
+				<br>
+				<label for="studentQualificationTotalMarks"><b>Maximum Marks/Maximum Grade Point</b></label>
+				<div class="input-group">	
+		   			<input type="number"  class="form-control"  placeholder="Total Marks/Maximum Grade Point"  name="studentQualificationTotalMarks" id="editstudentQualificationTotalMarks" readonly >
+					<span  class="input-group-addon"><i class="far fa-edit editable" support="editstudentQualificationTotalMarks"></i></span>
+				</div>		
+				 <br>
+				<label for="editstudentQualificationRegNo"><b>Reg No</b></label>
+  				<div class="input-group">
+					 <input  pattern="^[a-zA-Z0-9-_]+( [a-zA-Z]+)*$"  type="text" class="form-control editableMember" name="studentQualificationRegNo" id="editstudentQualificationRegNo" readonly>
+    				 <span  class="input-group-addon"><i class="far fa-edit editable" support="editstudentQualificationRegNo"></i></span>
+  				</div>
+				
+				<label for="editstudentQualificationGradeClass"><b>Class</b></label>
+				<div class="input-group">
+					<select name="studentQualificationGradeClass" id="editstudentQualificationGradeClass"  class="form-control" class="editableMember">
+						<option value="NA">Not Applicable</option>
+						<option value="Second-Class">Second-Class</option>
+						<option value="First-Class">First-Class</option>
+						<option value="Distinction">Distinction</option>
+					</select> 
+				 	<span  class="input-group-addon"><i class="far fa-edit editable" support="editstudentQualificationGradeClass"></i></span>
+  				</div>
+  				<br>
+  				
+  				
+  				<label for="studentQualificationMonthYearPass"><b>Year of Passing</b></label>
+				<div class="input-group">
+				<select  class="form-control"  id="editstudentQualificationMonthYearPassID" name="studentQualificationMonthYearPass"></select>
+				<span  class="input-group-addon"><i class="far fa-edit editable editableSelect" support="editstudentQualificationMonthYearPassID"></i></span>
+				</div>
+  				
+  				
+  				 <div class="form-check">
+    				<input type="checkbox"  class="form-check-input" id="editstudentQualificationLastQualification">
+    				<label class="form-check-label" for="exampleCheck1">Last Qualification?</label>
+  				 </div>
+  			<hr>
+  			<div class="form-group" id="tcDetailsDiv2">
+  			
+  				 <label for="studentQualificationTCNo"><b>TC Number</b></label>
+				 <input type="text"  class="form-control"  name="studentQualificationTCNo" id="editstudentQualificationTCNo">
+				 
+				 <hr>
+				 <label for="studentQualificationTCIssuedDate"><b>TC Issue Date</b></label>
+				 <input type="text"  class="form-control dp"   name="studentQualificationTCIssuedDate" id="editstudentQualificationTCIssuedDate" >
+				 <hr>
+				 <div class="form-check">
+				 <input type="checkbox"  class="form-check-input" id="editstudentQualificationBreakInLastQualification">
+    			 <label class="form-check-label" for="exampleCheck1">Break in Last qualification?</label>
+				 </div>
+				 <hr>
+				  <label for="studentQualificationBreakReasonAndDetails"><b>Details</b></label>
+				  <textarea class="form-control" rows="5"   name="studentQualificationBreakReasonAndDetails" id="editstudentQualificationBreakReasonAndDetails"></textarea>
+					
+			</div>
+  				
+				<hr>
+				<button id="btnedu1" type="submit" class="btn btn-primary">Submit</button>
+			</div>
+			</form>
+      </div>
+      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="dialogEudcationAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Please fill in this form to setup Qualification Details</h5>
+        		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+	  </div>   
+	   <div class="modal-body">
+	   <form id="formStudentEducation">
+		 <div class="form-group">
+			    <h1>Education Info</h1>
+		 	<br>
+		 	<div class="row">
+		 	<div class="col-md-12">
+		 	
+			<label for="qualificationId"><b>Qualifying Examination</b></label>
+			<select name="mappedQualification" id="qualificationId"  class="form-control">
+			
+			</select>	 
+			<br>  
+			<label for="studentQualificationBoard"><b>Board of Qualifying Exam</b></label>
+			<select name="studentQualificationBoard" id="studentQualificationBoard"  class="form-control">
+			</select> 
+			<br>
+			 <label for="studentQualificationInstitution"><b>Institution</b></label>
+			<input type="text"  class="form-control"  placeholder="Name of Institution"  name="studentQualificationInstitution" id="studentQualificationInstitution" >
+			
+			<br>
+			<!--  <label for="studentQualificationPercentage"><b>Percentage of Marks</b></label>
+			<input type="number"  class="form-control"  placeholder="Percentage Obtained"  name="studentQualificationPercentage" id="studentQualificationPercentage" >
+			-->
+			<label for="studentQualificationMarksObtained"><b>Marks/CGPA Obtained</b></label>
+			<input type="number" step="any"  class="form-control"  placeholder="Marks Obtained"  name="studentQualificationMarksObtained" id="studentQualificationMarksObtained" >
+			<br>
+			
+		   <label for="studentQualificationTotalMarks"><b>Maximum Marks/Grade point</b></label>
+			<input type="number" step="any"  class="form-control"  placeholder="Total Marks"  name="studentQualificationTotalMarks" id="studentQualificationTotalMarks" >
+			<br>
+		
+			 <label for="studentQualificationRegNo"><b>Registration No</b></label>
+			<input type="text"  class="form-control"  pattern="^[a-zA-Z0-9-_]+( [a-zA-Z]+)*$" placeholder="Reg No"  name="studentQualificationRegNo" id="studentQualificationRegNo" >
+			<br>  
+			<label for="studentQualificationGradeClass"><b>Class</b></label>
+			<select name="studentQualificationGradeClass" id="studentQualificationGradeClass"  class="form-control">
+				<option value="NA">Not Applicable</option>
+				<option value="Second-Class">Second-Class</option>
+				<option value="First-Class">First-Class</option>
+				<option value="Distinction">Distinction</option>
+			</select> 
+			
+			<br>
+
+			 <label for="studentQualificationMonthYearPass"><b>Year of Passing</b></label>
+			<select  class="form-control"  id="studentQualificationMonthYearPassID" >
+			
+			</select>
+
+			<br>  
+				<label for="studentQualificationMediumInstruction"><b>Medium</b></label>
+				<select name="studentQualificationMediumInstruction" id="studentQualificationMediumInstruction"  class="form-control">
+					<option value="NA">Not Applicable</option>
+					<option value="Assamese">Assamese</option>
+					<option value="Bengali">Bengali</option>
+					<option value="Bodo">Bodo</option>
+					<option value="Dogri">Dogri</option>
+					<option value="English">English</option>
+					<option value="Hindi">Hindi</option>
+					<option value="Kannada">Kannada</option>
+					<option value="Kashmiri">Kashmiri</option>
+					<option value="Maithili">Maithili</option>
+					<option value="Malayalam">Malayalam</option>
+					<option value="Manipuri">Manipuri</option>
+					<option value="Odia">Odia</option>
+					<option value="Punjabi">Punjabi</option>
+					<option value="Sanskrit">Sanskrit</option>
+					<option value="Santhali">Santhali</option>
+					<option value="Sindhi">Sindhi</option>
+					<option value="Tamil">Tamil</option>
+					<option value="Telugu">Telugu</option>
+					<option value="Tulu">Tulu</option>
+					<option value="Urdu">Urdu</option>
+				</select> 
+			<br>
+			 <div class="form-check">
+    			<input type="checkbox"  class="form-check-input" id="studentQualificationLastQualification">
+    			<label class="form-check-label" for="exampleCheck1">Last Qualification?</label>
+  			</div>
+  			<hr>
+  			<div class="form-group" id="tcDetailsDiv" style="display:none">
+  				 <label for="studentQualificationTCNo"><b>TC Number</b></label>
+				 <input type="text"  class="form-control"  name="studentQualificationTCNo" id="studentQualificationTCNo" >
+				 <hr>
+				 <label for="studentQualificationTCIssuedDate"><b>TC Issue Date</b></label>
+				 <input type="text"  class="form-control dp"   name="studentQualificationTCIssuedDate" id="studentQualificationTCIssuedDate" >
+				 <hr>
+				 <div class="form-check">
+				 <input type="checkbox"  class="form-check-input" id="studentQualificationBreakInLastQualification">
+    			 <label class="form-check-label" for="exampleCheck1">Break in Last qualification?</label>
+				 </div>
+				 <hr>
+				  <label for="studentQualificationBreakReasonAndDetails"><b>Details</b></label>
+				  <textarea class="form-control" rows="5"   name="studentQualificationBreakReasonAndDetails" id="studentQualificationBreakReasonAndDetails"></textarea>
+					
+			</div>
+  			
+  			<hr>
+  			 <button type="submit" id="eduSubmit" class="btn btn-primary">Save</button>
+			</div>
+			 <hr>
+				   
+			
+			</div>
+	
+			</div>
+			</form>
+		    </div>
+		
+	   <div class="modal-footer">
+
+      </div>
+      </div>
+    </div>
+  </div>
+
+
+<div class="modal fade" id="editGuardianDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Guardian Details</h5>
+        		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+	  </div>
+      <div class="modal-body">
+        	<form id="formEditGuardianUser">
+			 <div class="form-group">
+				<h4>Guardian Info </h4>
+				<br>
+                <div class="row">
+                     <div class="col-md-12">
+					<input  type="hidden"  class="form-control"   name="" id="editGuardianCode" readonly>
+                       <label for="editUserCode"><b>User Code</b></label>	
+					   <div class="input-group">
+					 		<input  type="text" class="form-control editableMember" name="gaurdianCode" id="editUserCode" readonly >
+    				 	</div>
+                     </div>
+                 </div>    
+                  <div class="row">
+                    <div class="col-md-12">
+                    	<label for="editEmail"><b>Email</b></label>	
+                       <div class="input-group">
+					 		<input  type="email" class="form-control editableMember" name="email" id="editEmail" readonly >
+    				 		<!-- <span class="input-group-addon"><i class="far fa-edit editable"  support="editEmail" ></i></span> -->
+  						</div>
+                    </div>
+                    </div>
+                     <div class="row">
+                     <div class="col-md-12">
+                     <label for="editGuardianName"><b>Mobile</b></label>	
+					   <div class="input-group">
+					 		<input  type="text" class="form-control editableMember" name="mobile" id="editMobile" readonly >
+    				 		<!-- <span class="input-group-addon"><i class="far fa-edit editable"  support="editMobile" ></i></span> -->
+  						</div>                         
+                     </div>
+                     </div>
+					<hr>
+                 
+        			<label for="editGuardianName"><b>Name</b></label>	
+				<div class="input-group">
+					 <input  type="text" class="form-control editableMember" name="guardianName" id="editGuardianName" readonly >
+    				 <span class="input-group-addon"><i class="far fa-edit editable"  support="editGuardianName" ></i></span>
+  				</div>
+  				<label for="editGuardianRelation"><b>Relation</b></label>
+  				<div class="input-group">
+				    <select name="guardianRelation" id="editGuardianRelation"  class="form-control editableMember">
+				    	<option value="Father">Father</option>
+				    	<option value="Mother">Mother</option>
+				    	<option value="Brother">Brother</option>
+				    	<option value="Sister">Sister</option>
+				    	<option value="sponsor">Sponsor</option>
+				    	<option value="others">others</option>
+				    </select>
+    				 <span   class="input-group-addon"><i class="far fa-edit editable" support="editGuardianRelation"></i></span>
+  				</div>
+				<br>
+				
+				<!-- <label for="editGuardianQualification"><b>Guardian Qualification</b></label>
+  				<div class="input-group">
+					 <input type="text" class="form-control editableMember" name="guardianQualification" id="editGuardianQualification" readonly >
+    				 <span   class="input-group-addon"><i class="far fa-edit editable" support="editGuardianQualification"></i></span>
+  				</div>
+  				<br> -->
+  				<label for="editGuardianOccupation"><b>Occupation</b></label>
+  				<div class="input-group">
+					 <input type="text" class="form-control editableMember" name="guardianOccupation" id="editGuardianOccupation" readonly>
+    				 <span  class="input-group-addon"><i class="far fa-edit editable" support="editGuardianOccupation"></i></span>
+  				</div>
+				 <br>
+				<label for="editGuardianOrganization"><b>Organization</b></label>
+  				<div class="input-group">
+					 <input type="text" class="form-control editableMember" name="guardianOrganization" id="editGuardianOrganization" readonly>
+    				 <span  class="input-group-addon"><i class="far fa-edit editable" support="editGuardianOrganization"></i></span>
+  				</div>
+				 <br>
+				<label for="editGuardianAnnaualIncome"><b>Annual Income</b></label>
+  				<div class="input-group">
+					 <input type="text" class="form-control editableMember" name="guardianAnnaualIncome" id="editGuardianAnnaualIncome" readonly>
+    				 <span  class="input-group-addon"><i class="far fa-edit editable" support="editGuardianAnnaualIncome"></i></span>
+  				</div>
+				
+				<label for="editGuardianOfficialAddress"><b>Official Address</b></label>
+  				<div class="input-group">
+					 <textarea class="form-control editableMember" rows="5"   name="guardianOfficialAddress" id="editGuardianOfficialAddress" readonly></textarea>
+    				 <span  class="input-group-addon"><i class="far fa-edit editable" support="editGuardianOfficialAddress" ></i></span>
+  				</div>
+  				
+				<label for="editGuardianOfficialAddress"><b>Residential Address</b></label>
+  				<div class="input-group">
+					 <textarea class="form-control editableMember" rows="5"  name="guardianResidentialAddress" id="editGuardianResidentialAddress" readonly></textarea>
+    				 <span  class="input-group-addon"><i class="far fa-edit editable"  support="editGuardianResidentialAddress"></i></span>
+  				</div>		
+  				 <br>
+			   <label for="guardianLandLine"><b>Guardian Land Line</b></label>
+			   <div class="input-group">
+				<input type="text"  pattern="[0-9]{5,20}" class="form-control"  placeholder="Guardian Land Line" name="guardianLandLine" id="editguardianLandLine" readonly>
+				<span  class="input-group-addon"><i class="far fa-edit editable"  support="editguardianLandLine"></i></span>
+				</div>
+			   <br>	
+			   				<div id="guardianPassPortDiv1">
+					<h3>Passport Details</h3>
+						<div>
+						<p>
+							<div class="form-group">
+								<label for"">Passport No:</label>
+								<input type="text" class="form-control" id="guardianPassPort1" name="guardianPassPort">
+							 </div>
+							 <div class="form-group">
+								<label for"">Place of Issue:</label>
+								<input type="text" class="form-control" id="guardianPassPortPlaceOfIssue1" name="guardianPassPortPlaceOfIssue">
+							 </div>
+							 <div class="form-group">
+								<label for"">Date of Issue:</label>
+								<input type="text" class="form-control dp" id="guardianPassPortDateOfIssue1" name="guardianPassPortDateOfIssue">
+							 </div>
+							 <div class="form-group">
+								<label for"">Date of Expiry:</label>
+								<input type="text" class="form-control dp" id="guardianPassPortDateOfExpiry1" name="guardianPassPortDateOfExpiry">
+							 </div>
+						</p>					
+						</div>
+					<!-- <span  class="input-group-addon"><i class="far fa-edit editable" support="guardianPassPort1"></i></span> -->
+				</div> 
+			  <div class="form-check">
+			    <input  type="checkbox" class="form-check-input" id=editguardianIsLocal>
+			    <label class="form-check-label" for="exampleCheck1">Local Guardian</label>
+			  </div>
+			  <hr>
+			  <div class="form-check">
+			    <input  type="checkbox" class="form-check-input" id=editisGuardianSponsor>
+			    <label class="form-check-label" for="exampleCheck1">is Sponsor?</label>
+			  </div>
+			  <hr>
+				 <button id="btngmisc1" type="submit" class="btn btn-primary">Submit</button>
+			</div>
+			</form>
+			</div>
+			<div class="modal-footer">
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="dialogRoleMap" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+	  </div> 
+	   <div class="modal-body">
+	   <h4>Role & SMS settings</h4>
+		<div class="modal-body">
+		<form class="form-horizontal" id="editForm">
+		<div class="form-group">
+		 <label for="selectedUser">Selected User-Code:</label>
+		 <div >
+		<input type="text" class="form-control" id="selectedUserId" name="selectedUser" readonly>
+		 </div>
+		</div>
+		<div class="form-group">
+		 <label  for="name">Selected User:</label>
+		 <div>
+		<input type="text" class="form-control" id="selectedUser" name="selectedUser" readonly>
+		 </div>
+		</div>
+		<hr>
+		<h3>Web App Role Settings</h3>
+		<hr>
+		<div class="row">
+			<div class="col-sm-2"></div>
+			<div class="col-sm-9" id="userRoleMappingDiv" ></div>
+		</div>
+		<hr>
+		<h3>Mobile App Role Settings</h3>
+		<hr>
+		<div class="row">
+			<div class="col-sm-2"></div>
+			<div class="col-sm-9" id="userRoleMobileMappingDiv"></div>
+		</div>
+		<hr>
+		  <div class="form-check">
+		    <input type="checkbox" class="form-check-input" id="sendSMS">
+		    <label class="form-check-label" for="exampleCheck1">Send SMS to User</label>
+		  </div>
+		<div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		<button type="submit"  class="btn btn-primary" id="editSubmit">Save changes</button>
+		</div>
+		</form>
+      </div>
+	  </div>
+      <div class="modal-footer">
+      </div>
+   
+  </div>
+</div>
+</div>
+
+		<div id="accordionDocDiv">
+			<h3>Documents</h3>
+				<div>
+				 <div id="accordionDoc">
+				  <h3>Personal Files</h3>
+				  <div>
+				    <p>
+			    	 <div class="table-responsive">
+			    		<table class="table table-striped">
+		    			  <thead>
+						    <tr>
+						      <th scope="col">Doc Name</th>
+						      <th scope="col">Existing Doc</th>
+						    </tr>
+						  </thead>
+						  <tbody id="personalFileTable">
+						  <tr><td>Aadhar</td><td><button class="getFile" ext="jpg" doc="aadhar"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+						  <tr><td>Passport</td><td><button class="getFile" ext="jpg" doc="passport"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+						  <tr><td>Voter's Id</td><td><button class="getFile" ext="jpg" doc="voterid"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+						  <tr><td>Driving License</td><td><button ext="jpg" class="getFile" doc="dl"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+						  <tr><td>Community/Caste Certificate</td><td><button ext="jpg" class="getFile" doc="community"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+						  <tr><td>Non Creamy-Layer Certificate</td><td><button ext="jpg" class="getFile" doc="noncreamy"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+						  <tr><td>Other </td><td><button ext="jpg" class="getFile" doc="other"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+						  </tbody>
+			    		</table> 
+			    	 </div>
+			    	</p>
+	  			</div>
+	  			<h3>CLAT Files</h3>
+				  <div>
+				    <p>
+			    	 <div class="table-responsive">
+			    		<table class="table table-striped">
+		    			  <thead>
+						    <tr>
+						      <th scope="col">Doc Name</th>
+						      <th scope="col">Existing Doc</th>
+						    </tr>
+						  </thead>
+						  <tbody id="clatFileTable">
+						  <tr><td>CLAT Admit Card</td><td><button class="getFile" ext="jpg" doc="docClatAdmitCard"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+						  <tr><td>CLAT Score</td><td><button class="getFile" ext="jpg" doc="docClatScore"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+						  </tbody>
+			    		</table> 
+			    	 </div>
+			    	</p>
+	  			</div>
+	  			 <h3>Qualifications</h3>
+  				<div>
+   				 <p>
+		    	 <div class="table-responsive">
+		    		<table class="table table-striped">
+	    			  <thead>
+					    <tr>
+					      <th scope="col">Qualification</th>
+					      <th scope="col">Existing Doc</th>
+					    </tr>
+					  </thead>
+					  <tbody id="eduFileTable">
+					  
+					  </tbody>
+		    		</table> 
+		    	 </div>
+		    	    </p>
+ 				 </div>
+ 				<h3>Student Photo</h3>
+  				<div>
+   				 <p>
+		    	 <div class="table-responsive">
+		    		<table class="table table-striped">
+	    			  <thead>
+					    <tr>
+					      <th scope="col">Student Photo</th>
+					      <th scope="col">Existing Image</th>
+					    </tr>
+					    </thead>
+					    <tbody>
+					   <tr><td>Photo</td><td><button class="getFile" ext="jpg" doc="studentImage"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+					    </tbody>
+					  
+		    		</table> 
+		    	 </div>
+		    	    </p>
+ 				 </div>
+ 				<h3>Other Docs</h3>
+  				<div>
+   				 <p>
+		    	 <div class="table-responsive" id="otherDocs">
+		    		<table class="table table-striped">
+	    			  <thead>
+					    <tr>
+					      <th scope="col">Doc Name</th>
+					      <th scope="col">Existing Image</th>
+					    </tr>
+					    </thead>
+					    <tbody>
+					   <tr><td>TC</td><td><button class="getFile" ext="jpg" doc="docTC"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+					   <tr><td>Course Conduct</td><td><button class="getFile" ext="jpg" doc="doccourseConduct"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+					   <tr><td>Migration</td><td><button class="getFile" ext="jpg" doc="docMigration"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+					    </tbody>
+					</table> 
+		    	 </div>
+		    	    </p>
+ 				 </div> 
+ 				 <h3 id="nriDocsHead" style="display:none">NRI Docs</h3>
+  				<div id="nriDocs" style="display:none">
+   				 <p>
+		    	 <div class="table-responsive" >
+		    		<table class="table table-striped">
+	    			  <thead>
+					    <tr>
+					      <th scope="col">Doc Name</th>
+					      <th scope="col">Existing Image</th>
+					    </tr>
+					    </thead>
+					    <tbody>
+					      <tr><td>Sponsor Passport</td><td><button ext="jpg" class="getFile" doc="docSponsorPass"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+					       <tr><td>Sponsor Resident Permit</td><td><button ext="jpg" class="getFile" doc="docSponsorResidentPermit"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+					       <tr><td>Indian Embassy Certificate</td><td><button ext="jpg" class="getFile" doc="docIndianEmbassy"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+					       <tr><td>Sponsor Undertaking</td><td><button ext="jpg" class="getFile" doc="docSponsorUndertaking"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+					    </tbody>
+					</table> 
+		    	 </div>
+		    	    </p>
+ 				 </div>
+ 				 
+ 				<h3 id="fnDocsHead" style="display:none">Foreign National Docs</h3>
+  				<div id="fnDocs" style="display:none">
+   				 <p>
+		    	 <div class="table-responsive">
+		    		<table class="table table-striped">
+	    			  <thead>
+					    <tr>
+					      <th scope="col">Doc Name</th>
+					      <th scope="col">Existing Image</th>
+					    </tr>
+					    </thead>
+					    <tbody>
+				   	       <tr><td>Parent Passport-1</td><td><button ext="jpg" class="getFile" doc="docParentPass1"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+					       <tr><td>Parent Passport-2</td><td><button ext="jpg" class="getFile" doc="docParentPass2"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+							<tr><td>Percentage Conversion</td><td><button ext="jpg" class="getFile" doc="docPercentageConversion"><i class=" fas fa-archive" aria-hidden="true"></i></button></td></tr>
+					    </tbody>
+					</table> 
+		    	 </div>
+		    	    </p>
+ 				 </div>
+		    	</div> 
+  			</div>
+  			</div>
+<div class="row" id="divStudentAdd">
+	<div class="col-md-12">
+
+		<div id="tabs">
+		  <ul>
+		    <li><a href="#tabs-1">Personal</a></li>
+		     <li><a href="#tabs-5">Clat</a></li>
+		    <li><a href="#tabs-2">Education</a></li>
+		    <li><a href="#tabs-3">Guardian</a></li>
+		    <li><a href="#tabs-6">Bank</a></li>
+		     <li><a href="#tabs-4">Admission</a></li>
+		    <!-- <li><a href="#tabs-7">Role & SMS</a></li> -->
+		  </ul>
+		  <div id="tabs-1" class="tabDivs">
+		    <p>
+		       <form id="formStudentPersonal">
+		    	 <div class="form-group" id="divStudentPersonal">
+		    	    <h1>Personal Details</h1>
+				    <p>Please fill in this form.</p>
+				    <hr>
+					<label for="studentName"><b>Name of Student</b></label>
+				   	 <input type="text" class="form-control"  pattern="^[a-zA-Z.]+( [a-zA-Z.]+)*$" title="Name of the student should only contain letters and space" placeholder="Enter Student Name" name="studentPersonalStudentName" id="studentPersonalStudentName" required></input>
+					<br>
+					<label for="studentEmail"><b>Email</b></label>
+				   	 <input type="text" readonly class="form-control" id="studentEmail"></input>	
+					<br>
+					<label for="studentMobile"><b>Mobile</b></label>
+				   	 <input type="text" readonly class="form-control" id="studentMobile"></input>	
+					<br>
+				    <label for="aadhar"><b>Aadhar</b></label>
+				    <input type="text"  class="form-control" pattern="[a-zA-Z0-9]{12}" title="Aadhar Card Number"  placeholder="Enter Aadhar" name="studentPersonalAadhar"  id="studentPersonalAadhar" ></input>
+				    <br>
+				    
+				    <label for="gender"><b>Gender</b></label>
+				    <select name="studentPersonalGender" id="studentPersonalGender"  class="form-control" required>
+				    	<option value="m">Male</option>
+				    	<option value="f">Female</option>
+				    	<option value="o">Transgender</option>
+				    </select>
+					<br>
+					  <div class="row">
+					    <div class="col-sm-6"">
+					      	<label for="dob"><b>Date of Birth</b></label>
+							<input  class="form-control"  type="text" id="studentPersonalDob" required>
+					    </div>
+					    <div class="col-sm-6">
+					     	 <label for="ageOnAdmission"><b>Age on Admission</b></label>
+							 <input  class="form-control"  type="text" id="ageOnAdmission" name="studentPersonalAgeOnAdmission">
+					    </div>
+					  </div>
+					
+					<label for="mt"><b>Mother Tongue</b></label>
+				    <select name="studentPersonalMotherTounge" id="mt"  class="form-control">
+					<option value="NA">Select</option>
+					<option value="Assamese">Assamese</option>
+					<option value="Bengali">Bengali</option>
+					<option value="Bodo">Bodo</option>
+					<option value="Dogri">Dogri</option>
+					<option value="English">English</option>
+					<option value="Gujarati">Gujarati</option>
+					<option value="Hindi">Hindi</option>
+					<option value="Kannada">Kannada</option>
+					<option value="Kashmiri">Kashmiri</option>
+					<option value="Konkani">Konkani</option>
+					<option value="Maithili">Maithili</option>
+					<option value="Malayalam">Malayalam</option>
+					<option value="Manipuri">Manipuri</option>
+					<option value="Marathi">Marathi</option>
+					<option value="Nepali">Nepali</option>
+					<option value="Odia">Odia</option>
+					<option value="Punjabi">Punjabi</option>
+					<option value="Sanskrit">Sanskrit</option>
+					<option value="Santhali">Santhali</option>
+					<option value="Sindhi">Sindhi</option>
+					<option value="Tamil">Tamil</option>
+					<option value="Telugu">Telugu</option>
+					<option value="Tulu">Tulu</option>
+					<option value="Urdu">Urdu</option>
+				    </select>
+				    <hr>
+				    	
+					<label for="religion"><b>Religion</b></label>
+				    <select name="studentPersonalMappedReligion" id="selectReligion"  class="form-control" >
+
+				    </select>
+
+				    <br>
+				   <!-- <label for="category"><b>Category</b></label>
+				    <select name="studentPersonalMappedCategory" id="selectCategory"  class="form-control">
+
+				    </select>
+				    <br>-->
+				    
+					<label for="caste"><b>caste</b></label>
+				    <select name="studentPersonalMappedCaste" id="selectReligionCaste"  class="form-control">
+
+				    </select>
+					<br>
+					<label for="selectCommunity"><b>Community</b></label>
+				    <select name="studentPersonalMappedCommunity" id="selectCommunity"  class="form-control">
+				    </select>
+				    <br>
+				    
+				    
+				     <label for="studentPersonalPermanentAddress">Permanent Address:</label>
+ 					 <textarea required class="form-control" rows="5" name="studentPersonalPermanentAddress" id="studentPersonalPermanentAddress"></textarea>
+ 					<hr>
+ 					<label class="form-check-label col-md-4" for="exampleCheck1"> Communication Address same as Permanent Address</label><input  class="col-md-2" type="checkbox" class="form-check-input" id="copyAdd">
+ 					<hr>
+ 					 	<label  for="studentPersonalCommunicationAddress">Communication Address:</label>
+ 					 	<textarea required class="form-control" rows="5" name="studentPersonalCommunicationAddress" id="studentPersonalCommunicationAddress"></textarea>
+ 					 <hr>
+ 			
+ 					<label for="mt"><b>Blood Group</b></label>
+				    <select name="studentPersonalBloodGroup" id="studentPersonalBloodGroup"  class="form-control">
+				    	<option value="">Select</option>
+				    	<option value="A+">A+</option>
+				    	<option value="O+">O+</option>
+				    	<option value="B+">B+</option>
+				    	<option value="AB+">AB+</option>
+				    	<option value="A-">A-</option>
+				    	<option value="O-">O-</option>
+				    	<option value="B-">B-</option>
+				    	<option value="AB-">AB-</option>
+				    </select>
+				    
+				    <br>
+				    <label for="studentPersonalPassport"><b>Passport No: of Student(Mandatory if Foreign Candidate)</b></label>
+				   	 <input type="text" class="form-control"  title="Passport No: of Student(Mandatory if Foreign Candidate)" id="studentPersonalPassport" name="studentPersonalPassport"></input>
+					<br>
+					<label for="studentPersonalCountry"><b>Nationality</b></label>
+					 <select id="studentPersonalCountry" name="studentPersonalCountry" class="form-control">
+					<option value="Afghan">Afghan</option>
+<option value="Albanian">Albanian</option>
+<option value="Algerian">Algerian</option>
+<option value="American">American</option>
+<option value="Andorran">Andorran</option>
+<option value="Angolan">Angolan</option>
+<option value="Antiguan or Barbudan">Antiguan or Barbudan</option>
+<option value="Argentine">Argentine</option>
+<option value="Armenian">Armenian</option>
+<option value="Aruban">Aruban</option>
+<option value="Australian">Australian</option>
+<option value="Austrian">Austrian</option>
+<option value="Azerbaijani">Azerbaijani</option>
+<option value="Bahamian">Bahamian</option>
+<option value="Bahraini">Bahraini</option>
+<option value="Bangladeshi">Bangladeshi</option>
+<option value="Barbadian">Barbadian</option>
+<option value="Basque">Basque</option>
+<option value="Belarusian">Belarusian</option>
+<option value="Belgian">Belgian</option>
+<option value="Belizean">Belizean</option>
+<option value="Beninese">Beninese</option>
+<option value="Bermudian">Bermudian</option>
+<option value="Bhutanese">Bhutanese</option>
+<option value="Bolivian">Bolivian</option>
+<option value="Bosnian">Bosnian</option>
+<option value="Bosnian or Herzegovinian">Bosnian or Herzegovinian</option>
+<option value="Botswanan">Botswanan</option>
+<option value="Brazilian">Brazilian</option>
+<option value="Breton">Breton</option>
+<option value="British">British</option>
+<option value="Bruneian">Bruneian</option>
+<option value="Bulgarian">Bulgarian</option>
+<option value="Burkinabé">Burkinabé</option>
+<option value="Burmese">Burmese</option>
+<option value="Burundian">Burundian</option>
+<option value="Cambodian">Cambodian</option>
+<option value="Cameroonian">Cameroonian</option>
+<option value="Canadian">Canadian</option>
+<option value="Catalan">Catalan</option>
+<option value="Cape Verdean">Cape Verdean</option>
+<option value="Chadian">Chadian</option>
+<option value="Chilean">Chilean</option>
+<option value="Chinese">Chinese</option>
+<option value="Colombian">Colombian</option>
+<option value="Comorian">Comorian</option>
+<option value="Congolese DRC">Congolese DRC</option>
+<option value="Congolese RotC">Congolese RotC</option>
+<option value="Costa Rican">Costa Rican</option>
+<option value="Croatian">Croatian</option>
+<option value="Cuban">Cuban</option>
+<option value="Cypriot">Cypriot</option>
+<option value="Czech">Czech</option>
+<option value="Danish">Danish</option>
+<option value="Djiboutian">Djiboutian</option>
+<option value="Dominican Commonwealth">Dominican Commonwealth</option>
+<option value="Dominican Republic">Dominican Republic</option>
+<option value="Dutch">Dutch</option>
+<option value="East Timorese">East Timorese</option>
+<option value="Ecuadorian">Ecuadorian</option>
+<option value="Egyptian">Egyptian</option>
+<option value="Emiratis">Emiratis</option>
+<option value="English">English</option>
+<option value="Equatoguinean">Equatoguinean</option>
+<option value="Eritrean">Eritrean</option>
+<option value="Estonian">Estonian</option>
+<option value="Ethiopian">Ethiopian</option>
+<option value="Falkland Islander">Falkland Islander</option>
+<option value="Faroese">Faroese</option>
+<option value="Fijian">Fijian</option>
+<option value="Finnish">Finnish</option>
+<option value="Filipino">Filipino</option>
+<option value="French">French</option>
+<option value="Gabonese">Gabonese</option>
+<option value="Gambian">Gambian</option>
+<option value="Georgian">Georgian</option>
+<option value="German">German</option>
+<option value="Ghanaian">Ghanaian</option>
+<option value="Gibraltarian">Gibraltarian</option>
+<option value="Greek">Greek</option>
+<option value="Grenadian">Grenadian</option>
+<option value="Guatemalan">Guatemalan</option>
+<option value="Guinean">Guinean</option>
+<option value="Guinean Bissau">Guinean Bissau</option>
+<option value="Guyanese">Guyanese</option>
+<option value="Haitian">Haitian</option>
+<option value="Honduran">Honduran</option>
+<option value="Hong Konger">Hong Konger</option>
+<option value="Hungarian">Hungarian</option>
+<option value="Icelandic">Icelandic</option>
+<option value="I-Kiribati">I-Kiribati</option>
+<option value="Indian">Indian</option>
+<option value="Indonesian">Indonesian</option>
+<option value="Iranian">Iranian</option>
+<option value="Iraqi">Iraqi</option>
+<option value="Irish">Irish</option>
+<option value="Israeli">Israeli</option>
+<option value="Italian">Italian</option>
+<option value="Ivorian">Ivorian</option>
+<option value="Jamaican">Jamaican</option>
+<option value="Japanese">Japanese</option>
+<option value="Jordanian">Jordanian</option>
+<option value="Kazakh">Kazakh</option>
+<option value="Kenyan">Kenyan</option>
+<option value="North Korean">North Korean</option>
+<option value="South Korean">South Korean</option>
+<option value="Kosovar">Kosovar</option>
+<option value="Kuwaiti">Kuwaiti</option>
+<option value="Kyrgyz">Kyrgyz</option>
+<option value="Lao">Lao</option>
+<option value="Latvian">Latvian</option>
+<option value="Lebanese">Lebanese</option>
+<option value="Liberian">Liberian</option>
+<option value="Libyan">Libyan</option>
+<option value="Liechtensteiner">Liechtensteiner</option>
+<option value="Lithuanian">Lithuanian</option>
+<option value="Luxembourger">Luxembourger</option>
+<option value="Macedonian">Macedonian</option>
+<option value="Malagasy">Malagasy</option>
+<option value="Malawian">Malawian</option>
+<option value="Malaysian">Malaysian</option>
+<option value="Maldivian">Maldivian</option>
+<option value="Malian">Malian</option>
+<option value="Maltese">Maltese</option>
+<option value="Marshallese">Marshallese</option>
+<option value="Mauritanian">Mauritanian</option>
+<option value="Mauritian">Mauritian</option>
+<option value="Mexican">Mexican</option>
+<option value="Micronesian">Micronesian</option>
+<option value="Moldovan">Moldovan</option>
+<option value="Monégasque">Monégasque</option>
+<option value="Mongolian">Mongolian</option>
+<option value="Montenegrin">Montenegrin</option>
+<option value="Moroccan">Moroccan</option>
+<option value="Mozambican">Mozambican</option>
+<option value="Namibian">Namibian</option>
+<option value="Nauruan">Nauruan</option>
+<option value="Nepalese">Nepalese</option>
+<option value="Netherlander">Netherlander</option>
+<option value="New Zealand Zelanian">New Zealand Zelanian</option>
+<option value="Nicaraguan">Nicaraguan</option>
+<option value="Nigerien">Nigerien</option>
+<option value="Nigerian">Nigerian</option>
+<option value="Norwegian">Norwegian</option>
+<option value="Omani">Omani</option>
+<option value="Pakistani">Pakistani</option>
+<option value="Palauan">Palauan</option>
+<option value="Palestinian">Palestinian</option>
+<option value="Panamanian">Panamanian</option>
+<option value="Papua New Guinean">Papua New Guinean</option>
+<option value="Paraguayan">Paraguayan</option>
+<option value="Peruvian">Peruvian</option>
+<option value="Polish">Polish</option>
+<option value="Portuguese">Portuguese</option>
+<option value="Puerto Rican">Puerto Rican</option>
+<option value="Qatari">Qatari</option>
+<option value="Quebecer">Quebecer</option>
+<option value="Romanian">Romanian</option>
+<option value="Russian">Russian</option>
+<option value="Rwandan">Rwandan</option>
+<option value="Saint Kittitian or Nevisian">Saint Kittitian or Nevisian</option>
+<option value="Saint Lucian">Saint Lucian</option>
+<option value="Saint Vincentian">Saint Vincentian</option>
+<option value="Samoan">Samoan</option>
+<option value="Sammarinese">Sammarinese</option>
+<option value="Sao Toméan">Sao Toméan</option>
+<option value="Saudi Arabian">Saudi Arabian</option>
+<option value="Senegalese">Senegalese</option>
+<option value="Serbian">Serbian</option>
+<option value="Seychellois">Seychellois</option>
+<option value="Sierra Leonean">Sierra Leonean</option>
+<option value="Singaporean">Singaporean</option>
+<option value="Slovak">Slovak</option>
+<option value="Slovenian">Slovenian</option>
+<option value="Solomon Island">Solomon Island</option>
+<option value="Somali">Somali</option>
+<option value="South African">South African</option>
+<option value="South Sudanese">South Sudanese</option>
+<option value="Spanish">Spanish</option>
+<option value="Sri Lankan">Sri Lankan</option>
+<option value="Sudanese">Sudanese</option>
+<option value="Surinamese">Surinamese</option>
+<option value="Swazi">Swazi</option>
+<option value="Swedish">Swedish</option>
+<option value="Swiss">Swiss</option>
+<option value="Syrian">Syrian</option>
+<option value="Tajikistani">Tajikistani</option>
+<option value="Tanzanian">Tanzanian</option>
+<option value="Thai">Thai</option>
+<option value="Timorese">Timorese</option>
+<option value="Togolese">Togolese</option>
+<option value="Tokelauan">Tokelauan</option>
+<option value="Tongan">Tongan</option>
+<option value="Trinidadian or Tobagonian">Trinidadian or Tobagonian</option>
+<option value="Tunisian">Tunisian</option>
+<option value="Turkish">Turkish</option>
+<option value="Tuvaluan">Tuvaluan</option>
+<option value="Ugandan">Ugandan</option>
+<option value="Ukrainian">Ukrainian</option>
+<option value="Uruguayan">Uruguayan</option>
+<option value="Uzbekistani">Uzbekistani</option>
+<option value="Vanuatuan">Vanuatuan</option>
+<option value="Vatican">Vatican</option>
+<option value="Venezuelan">Venezuelan</option>
+<option value="Vietnamese">Vietnamese</option>
+<option value="Welsh">Welsh</option>
+<option value="Yemeni">Yemeni</option>
+<option value="Zambian">Zambian</option>
+<option value="Zimbabwean">Zimbabwean</option>
+					 </select>
+				    
+				 <!--   <hr>
+				     <label for="studentPersonalAllergyDetails">Details of Allergy if any:</label>
+ 					 <textarea   class="form-control abled" rows="5" name="studentPersonalAllergyDetails" id="studentPersonalAllergyDetails"></textarea>
+ 				    <hr>-->
+				    <div class="form-check">
+			    		<input type="checkbox" class="form-check-input" name="studentPersonalSpeciallyAbled" id="idStudentPersonalSpeciallyAbled">
+			    		<label class="form-check-label" for="exampleCheck1">Is Specially Abled</label>
+			  		</div>
+			  		 <hr>
+				     <label  style="display:none" class="abled" for="studentPersonalSpeciallyAbledDetails">Details of Ability</label>
+ 					 <textarea  style="display:none" class="form-control abled" rows="5" name="studentPersonalSpeciallyAbledDetails" id="studentPersonalSpeciallyAbledDetails"></textarea>
+ 					 <hr>
+ 					
+			  
+				    <button type="submit" id="buttonPersonalSubmit" class="btn btn-primary">Save</button>	
+				    <button type="button" id="buttonPersonalClose"  class="btn btn-warning">Close</button>				    
+				</div>
+				</form>
+				<div id="accordion1">
+		 		 	<h3>Record Flow History</h3>
+	  				<div>
+	   		 		<p>
+	   			 		<div class="table-responsive">
+	    					<table class="table table-striped" id="gridTableStudentPersonal"></table>
+	    				</div>
+	    			</p>
+	  				</div>
+	   			</div>
+		     </p>
+		  </div>
+		  <div id="tabs-2" class="tabDivs">
+		  <p>
+		 	<div class="form-group">
+			    <h1>Education Details</h1>
+		 	<br>
+		 <!-- 	<div class="row">
+		 		<div class="col-md-8"></div>
+		 		<div class="col-md-4"><button type="button"  id="showAddModal" class="btn btn-primary form-control">Add Qualification</button></div>
+		 	</div> -->	
+		 	<div class="table-responsive">
+				<table class="table table-bordered " id="gridTableStudentQualification"></table>
+			</div>
+		    </div>
+		    </p>
+		    		    <hr>
+		    <div id="accordion5">
+		 		 	<h3>Record Flow History</h3>
+	  				<div>
+	   		 		<p>
+	   			 		<div class="table-responsive">
+	    					<table class="table table-striped" id="gridTable5"></table>
+	    				</div>
+	    			</p>
+	  				</div>
+	   		</div>
+		  </div>
+		  <div id="tabs-3" class="tabDivs">
+		    <p>	
+		    <h1>Guardian Details</h1>	 
+		    <div class="row">
+		       <div class="col-md-12">
+		       <div class="table-responsive">
+						<table class="table table-bordered" id="guardianTable"></table>
+				</div>
+		       </div>
+		     </div>
+		   		
+							
+					<div id="accordionGuardian" class="accordion"></div>			
+			</p>
+						<hr>
+				<div id="accordion4">
+		 		 	<h3>Record Flow History</h3>
+	  				<div>
+	   		 		<p>
+	   			 		<div class="table-responsive">
+	    					<table class="table table-striped" id="gridTable4"></table>
+	    				</div>
+	    			</p>
+	  				</div>
+	   			</div>
+		  </div>
+		    <div id="tabs-4" class="tabDivs">
+		    <p>
+	    	 <div class="form-group">
+			    <h1>Admission Details</h1>
+			    <p>Please fill in this form.</p>
+			    <hr>
+			    <form id="formAdmissionSave">				  
+			  	<input type="radio"  name="studentAdmissionType"  id="IS" value="IS" checked> Resident Indian<br>
+			  	<input type="radio"  name="studentAdmissionType"  id="FS" value="FS"> Foreign Candidate<br>
+			  	<input type="radio"  name="studentAdmissionType"  id="NRIS" value="NRIS"> NRI Sponsored 
+			  	<br>
+				<label for="admissionNo"><b>Admission No</b></label>
+				<div class="input-group">
+		    	<input type="text" class="form-control"  placeholder="Admission No:" id="admissionNo" readonly>
+		   		 </div>	
+			  	<label for="by"><b>Select Program</b></label>
+			    <select required name="studentAdmissionProgram" id="selectProgram"  class="form-control">
+			    </select>
+			  	
+			    <label for="by"><b>Select Batch</b></label>
+			    <select  required name="studentAdmissionBatch" id="selectBatch"  class="form-control">
+			    </select>
+
+					<label for="by"><b>Select Semester</b></label>
+			    <select  required name="studentAdmissionActiveSem" id="studentAdmissionActiveSem"  class="form-control">
+			    <option value="semester1">semester1</option>
+			    <option value="semester2">semester2</option>
+			    <option value="semester3">semester3</option>
+			    <option value="semester4">semester4</option>
+			    <option value="semester5">semester5</option>
+			    <option value="semester6">semester6</option>
+			    <option value="semester7">semester7</option>
+			    <option value="semester8">semester8</option>
+			    <option value="semester9">semester9</option>
+			    </select>	
+			    
+			    <label for="mappedFeeCategory"><b>Select Fee Category</b></label>
+			    <select required name="mappedFeeCategory" id="mappedFeeCategory"  class="form-control">
+			    </select>	
+				
+				<label for="admittedCategory"><b>Category under which Admission is made</b></label>
+			    <select  required name="admittedCategory" id="admittedCategory"  class="form-control">
+			    </select>
+				
+				 <div id="accordion1">
+					<h6>Vacancy Status(Pending Student entries not accounted)</h6>
+					<div>
+						  <div class="table-responsive cell-border well">
+						  <table id="gridTableDisplay" class="table table-striped">
+						  <thead><tr><th>Max Seats</th><th>occupied</th></tr></thead>
+						  <tbody id="reservTableBody"></tbody>
+						  </table>
+						  </div>
+					 </div>
+			    </div> 
+			    
+			    <label for="rollNo"><b>Admission Date</b></label>
+			    <input type="text" class="form-control dp"  placeholder="Admission Date" name="studentAdmissionDateTime" id="studentAdmissionDateTime" >
+			    
+				<label for="rollNo"><b>Roll No</b></label>
+			    <input type="text" class="form-control"  placeholder="Roll No" name="studentAdmissionRollNo" id="studentAdmissionRollNo" >
+				<br>
+				<label for="studentAdmissionDistanceToInstitute"><b>Distance from Nuals in Kms</b></label>
+			    <input type="number" class="form-control"  placeholder="Distance from Nuals in Kms" name="studentAdmissionDistanceToInstitute" id="studentAdmissionDistanceToInstitute" >
+				
+			    <label for="regNo"><b>Reg No</b></label>
+			    <input  type="text"  class="form-control"  placeholder="Reg No" name="studentRegNo" id="studentRegNo" >
+			    
+			    <hr>
+			     <div class="form-check">
+    				<input type="checkbox"  class="form-check-input" id="studentAdmissionInterUniversity">
+    				<label class="form-check-label" for="exampleCheck1">Inter-University Transfer?</label>
+  				 </div>
+  				 <hr>
+  				 <div class="form-group well" id="interUniversityDiv" style="display:none">
+  				 	<label for="rollNo"><b>Roll Number(Previous university)</b></label>
+			    	<input type="text"    class="form-control"  placeholder="Roll Number(Previous university)" name="studentAdmissionInterUniversityOldRollNo" id="studentAdmissionInterUniversityOldRollNo" >
+			    	<br>
+			    	<label for="rollNo"><b>Admission No(Previous university)</b></label>
+			    	<input type="text"   class="form-control"  placeholder="Admission No(Previous university)" name="studentAdmissionInterUniversityAdmissionNo" id="studentAdmissionInterUniversityAdmissionNo" >
+			    	<br>
+			    	<label for="rollNo"><b>Previous University Details</b></label>
+			    	<textarea class="form-control"     rows="5"  placeholder="Previous University Details" name="studentAdmissionInterUniversityOldUniversity" id="studentAdmissionInterUniversityOldUniversity"></textarea>
+			    	<br>
+			    	<label for="rollNo"><b>Program Name(Previous University)</b></label>
+			    	<input type="text"   class="form-control"  placeholder="Program Name(Previous University)" name="studentAdmissionInterUniversityOldProgramName" id="studentAdmissionInterUniversityOldProgramName" >
+			    	<br>
+			    	<label for="rollNo"><b>No: of Semesters completed(Previous University)</b></label>
+			    	<input type="number" class="form-control"  placeholder="No: of Semesters completed(Previous University)" name="studentAdmissionInterUniversitySemestersCompleted" id="studentAdmissionInterUniversitySemestersCompleted" >
+				 </div>
+				 <hr>
+			 
+			    <label for="studentAdmissionStatus"><b>Set Student Status to:</b></label>
+			    <select name="studentAdmissionStatus" id="studentAdmissionStatus"  class="form-control" required>
+			    <option value="processing">Verify & Forward</option>
+			    <option value="valid">Approved</option>
+			   	</select>	
+		   	
+				 
+			    <button type="submit" id="buttonAdmissionSave" class="btn btn-primary" >Save</button>
+			    </form>
+			    <div id="accordion3">
+		 		 	<h3>Record Flow History</h3>
+	  				<div>
+	   		 		<p>
+	   			 		<div class="table-responsive">
+	    					<table class="table table-striped" id="gridTableStudentAdmission"></table>
+	    				</div>
+	    			</p>
+	  				</div>
+	   			</div>
+			</div>
+		    </p>
+		  </div>
+		  
+		  <div id="tabs-5" class="tabDivs">
+		    <p>
+		    <form id="formClatSave">
+		    	 <div class="form-group" id="divClatDetails">
+				     <h4>CLAT Details</h4>
+				    <p>Please fill in this form.</p>
+				    <hr>
+				    <label for="clatApplicationNo"><b>CLAT Admit Card No:</b></label>
+				    <input type="text" class="form-control"  placeholder="CLAT Admit Card No"  pattern="^[a-zA-Z0-9-_]+( [a-zA-Z]+)*$"   name="clatApplicationNo" id="clatApplicationNo"  required>
+					<br>
+					<label for="rollNo"><b>CLAT Score</b></label>
+				    <input type="text" class="form-control"  placeholder="CLAT Score"   pattern="^[a-zA-Z0-9-._]+( [a-zA-Z]+)*$" name="clatRollNo" id="clatRollNo">
+					<br>
+				    <label for="clatRank"><b>CLAT Rank</b></label>
+				    <input type="number"  class="form-control"  placeholder="Enter CLAT RANK " name="clatRank" id="clatRank" required >
+				    <br>
+				    <br>
+				     <label id="lsubCat" for="subCat"><b>Select Sub Cat</b></label>
+				     <select name="subCat" id="subCat"  class="form-control">
+				    	<option value="Christian">Ezhava</option>
+				    	<option value="Hindu">Thiyya</option>
+				    	<option value="Muslim">Billava</option>
+				    	<option value="Muslim">Muslim</option>
+				    	<option value="Muslim">Latin Catholic</option>
+				    </select>
+				    
+				    <hr>
+				    <button type="submit" class="btn btn-primary" id="buttonClatDetails">Save</button>
+				</div>
+			</form>
+			<div id="accordion2">
+		 		 	<h3>Record Flow History</h3>
+	  				<div>
+	   		 		<p>
+	   			 		<div class="table-responsive">
+	    					<table class="table table-striped" id="gridTableStudentClat"></table>
+	    				</div>
+	    			</p>
+	  				</div>
+	   		</div>
+		    </p>
+		  </div>  
+		  
+		  		  
+		  <div id="tabs-6" class="tabDivs">
+		    <p>
+		    	 <div class="form-group">
+				    <h1>Bank Details</h1>
+				    <p>Please fill in this form.</p>
+				    <hr>
+				    <form id="formStudentBank">
+				    <label for="bank"><b>Bank</b></label>
+			    	<input type="text" class="form-control"  placeholder="Bank Name" name="studentBankName" id="studentBankName" required>
+				    <br>
+					<label for="accName"><b>Account Holder Name</b></label>
+				     <input type="text" class="form-control"  placeholder="Account Holder Name" name="studentBankAccountHolderName" id="studentBankAccountHolderName" required>					
+					<br>
+					<label for="accNo"><b>Account No</b></label>
+				     <input type="text" class="form-control" pattern="^[a-zA-Z0-9-_]+( [a-zA-Z]+)*$" placeholder="Account Number" name="studentBankAccountNumber" id="studentBankAccountNumber" required>
+					<br>
+				    <label for="Branch"><b>Branch</b></label>
+				     <input type="text"  class="form-control"  pattern="^[a-zA-Z0-9-_]+( [a-zA-Z]+)*$"  placeholder="Branch Name" name="studentBankBranch" id="studentBankBranch" required>
+				    <br>
+				    <label for="IFSC"><b>IFSC</b></label>
+				     <input type="text"  class="form-control"  placeholder="IFSC" name="studentBankIFSC" id="studentBankIFSC" required>
+				    <br>
+				    <hr>
+				    <button type="submit" class="btn btn-primary" id="buttonBankSave">Save</button>
+				    </form>
+				</div>
+		    </p>
+		  </div>
+		 <!-- <div id="tabs-7" class="tabDivs">
+		    <p>
+		    	 <div class="form-group">
+		    	 <h1>Role Mapping and SMS</h1>
+		    	 <hr>
+		    	<div class="row">
+				<div class="col-md-12">
+					<div class="table-responsive">
+						<table class="table table-bordered " id="gridTableUserDetails"></table>
+					</div>		
+				</div>
+				</div>
+		    </p>
+		    </div>	 
+		</div>-->
+	</div>
+</div>
+
+<div class="modal fade" id="dialogGuardianAdd1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Guardian Info</h5>
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+	  </div>   
+	  <div class="modal-body">
+	   	<div class="form-group well">
+		    <h1>Guardian Details</h1>
+		    <p>Please fill in this form.</p>
+		    <hr>
+		   <form id="addGuardianForm1">
+		   <label for="gEmail"><b>Guardian Email</b></label>
+		    <input type="email" class="form-control"  placeholder="Guardian Email" name="email1" id="gEmail1"  required>
+			<br>
+			<label for="gMobile"><b>Guardian Mobile</b></label>
+		    <input type="text"  pattern="[0-9]{5,20}"  class="form-control"  placeholder="Guardian Mobile" name="mobile1" id="gMobile1"  required>
+			<br>
+		    <button type="submit" id="buttonGuardianCheck" class="btn btn-primary">Submit</button>
+		    </form>
+		</div>
+      </div>
+      <div class="modal-footer">
+      </div>
+   		<div class="table-responsive">
+			<table class="table table-striped" id="tableExistingGuardian">
+			  <thead>
+				<tr>
+				  <th scope="col">User Id</th>
+				  <th scope="col">Email</th>
+				  <th scope="col">Mobile</th>
+				  <th scope="col">Action</th>
+				</tr>
+			  </thead>
+			</table>
+		</div>
+    </div>
+  </div>
+</div>
+
+<div  autofocus class="modal fade" id="dialogGuardianAdd2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Guardian Info</h5>
+        		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+	  </div>   
+	   <div class="modal-body">
+		<form id="studentGuardianAddForm">
+		 <div class="form-group">
+			<p id="guardNotification">Please fill in this form.</p>
+			<br>
+			<div class="row">
+		 	<div class="col-md-12">
+				<label for="guardianName"><b>Guardian Name</b></label>
+				<input type="text" class="form-control"  placeholder="Guardian Name" name="guardianName" id="guardianName" required >
+				<br>
+				<label for="guardianRelation"><b>Relation to the candidate</b></label>
+				<select name="guardianRelation" id="guardianRelation"  class="form-control">
+					<option value="Father">Father</option>
+					<option value="Mother">Mother</option>
+					<option value="Brother">Brother</option>
+					<option value="Sister">Sister</option>
+					<option value="sponsor">Sponsor</option>
+					<option value="others">others</option>
+				</select>
+				<br>
+				<label for="grel"><b>Occupation</b></label>
+				<input type="text" class="form-control"  placeholder="Guardian Occupation" name="guardianOccupation" id="guardianOccupation" >
+				
+				<label for="guardianOrganization"><b>Organization</b></label>
+				<input type="text" class="form-control"  placeholder="Guardian Organiztion" name="guardianOrganization" id="guardianOrganization" >
+				<br>
+				<label for="guardianAnnualIncome"><b>Annual Income</b></label>
+				<input type="number" class="form-control"  placeholder="Guardian Annual Income" name="guardianAnnualIncome" id="guardianAnnualIncome" >
+				<br>
+				<label for="gEmail"><b>Guardian Email</b></label>
+				<input type="email" class="form-control"  placeholder="Guardian Email" name="gEmail" id="gEmail" >
+				<br>
+				<label for="gMobile"><b>Guardian Mobile</b></label>
+				<input type="text"  pattern=[0-9]{10} class="form-control"  placeholder="Guardian Mobile" name="gMobile" id="gMobile" >
+				<br>
+				<label for="guardianOfficialAddress">Official Address</label>
+				<textarea class="form-control" rows="5" name="guardianOfficialAddress" id="guardianOfficialAddress"></textarea>
+				<br>
+				<label for="guardianResidentialAddress">Present Residential Address</label>
+				<textarea class="form-control" rows="5" id="guardianResidentialAddress" name="guardianResidentialAddress"></textarea>
+			   <br>
+			   
+			   <label for="guardianLandLine"><b>Guardian Land Line</b></label>
+				<input type="text"  pattern="[0-9]{11}" class="form-control"  placeholder="Guardian Land Line" name="guardianLandLine" id="guardianLandLine" >
+				
+			   <br>
+			   	<div id="guardianPassPortDiv">
+					<h3>Passport Details</h3>
+						<div>
+						<p>
+							<div class="form-group">
+								<label for"">Passport No:</label>
+								<input type="text" class="form-control" id="guardianPassPort" name="guardianPassPort">
+							 </div>
+							 <div class="form-group">
+								<label for"">Place of Issue:</label>
+								<input type="text" class="form-control" id="guardianPassPortPlaceOfIssue" name="guardianPassPortPlaceOfIssue">
+							 </div>
+							 <div class="form-group">
+								<label for"">Date of Issue:</label>
+								<input type="text" class="form-control dp" id="guardianPassPortDateOfIssue" name="guardianPassPortDateOfIssue">
+							 </div>
+							 <div class="form-group">
+								<label for"">Date of Expiry:</label>
+								<input type="text" class="form-control dp" id="guardianPassPortDateOfExpiry" name="guardianPassPortDateOfExpiry">
+							 </div>
+						</p>					
+						</div>
+					<!-- <span  class="input-group-addon"><i class="far fa-edit editable" support="guardianPassPort1"></i></span> -->
+				</div> 
+			   
+			    <div class="form-check">
+				<input type="checkbox" class="form-check-input" id="guardianIsLocal" name="guardianIsLocal">
+				<label class="form-check-label" for="exampleCheck1">Local Guardian</label>
+			   </div>
+				<hr>
+			   <hr>
+				<div class="form-check">
+				<input type="checkbox" class="form-check-input" id="isGuardianSponsor" name="isGuardianSponsor">
+				<label class="form-check-label" for="exampleCheck1">is Sponsor?</label>
+			   </div>
+	    		<button type="button" id="buttonGuardianSave" class="btn btn-primary">Save</button>
+		    	<button style="display:none" type="button" id="buttonGuardianSave2" class="btn btn-primary">Save</button>
+			<hr>
+			</div>
+			</div>
+		</div>
+	</form>
+      </div>
+      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>	
+<div  autofocus class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">File Display</h5>
+        		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+	  </div>   
+	   <div class="modal-body" id="objectDiv">
+		<object  class="img-responsive" style="width: 450px; height: 450px;" id="imageFile"></object >
+      </div>
+      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>

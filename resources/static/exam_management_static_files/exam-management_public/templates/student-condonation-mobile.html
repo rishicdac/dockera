@@ -1,0 +1,796 @@
+ <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">          
+          <!-- /.col-md-12 -->
+          <div class="col-lg-12"> 			
+			<!-- Main content -->
+				<div class="content">
+				  <div class="container-fluid">
+					<div class="row">          
+					  <!-- /.col-md-12 -->
+					  <div class="col-lg-12">           
+
+						<div class="card card-info card-outline">
+						  <div class="card-header ">
+							<h5 class="m-0 card-title">Condonation Details</h5>
+							
+						  </div>
+						  
+				<!--Condonation list view -->
+					<div class="card-body" id="condonationList">
+					<div class="col-md-12">	
+						<div class="">
+							<div class="table-responsive">
+							  <table id="tblCondonationUpdationList" class="table table-striped table-bordered  display" style="width:100%">
+								<thead>
+											<tr>
+											  
+											<!--   <th>Student Id</th>	 -->
+											  <th>Student Name</th>						  
+											  <th>Program / Batch / Semester</th>
+											  <th>Attendance (%)</th>
+											  <th>Fine Amount</th>
+											  <th>Exempted</th>
+											  <th>Payment Status</th>
+											  <th>View</th>
+											  <th>Action</th>
+											 </tr>
+											</thead>
+							  </table>
+							</div>	
+							
+						</div>
+					</div>
+		
+				</div>
+				</div>
+				</div>
+				</div>
+				</div>
+				</div>
+				
+		<!--Condonation request  view -->
+					
+			<div class="col-md-12" id="requestModel" style="display:none;">
+			
+					<div class=" invoice p-3 mb-3">
+						<div class="tab-content">
+						  <div class="tab-pane active" id="activity">		
+							<div class="post">
+								<div class="user-block text-center">
+									<img class="img-circle img-bordered-sm" src="exam-management_proxy/exam-management_public/img/nuals.jpg" alt="user image" style="width:70px;height:70px;">
+									<span class="username text-center">
+									  <h3>The National University of Advanced Legal Studies</h3>
+									</span>
+										<div class="description-block border-right">
+										<h5 class="description-header"> Request for Condonation for the shortage of Attendance  </h5>
+									
+									<hr/>
+								</div>	
+			
+			
+			    </div>
+					<div class="col-md-12">
+						<div class="">
+								<form id="formUpdateCondonation">
+								
+									 
+										<div class="row">
+									    	<dl class="row pl-5">
+											  <dt class="col-sm-4">Student Id</dt>
+											  <dd class="col-sm-8" id="studentId"></dd>	
+											  <dt class="col-sm-4" >Name</dt>
+											  <dd class="col-sm-8" id="studentName"></dd>
+											  <dt class="col-sm-4">Attendance (%) </dt>
+											  <dd class="col-sm-8" id="attendance"></dd>
+										      <dt class="col-sm-4">Previously any Condonation granted ?  (if yes, details) </dt>
+										 	  <dd class="col-sm-8" id="previousExemption">No</dd>	
+										    </dl>
+											
+										</div>	
+									  										
+									<div class="row  pl-5">
+										<div class="col-md-8">
+											<div class="form-group">
+											   <label for="remarks">Reason For Absence</label>
+											   <textarea class="form-control" name="reason" id="reason" rows="3" placeholder="Enter the reason for exemption" required></textarea>
+											</div>
+												
+										</div>
+									</div>	
+								<div class="row col-md-8 pl-5">
+									 <div class="form-group">
+		                        		<label>Any Supporting documents, If any (only pdf)</label>
+		                        		<div class="custom-file">
+								  			<input type="file" class="custom-file-input"  accept="application/pdf"   id="refFile" placeholder=""  >
+								  			<label class="custom-file-label" for="customFile">Choose file</label>
+										</div>
+		                      		</div>	
+		                      		<br>
+		                      		</div>
+		                      		<div class="row col-md-4 pl-5">
+		                      		<button type="submit"  class=" row btn btn-sm btn-info" id="btnExempt">Request for exemption</button>
+		                      		</div>			
+								</div>	
+								</form>
+							</div>
+							<br>
+						</div>
+					</div>
+				
+			</div>
+		</div>
+	</div>
+</div>
+	<!--/Condonation request  view -->
+	
+	<!--Condonation submitted  view -->
+					
+			<div class="col-md-12" id="viewModel" style="display:none;">
+			
+					<div class=" invoice p-3 mb-3">
+						<div class="tab-content">
+						  <div class="tab-pane active" id="activity">		
+							<div class="post">
+								<div class="user-block text-center">
+									<img class="img-circle img-bordered-sm" src="exam-management_proxy/exam-management_public/img/nuals.jpg" alt="uploaded document" style="width:70px;height:70px;">
+									<span class="username text-center">
+									  <h3>The National University of Advanced Legal Studies</h3>
+									</span>
+										<div class="description-block border-right">
+										<h5 class="description-header">  Condonation Details  </h5>
+									
+									<hr/>
+								</div>	
+			
+			
+			    </div>
+					<div class="col-md-12">
+						<div class="">
+						  		<div class="row">
+							    	<dl class="row pl-5">
+									  <dt class="col-sm-4 pt-2">Student Id</dt>
+									  <dd class="col-sm-8 pt-2" id="studentViewId"></dd>	
+									  <dt class="col-sm-4 pt-2" >Name</dt>
+									  <dd class="col-sm-8 pt-2" id="studentViewName"></dd>
+									   <dt class="col-sm-4 pt-2" >Program / Batch /Semester</dt>
+									  <dd class="col-sm-8 pt-2" id="programBatchSemView"></dd>
+									  <dt class="col-sm-4 pt-2">Attendance (%) </dt>
+									  <dd class="col-sm-8 pt-2" id="attendanceView"></dd>
+								      <dt class="col-sm-4 pt-2">Previously any Condonation granted ?  (if yes, details) </dt>
+								 	  <dd class="col-sm-8 pt-2" id="previousExemptionView">--</dd>	
+								 	  <dt class="col-sm-4 pt-2">Reason for Absence </dt>
+								 	  <dd class="col-sm-8 pt-2" id="reasonView">---</dd>	
+								 	  <dt class="col-sm-4 pt-2">Supporting Documents </dt>
+								 	  <dd class="col-sm-8 pt-2" id="refDocView"></dd>	
+								 	  <dt class="col-sm-4 pt-2 link" style="display:none;">Submitted Document</dt>
+								 	  <dd class="col-sm-8 link user-block pt-2"  style="display:none;">
+									 	<a href="#" id="refDocLink"><img class=" img-bordered-sm" src="exam-management_proxy/exam-management_public/img/pdf.png" alt="user image"></a>
+									  </dd>
+									  <dt class="col-sm-4 pt-3">Exempted </dt>
+								 	  <dd class="col-sm-8 pt-3" id="exemptedView"></dd>	
+								 	
+								 	  <dt class="col-sm-4 pt-2">FineAmount </dt>
+								 	  <dd class="col-sm-8 pt-2" id="fineAmountView"></dd>
+								 	  	 	  	
+								 
+								 	  <dt class="col-sm-4 pt-2">Payment Status </dt>
+								 	  <dd class="col-sm-8 pt-2" id="paymentStatus"></dd>
+								 	  
+								 	  
+								 	  <dt class="col-sm-4 pt-2"> Status </dt>
+								 	  <dd class="col-sm-8 pt-2" ><span class="right badge badge-danger" id="conStatus"></span> </dd>
+								 			
+								    </dl>
+									
+								</div>	
+							
+							<div id="frameDoc" style="display:none;">
+							        <iframe id="iframeDoc" height="500" width="100%"  title="Supporting document for condonation"></iframe>
+							 </div>
+							
+							</div>
+							<br>
+						</div>
+					</div>
+				
+			</div>
+		</div>
+	</div>
+</div>
+	
+	
+<script>
+//global variables and fns
+
+/* base url for exam management */
+var BASE_URL = "/exam-management/api/v1/";
+var MARKS_CONFIG_URL = "/mark-config/api/v1/academics/marks-management/evaluation-types-program/program-id/";
+var ACADEMIC_YEAR_URL = "/academics/api/v1/academics/getDetailsByMasterId/masterId/83";
+
+	
+	/* fn to convert form data to json */
+	$.fn.serializeObject = function()
+	{
+	    var o = {};
+	    var a = this.serializeArray();
+	    $.each(a, function() {
+	        if (o[this.name] !== undefined) {
+	            if (!o[this.name].push) {
+	                o[this.name] = [o[this.name]];
+	            }
+	            o[this.name].push(this.value || '');
+	        } else {
+	            o[this.name] = this.value || '';
+	        }
+	    });
+	    return o;
+	 };
+
+ 
+ 	$('.datepicker').datepicker({
+	    //format: 'yyyy-mm-dd',	
+ 		//startDate : moment() , //0
+	    format: 'dd-mm-yyyy',
+		autoclose:true,
+		clearBtn:true,
+		pickerPosition: "bottom-left"
+		
+	});  
+	
+ 	
+	$('.datepicker-month-year').datepicker({
+	    format: 'M-yyyy',	
+	    startView: "months", 
+        minViewMode: "months",						   
+		autoclose:true,
+		clearBtn:true
+	});
+	
+
+    
+    
+    //getStudentInfo();
+   	function getStudentInfo()
+	{
+
+      $.ajax({
+	   		url: "/students/getStudentsDetails-V3",
+	   		method: 'GET',
+	   		data:{"userCodes":$("#usercode").val()},
+	   		success: function(data)
+	   		{
+	   		  console.log(data);
+	   		  return data;
+	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+	 }
+    
+$(document).ready(function() {
+ 
+
+   var loggedStudentId = $("#usercode").val();
+   
+   var studentId;
+   var condonationId;
+   var datawithPayment;
+   var docLink;
+   loadTable();
+   
+				
+	/* file upload */
+	$(".custom-file-input").on("change", function() {
+	
+	  var fileName = $(this).val().split("\\").pop();
+	  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+	});
+    
+    
+   /*
+   *  Function to load the condonation list which satisfies the criteria 
+   */
+   function loadCondonationList(data){ 
+       condonationListDataTable =  $('#tblCondonationUpdationList').DataTable({
+            "language": {
+                    "emptyTable": "No students found satisfying your criteria"
+                  },
+			"processing": true,
+			"destroy": true,
+			"data":data,
+			"columns": [
+			
+		 /*   { "data": "id"},*/
+		/*	{ "data": "studentId"},*/
+			{ "data": "studentName" , "render": function (data, type, full, meta) {
+	            
+                                 return (full.studentName + " ( " + full.studentId + ") ");   
+                         }
+			},
+			{ "data": "null",
+			            "render": function (data, type, full, meta) {
+		            
+		                    return (full.program + " / " + full.batch + " / " + full.semester)   
+			            }
+		      },
+			{ "data": "percentage" },
+			{ "data": "fineAmount" ,
+			           "render": function (data, type, full, meta) {
+						           if(data ==null)
+						                 return ("Approval Pending");
+						            else
+						                 return data;        
+						           }},
+			{ "data": "exempted",
+			           "render": function (data, type, full, meta) {
+						           if(data ==null)
+						                 return ("Approval Pending");
+						           else
+					            	   return (data ? "YES" : "NO");       
+						                    
+						           } },
+			{ "data": "feeOrderStatusValue",
+						"render": function (data, type, full, meta) {
+						              if(data ==null)
+						                   return ("Approval Pending");
+						              else
+						            	  return data;
+						            }},
+		 	{
+				"data": null,
+				"defaultContent":
+					
+					'<a data-toggle="collapse" href="#"  class=""small-box-footer text-danger" id="btnView"> <i class="fas fa-eye"></i></a>' 
+					
+			},
+			{
+				"data": null,
+				"render":function (data, type, full, meta) {
+					if(data.reason == null)
+					 return '<a data-toggle="collapse" href="#"  class=""small-box-footer text-danger" id="btnEdit"> <i class="fas fa-edit"></i></a>'
+					 else
+					    return "Request Submitted"; 
+					}
+			}
+			]
+		
+            
+		});
+   
+     $('#tblCondonationUpdationList tbody').on( 'click', 'tr', function () {
+	
+	        if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	            condonationListDataTable.$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	        }
+	    } );
+	    
+	    
+    
+	   /*
+	   *  Action function to update the condonation list 
+	   */
+	    $('#tblCondonationUpdationList tbody').on('click', '#btnEdit', function () {
+	            	             
+               $('#viewModel').hide();   
+	    	    $('#requestModel').show();
+	           
+	    
+			    $('html, body').animate({
+				        scrollTop: $("#requestModel").offset().top
+				}, 1000);
+				
+				
+	            var data = condonationListDataTable.row($(this).parents('tr')).data();
+               console.log(data);
+               condonationId =data.id;
+              
+              	$("#studentId").text(data.studentId);
+              	$("#studentName").text(data.studentName);
+              	$("#attendance").text(data.percentage);
+              	
+              	let exemptionString;
+              	/* exemption */
+                for(var i = 0; i < datawithPayment.length; i++){
+
+				   if(datawithPayment[i].hasOwnProperty('exempted') && datawithPayment[i]['exempted'] === true) {
+				    exemptionString = exemptionString + datawithPayment[i]['program'] + "/"+ datawithPayment[i]['batch'] +"/"+ datawithPayment[i]['semester'];
+				   }
+
+              }
+
+               	$("#previousExemption").text(exemptionString);
+		});
+		
+	   /*
+	   *  Action function to update the condonation list 
+	   */
+	    $('#tblCondonationUpdationList tbody').on('click', '#btnView', function () {
+	            	             
+	    	$('#frameDoc').hide();         	                     
+	    	    $('#viewModel').show();
+	            $('#requestModel').hide();  
+			    $('html, body').animate({
+				        scrollTop: $("#viewModel").offset().top
+				}, 1000);
+				
+				var data = condonationListDataTable.row($(this).parents('tr')).data();
+              	console.log(data);
+              	              
+               	$("#studentViewId").text(data.studentId);
+              	$("#studentViewName").text(data.studentName);
+              	$("#attendanceView").text(data.percentage);
+              	$("#programBatchSemView").text(data.program + " / " + data.batch + " / " + data.semester);
+              	
+              	let exemptionString;
+              	/* exemption */
+                for(var i = 0; i < datawithPayment.length; i++){
+
+				   if(datawithPayment[i].hasOwnProperty('exempted') && datawithPayment[i]['exempted'] === true && datawithPayment[i]['studentId'] === data.studentId) {
+				    exemptionString = exemptionString + datawithPayment[i]['program'] + "/"+ datawithPayment[i]['batch'] +"/"+ datawithPayment[i]['semester'];
+				   }
+
+              }
+               	$("#previousExemptionView").text(exemptionString);
+               	$("#reasonView").text(data.reason ? data.reason : "----");
+               	if(data.refDoc != null)
+				 {
+				   $('#refDocView').text('Yes');
+				   //$('#refDocView').hide;
+				    $('.link').show();
+				    //docLink = data.refDoc;
+				    docLink = "filerepo_public/minioFiles/nuals/"+data.refDoc;  
+				 }
+				 else
+				   $('#refDocView').text('No');
+				   
+                 $("#exemptedView").text(data.exempted ? "YES" : "NO");    	  
+              	
+                 /* fine amount */
+                 if(data.fineAmount == null)
+                	 $("#fineAmountView").text("Approval Pending");
+                 else
+              	     $("#fineAmountView").text(data.fineAmount);
+              	 
+              	 $("#conStatus").text(data.status ? data.status :" Listed for condonation");
+              
+              	$("#paymentStatus").text(data.feeOrderStatusValue ? data.feeOrderStatusValue :"Fine not generated" );
+		});
+	}
+	
+	$("#refDocLink").on('click',function(){
+			//  window.open(docLink, '_blank');
+		  $('#frameDoc').show();
+		  $('html, body').animate({
+		        scrollTop: $("#frameDoc").offset().top
+		}, 1000);
+		
+		  $('#iframeDoc').attr('src', docLink);
+		})
+	
+				
+							
+    /**
+	 * update condonation fee details and raise fine amount as debit against the student 
+	**/
+	
+   	$('#formUpdateCondonation').unbind().bind('submit',function(event)
+	{
+	
+		 event.preventDefault();
+		  var condonationFormDataJson={};
+		  condonationFormDataJson.id = condonationId;
+		  condonationFormDataJson.studentName = $("#studentId").text();
+		  condonationFormDataJson.status = "SUBMITTED";
+		  condonationFormDataJson.reason = $("#reason").val();
+		   
+		  
+		  let formData = new FormData();
+		  var file = $('#refFile')[0].files[0];
+		 
+   		  if (file != undefined) {
+			
+				formData.append('CondonationData',JSON.stringify(condonationFormDataJson));
+				formData.append('file',	file);
+															
+			}			
+																	
+		 var msg = { title : "Request", msg : " Do you want to request for condonation exemption?"  };
+		 
+		 ConfirmDialog(msg, "SAVE").then(function(response) {
+		 		
+		 			  if (file != undefined) {
+		 			    requestCondonationFile(formData);
+		 			  
+		 			  }
+		 			  else{
+		 			     requestCondonation(condonationFormDataJson);
+		 			}
+									
+		  }, function(error) {
+				
+				  toastr.error("Request cancelled");	
+			
+			});
+				          
+	
+     });
+    
+    
+    function requestCondonation(condonationFormDataJson){
+    
+      $.ajax({
+	   		url: BASE_URL+"condonation/student/update",
+	   		method: 'POST',
+	   		data:condonationFormDataJson,
+	   	
+	   		success: function(data)
+	   		{
+	   		   $('#requestModel').hide();
+	   		   toastr.success("Request submitted Successfully");
+	   		   loadTable();
+	   		  	   		  	   			
+	   		},
+	   		error:function(err)
+	   		{
+	   		    toastr.error("Request submission failed !!");
+	   		    
+	   		}
+    
+    
+    });
+    }
+   
+    
+    function requestCondonationFile(formData){
+    	 console.log(formData);
+          $.ajax(
+		   		  {
+		   			"url":"/exam-management_proxy/api/v1/condonation/update-file",
+		   			"method":"POST",
+		   			cache: false,
+		   			processData: false, 
+			        contentType: false, 
+			        data:formData,
+		   			success:function(data){
+	   			
+		   			
+		   				$('#requestModel').hide();
+	   		    		toastr.success("Request submitted Successfully");
+	   		   			loadTable();
+		   			  
+			   			  //reset  	
+			   			  $("#reason").val(""); 
+			   			  $(".custom-file-label").html("");
+		   			  	
+			   			
+		   			},
+		   			
+					error:function(err)
+			   		{
+			   			toastr.error("Request submission failed !!");
+			   			 			
+			   		}
+		   		});	
+    
+    
+    }
+    
+    
+    
+    /**
+    *  load data after successful updation
+    */
+    
+    function loadTable()
+    {
+       	url = BASE_URL+"condonation/list/student/";
+   		datawithPayment =  loadURLData(url);
+   	 	loadCondonationList(datawithPayment);
+         
+    
+    }
+   
+    
+  });                
+    
+
+   /**
+   * Fee Settings
+   */
+   
+   var studentListWithData=new Array();
+   var studentCodeList=new Array();
+   
+   
+	function loadData(url)
+	{
+		let dataWithPayment=[];
+		$.ajax(
+		{
+			url:url,
+			async:false,
+			success:function(data)
+			{
+			studentListWithData=data.data;
+			console.log(studentListWithData);
+			if(studentListWithData.length>0){
+			  var studfeeidmapArray=generateFeeIdenMapArray(studentListWithData);
+			  console.log(studfeeidmapArray);
+			  dataWithPayment = getFeeOrderStatus(studfeeidmapArray);
+			}
+		}
+	})
+	
+	return dataWithPayment;
+  }
+  
+  function loadURLData(url,data)
+	{
+		let dataWithPayment=[];
+		$.ajax(
+		{
+			url:url,
+			method:"POST",
+			data:data,
+			async:false,
+			success:function(data)
+			{
+			studentListWithData=data.data;
+			console.log(studentListWithData);
+			if(studentListWithData.length>0){
+			  var studfeeidmapArray=generateFeeIdenMapArray(studentListWithData);
+			  console.log(studfeeidmapArray);
+			  dataWithPayment = getFeeOrderStatus(studfeeidmapArray);
+			}
+		}
+	})
+	
+	return dataWithPayment;
+  }
+	
+ function generateFeeIdenMapArray(data)
+	{
+		var mapArray=new Array();
+		for(let i=0;i<data.length;i++)
+		{
+			var map={};
+			var studCode=data[i]['studentId'];
+			map['feeOrderStudent']=studCode;//maintain the same key feeOrderStudent in map
+			//if(data[i]['orderId'] != null)
+			 map['feeOrderIdentity']= data[i]['orderId'];//maintain the same key feeOrderIdentity in map
+			//else 
+			// map['feeOrderIdentity']= "";//maintain the same key feeOrderIdentity in map
+			
+			mapArray.push(map);
+			}
+			return mapArray;
+	}
+
+ function addTostudentListWithData(data)
+	{
+		for(let i=0;i<studentListWithData.length;i++)
+		{
+		for(let j=0;j<data.length;j++)
+		{
+		//if(String(studentListWithData[i]['studentId'])==data[j]['feeOrderStudentCode'])
+		if(String(studentListWithData[i]['orderId'])==data[j]['feeOrderId'])
+		{
+		studentListWithData[i]['feeOrderStatusValue']=data[j]['feeOrderStatusValue'];
+		}
+		if(String(studentListWithData[i]['orderId'])== null){
+		
+			studentListWithData[i]['feeOrderStatusValue']= "No Fee";
+		  }
+		  
+		}
+	}
+	
+	}
+	
+	
+ function getFeeOrderStatus(datatosend)
+	{
+		console.log("calling getFeeOrderStatus function")
+		$.ajax(
+		{
+			   url:'/fees/getManyFeeOrderStatusByFeeIdentifierAndAccount',
+			   data:{'feeOrderStudents':datatosend},
+			   method:"post",
+			   async:false,
+			   success:function(data)
+			   {
+					console.log(data); 
+					if(data.length>0)
+					{
+					addTostudentListWithData(data);
+					//loadDatatable(studentListWithData);
+					//return studentListWithData;
+					}
+	           },
+		    error:function(err)
+				{
+				showMessage(err);
+				}
+		});
+		return studentListWithData;
+}
+ var ConfirmDialog = function (data,type){
+
+ var TYPE;
+ var ICON ;
+ var BTN_CLASS;
+
+	 if ( type == 'SAVE'){
+		 TYPE = 'green';
+		 ICON =  'fa fa-save';
+		 BTN_CLASS = 'btn-success';
+	 }
+	 else if ( type == 'DELETE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-trash';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else if ( type == 'APPROVE'){
+		 TYPE = 'red';
+		 ICON =  'fa fa-thumbs-up';
+		 BTN_CLASS = 'btn-danger';	 
+	 }
+	 else
+	 {
+		 TYPE = 'red';
+		 ICON =  'fa fa-warning';
+		 BTN_CLASS = 'btn-warning';	
+	 }
+	 var DialogPromise = function (resolve, reject) {
+	    
+	     $.confirm({
+	        title: data.title,
+	        content:data.msg,
+	        closeIcon : true,
+	        type: TYPE,
+	        icon: ICON,
+	        offsetTop: 40,	      
+	        bgOpacity :'0.7',
+	        buttons: {  
+	            ok: {
+	                text: "<b> Yes </b>",	            
+	                keys: ['enter'],
+	                action: function(){	                    
+	                     resolve(true); 	                    
+	                }
+	            },
+	            no: function(){
+	              text: "<b> No </b>",	                  
+	                    reject(false); 
+	            }
+	        }
+     });    
+    
+   };    
+    return  new  Promise (DialogPromise);
+ }
+
+</script>  
+
+
+
+	
+	
+	
+	<!-- Toastr -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css"/> 
+	
+	
+	
+	
+	

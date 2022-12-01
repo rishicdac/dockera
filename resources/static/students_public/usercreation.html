@@ -1,0 +1,99 @@
+
+<script>
+var SelectedOrMappedUser;
+var reportFilter=""
+
+$(document).ready(function()
+{
+
+	$('#userform').unbind().bind('submit',function(e)
+	{
+		e.preventDefault();
+		var formData=$(this).serializeArray();
+		formData.push({"name":"active","value":false});
+		if (confirm('Are you sure you want to add this user? Make sure you activate the user for role assignment'))
+		{
+			$.ajax(
+			{
+				"url":"/userManagement/addUser",
+				"method":"POST",
+				 data:formData,
+				 success:function(data)
+				{
+					if(data["createdUser"])
+					{
+						showMessage("User Added successfully. Activate the user for assigning roles");
+						$('#userform').find("input[type=text],input[type=email],input[type=password],textarea").val("");
+					}
+				}
+							
+			});	
+		} 
+		else
+		{
+			$('#dialogEdit').modal('toggle');		
+		}
+	});
+
+});
+
+</script>
+
+<div class="card card-info">
+  <div class="card-header">
+    <h3 class="card-title">User Details(User added from this functionality will be inactive by default)</h3>
+  </div>
+  <!-- /.card-header -->
+  <!-- form start -->
+  <form id="userform" class="form-horizontal">
+    <div class="card-body">
+      <div class="form-group row">
+        <label for="inputEmail3" class="col-sm-5 col-form-label">Email</label>
+        <div class="col-sm-7">
+          <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+        </div>
+      </div>
+      <hr>
+      <div class="form-group row">
+        <label for="inputEmail3" class="col-sm-5 col-form-label">User Code(This will be mapped to Admission Code/employee code)</label>
+        <div class="col-sm-7">
+          <input type="text" class="form-control" id="usercode" name="usercode" placeholder="user code">
+        </div>
+      </div>
+      <hr>
+      <div class="form-group row">
+        <label for="inputEmail3" class="col-sm-5 col-form-label">Mobile Number</label>
+        <div class="col-sm-7">
+          <input type="text" class="form-control" id="mobile" name="mobile" placeholder="Mobile">
+        </div>
+      </div>
+      <hr>
+      <div class="form-group row">
+        <label for="inputPassword3" class="col-sm-5 col-form-label">Password</label>
+        <div class="col-sm-7">
+          <input type="password" class="form-control" id="inputPassword3" name="password" placeholder="Password">
+        </div>
+      </div>
+      <hr>
+      <div class="form-group row">
+        <label for="inputPassword3" class="col-sm-5 col-form-label">User Type</label>
+        <div class="col-sm-7">
+         <select class="form-control" name="userType">
+         	<option>admin</option>
+         	<option>employee</option>
+         	<option>student</option>
+         	<option>guardian</option>
+         </select>
+        </div>
+      </div>
+      <hr>
+    </div>
+    <!-- /.card-body -->
+    <div class="card-footer">
+      <button type="submit" class="btn btn-info">Submit</button>
+      <button type="button" class="btn btn-default float-right">Cancel</button>
+    </div>
+    <!-- /.card-footer -->
+  </form>
+</div>
+

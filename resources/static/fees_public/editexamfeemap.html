@@ -1,0 +1,160 @@
+<script>
+var selectedProgram;
+function getExistingCertficationAmountMapping(programid)
+{
+	$.ajax(
+	{
+		"url":"/fees/getExistingAmountMappingByStatusAndProgram",
+		"data":{"groupType":"examination","status":$('#status').val(),"programid":programid},
+		success:function(data)
+		{
+			if(data)
+			{
+				setUpDataTable(data,[{"courseCode":"courseCode"},{"exmfeeMapOrderNo":"Order"},
+				{"sfsFeeHeadName":"Fee Head"},{"feeAmount":"Amount Mapped"},
+				{"sfsFeeHeadId":"Fee Head Id"},{"courseId":"programId"}],"gridTable",null);
+				onDataTableClick("gridTable",function()
+				{
+					var pgmcode=selectedRowFromDataTable[0];
+					var order=selectedRowFromDataTable[1];
+					var amount=selectedRowFromDataTable[3];
+					var feehead=selectedRowFromDataTable[4];
+					var pgmid=selectedRowFromDataTable[5];
+					$('#mappingProgramCode').val(pgmcode);
+					$('#order').val(order);
+					$('#amount').val(amount);
+					$('#programid').val(pgmid);
+					$('#feeheadid').val(feehead);
+					$('#dialogEdit').modal({backdrop: 'static',keyboard: false});
+				})
+			}
+		}
+	})
+}
+function getAllCourses()
+{
+	$.ajax({
+		url:'/course/getAllCourses',
+		method:'GET',
+		success:function(data)
+		{
+			courseMap=data;	
+			setUpDropDown("course_id",data,"courseId","courseCode");
+			$("#course_id").unbind().bind('change',function()
+			{
+				if($('#course_id').val()!="")
+				{
+					getExistingCertficationAmountMapping($('#course_id').val());
+				}
+			});
+		},
+		error:function(err)
+		{
+			showMessage(err);
+		}
+		});
+}
+	
+$(document).ready(function()
+{
+	getAllCourses();
+	$('#formMapEdit').unbind().bind('submit',function(event)
+	{
+		event.preventDefault();
+		var formData=$(this).serializeArray();
+		$.ajax(
+		{
+			"url":"/fees/saveexamcertmapping",
+			"method":"post",
+			data:formData,
+			success:function(data)
+			{
+				try
+				{
+					if(data=="success")
+					{
+						showMessage("Mapping updated successfully. Kindly get it verified");
+					}
+					else
+					{
+						showMessage("Updation Failed.Contact Admin");
+					}
+					$('#dialogEdit').modal('toggle');
+					getExistingCertficationAmountMapping($('#course_id').val());
+				}
+				catch(e)
+				{
+					
+				}
+			}
+		})
+	});
+});
+</script>
+<hr>
+<div class="row" id="minify">
+	<div class="col-md-12">
+	    <label for="selectProgram">Select Status of Mapping</label>
+	  <select  class="form-control" id="status">
+	  	<option value="valid">Verified</option>
+	  	<option value="invalid">Entered</option>	
+	  </select>
+	</div>
+</div> 
+<div class="row" id="minify">
+	<div class="col-md-12">
+	    <label for="selectProgram">Select Program</label>
+	  <select  class="form-control" id="course_id"  name="course_id" required="required">	
+	  </select>
+	</div>
+</div> 
+<hr>
+<div class="table-responsive">
+	<table class="table table-striped" id="gridTable"></table>
+</div>
+
+<div class="modal fade" id="dialogEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Fee Mapping Details</h5>
+		 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+		<div class="modal-body">
+			<form id="formMapEdit" >
+			<div class="form-group">
+		   		<label for="categoryId">Program Id</label>
+		   		<input type="text" class="form-control" name="programid" id="programid"  readonly>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="categoryId">Fee Head Id</label>
+		   		<input type="text" class="form-control" name="feeheadid" id="feeheadid"  readonly>
+		   	</div>
+			<div class="form-group">
+		   		<label for="categoryId">Program-Code</label>
+		   		<input type="text" class="form-control" id="mappingProgramCode"  readonly>
+		   	</div>
+		   	<div class="form-group">
+		   		<label for="categoryName">Order</label>
+		   		<input type="text" class="form-control" id="order"  name="order" readonly>
+		   	</div>
+			<div class="form-group">
+		   		<label for="categoryName">Amount</label>
+		   		<input type="number" step="any" class="form-control" id="amount"  name="amount" >
+		   	</div>
+			
+		   	<button type="submit" id="btnedit"  class="btn btn-primary">Save</button>
+		   	</form>
+		</div>
+		   <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+

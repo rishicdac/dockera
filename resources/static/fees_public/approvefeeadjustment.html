@@ -1,0 +1,758 @@
+
+<script>
+var feeIdentifierArray=new Array();
+var paidIdentifierArray=new Array();
+var toBePaidArray=new Array();
+var fullTranArray=new Array();
+var feeIdenToAmoutMap={};
+var feeHeadsToIdenMap={};
+var fineDateDetailsToFeeIden={};
+var today;
+var fineDetailsMap={};
+var selectedStudentCode="";
+var feeIdentifierBalanceStatusMap={};
+var feeHeadIdToNameMap={};
+var feeHeadIdToAmountMap={};
+
+function removeDupes(arr)
+{
+   return arr.filter((value,index)=>arr.indexOf(value)===index);	
+}
+
+function getRecordTimeLines(selectedUserCode,feeIdentifier)
+{
+	$.ajax(
+	{
+		"url":"/fees/getAdjustRecordTimeLines",////
+		"method":"GET",
+		"data":{"studentCode":selectedUserCode,"feeIden":feeIdentifier},
+		success:function(data)
+		{
+			if(data)
+			{
+				for(var i=0;i<data.length;i++)
+				{
+					data[i]['adjustmentDoneDate']=data[i]['adjustmentDoneDate'].split('T')[0];
+					console.log("Date formnateed  "+data[i]['adjustmentDoneDate']);
+				}
+				console.log("Setting up grid");
+				setUpDataTable(data,[{"adjustmentDoneDate":"Date of entry"},{"adjustmentDoneRemarks":"remarks"},{"adjustmentDoneUserCode":"By User"},{"adjustmentStatus":"Status Set"}],"adjRecordsTable",null);
+				console.log("Setting up Accodion");$('#head1').text('Record Flow History');
+				$('#head1').text('Record Flow History');
+				$( "#accordionRecords" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+				console.log("All done");
+			}
+		}
+	});
+}
+
+function giveFeeHeadsFromIden(idenName)
+{
+	var feeHeadsArray=new Array();
+	for(var i=0;i<fullTranArray.length;i++)
+	{
+		if(fullTranArray[i]["transactionIdentifierRemarkOrProcess"]==idenName)
+		{
+			if(fullTranArray[i]["transactionIdentifierProcessId"])
+			feeHeadsArray.push(fullTranArray[i]["transactionIdentifierProcessId"]);//transactionIdentifierProcessId	
+		}
+	}
+	feeHeadsArray=removeDupes(feeHeadsArray);
+	var feeHeadArrayString=String(feeHeadsArray);
+	return feeHeadArrayString;
+}
+function addFeeProcessToArray(data)
+{
+	console.log("INside addFeeProcessToArray");
+	try
+	{
+		var leng=data.length
+		for(var i=0;i<leng;i++)
+		{
+			if(feeIdentifierArray.length==0)
+			{
+				feeIdentifierArray.push(data[i]['transactionIdentifierRemarkOrProcess']);
+			}
+			else
+			{
+				if(feeIdentifierArray.indexOf(data[i]['transactionIdentifierRemarkOrProcess'])==-1)
+				{
+					feeIdentifierArray.push(data[i]['transactionIdentifierRemarkOrProcess']);
+				}
+			}
+		}
+		checkTransactionSettlement(data);
+		//checkIfFeeSettled(data);
+	}
+	catch(e)
+	{
+		console.log("Error in processing transactionData");
+	}	
+}
+
+function checkTransactionSettlement(data)
+{
+	for(var i=0;i<feeIdentifierArray.length;i++)
+	{
+		var balance=0;
+		for(var j=0;j<data.length;j++)
+		{
+			if(data[j]['transactionIdentifierRemarkOrProcess']==feeIdentifierArray[i])
+			{
+				balance=balance+data[j]['transactionAmount'];
+			}
+		}
+		feeIdentifierBalanceStatusMap[feeIdentifierArray[i]]=balance;
+		if(feeIdentifierBalanceStatusMap[feeIdentifierArray[i]]>0)
+		{
+			if(paidIdentifierArray.length==0)
+			{
+				paidIdentifierArray.push(feeIdentifierArray[i]);	
+			}
+			else
+			{
+				if(paidIdentifierArray.indexOf(feeIdentifierArray[i])==-1)
+				{
+					paidIdentifierArray.push(feeIdentifierArray[i]);	
+				}						
+			}			
+		}
+	}
+}
+function feeHeadsInIden(iden,feeHeads)
+{
+	console.log("calling feeHeadsInIden");
+	console.log(iden);
+	console.log(feeHeads);
+	var feeHeadArray=new Array();
+	for(var i=0;i<feeHeads.length;i++)
+	{
+		var fhid=feeHeads[i]['sfsFeeHeadId'];
+		var fhName=feeHeads[i]['sfsFeeHeadName'];
+		var m={};
+		m[fhid]=fhName;
+		feeHeadArray.push(m);
+	}
+	feeHeadsToIdenMap[iden]=feeHeadArray;
+	console.log("Checking feeHeadsToIdenMap berfore calling fillfeedetails");
+	console.log(feeHeadsToIdenMap);
+	fillFeeDetails(iden);
+}
+function dateDiff(d1,d2)
+{
+	var d=d1-d2;
+	return d;
+}
+
+function dateDiffInDays(diffTime)
+{
+	var diffDays =Math.abs(Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+	return diffDays;
+}
+function fillFeeDetails(iden)
+{
+	var tod=new Date(today);
+	var collEndDate;
+	var collEndDateString;
+	var level1CollectionEndDate;
+	var level1CollectionEndDateString;
+	var level2CollectionEndDate;
+	var level2CollectionEndDateString;
+	var level1FineAmnt;
+	var level2FineAmnt;
+	var level3FineAmnt;
+	var level3reAdmissionAmount;
+	var diffTime;
+	var level1FineAmountTotal=0;
+	var level2FineAmountTotal=0;
+	var level3FineAmountTotal=0;
+	var level2FineDaysCount=0;
+	var level3FineDaysCount=0;
+	var reAdmissionAmount=0;
+	var actualFeeAmount=0;
+	var fineAmount=0;
+	try
+	{
+		console.log("Inside------- fill fee details"+iden);
+		iden=iden.trim();
+		 collEndDate=new Date(fineDateDetailsToFeeIden[iden]['collection_Endt_Date'].split(" ")[0]);
+		 collEndDateString=fineDateDetailsToFeeIden[iden]['collection_Endt_Date'].split(" ")[0];
+		 level1CollectionEndDate=new Date(fineDateDetailsToFeeIden[iden]['level1collection_Endt_Date'].split(" ")[0]);
+		 level1CollectionEndDateString=fineDateDetailsToFeeIden[iden]['level1collection_Endt_Date'].split(" ")[0];
+		 level2CollectionEndDate=new Date(fineDateDetailsToFeeIden[iden]['level2collection_Endt_Date'].split(" ")[0]);
+		 level2CollectionEndDateString=fineDateDetailsToFeeIden[iden]['level2collection_Endt_Date'].split(" ")[0];
+		 level1FineAmnt=parseFloat(fineDateDetailsToFeeIden[iden]['level1fine_Amount']);
+		 level2FineAmnt=parseFloat(fineDateDetailsToFeeIden[iden]['level2fine_Amount']);
+		 level3FineAmnt=parseFloat(fineDateDetailsToFeeIden[iden]['level3daily_Fine_Amount']);
+		 level3reAdmissionAmount=parseFloat(fineDateDetailsToFeeIden[iden]['level3re_Admission_Fine_Amount']);
+		 diffTime=dateDiff(collEndDate,tod);
+		 console.log("basic setting over");
+	}
+	catch(e)
+	{
+		console.log("Error in fillFeeDetails   "+e);	
+	}
+	if(diffTime<0)
+	{
+		try
+		{
+		console.log("Fine shall be applicable");
+		var diffTime1=dateDiff(level1CollectionEndDate,tod);		
+		if(diffTime1<0)
+		{
+			var diffTime2=dateDiff(level2CollectionEndDate,tod);	
+			if(diffTime2<0)
+			{
+				var noOfDays=dateDiffInDays(diffTime1);
+				console.log("No of days for daily fee collction from level2collectionEnd Date is  "+noOfDays);
+				level3FineAmountTotal=noOfDays*level3FineAmnt;
+				level3FineDaysCount=noOfDays;
+				var diffTimeBetweenlevel1EndDateAndLevel2EndDate=dateDiff(level1CollectionEndDate,level2CollectionEndDate);
+				var noOfDays2=dateDiffInDays(diffTimeBetweenlevel1EndDateAndLevel2EndDate);
+				level2FineAmountTotal=noOfDays2*level2FineAmnt;
+				level2FineDaysCount=noOfDays2;
+				level1FineAmountTotal=level1FineAmnt;
+				reAdmissionAmount=level3reAdmissionAmount;
+				fineAmount=level3FineAmountTotal+level2FineAmountTotal+level1FineAmountTotal+reAdmissionAmount;
+				
+			}
+			else
+			{
+				var noOfDays=dateDiffInDays(diffTime1);
+				console.log("No of days for daily fee collction from level1collectionEnd Date is  "+noOfDays);
+				level2FineDaysCount=noOfDays;
+				level2FineAmountTotal=level2FineAmnt*noOfDays+level1FineAmnt;
+				fineAmount=fineAmount+level2FineAmountTotal;
+			}
+		}
+		else
+		{
+			//apply just single fine level1fine
+			level1FineAmountTotal=level1FineAmnt;
+			fineAmount=fineAmount+level1FineAmountTotal;
+		}
+		//fineDetailsMap[iden]={"level1Fine":level1FineAmountTotal,"level2Fine":level2FineAmountTotal,"level3Fine":level3FineAmountTotal,"reAdmissionAmount":reAdmissionAmount};
+		}
+		catch(e)
+		{
+			console.log("Error   >>>>>>>>>>>  "+e)
+		}
+	}
+	fineDetailsMap[iden]={"level1Fine":level1FineAmountTotal,"level2Fine":level2FineAmountTotal,"level3Fine":level3FineAmountTotal,"reAdmissionAmount":reAdmissionAmount};
+	if(fineAmount>0)
+	{
+		$( "#accordionFine" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });
+		$('#accordionFine').show();
+	}
+	else
+	{
+		$('#accordionFine').hide();
+	}
+	console.log("<><><><<<<<<><><><<><<<<<><><<<><><><><><><><><><><><><><><><><><><><><><");
+	$('#level1FineAmount').text(level1FineAmountTotal);
+	$('#level2FineAmount').text(level2FineAmountTotal);
+	$('#level3FineAmount').text(level3FineAmountTotal);
+	$('#reAdmissionAmount').text(reAdmissionAmount);
+	$('#level1Details').text("Single Fine Amount demanded till "+String(level1CollectionEndDateString+" from "+collEndDateString));
+	$('#level2Details').text("Fine amount of Rs "+String(level2FineAmnt)+" calculated on a daily basis from  "+String(level1CollectionEndDateString)+" to "+String(level2CollectionEndDateString)+"("+level2FineDaysCount+" days)");
+	$('#level3Details').text("Fine amount of Rs "+String(level3FineAmnt)+" calculated on a daily basis from  "+String(level2CollectionEndDateString)+" to "+String(today)+"("+level3FineDaysCount+" days)");
+	console.log(fineAmount);
+	$('#div-'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')).empty();
+	var tot=0;
+	var tab=$('<table class="table table-striped"><thead><tr><th>Fee Head</th><th>Amount</th></tr></thead><tbody id="tab-'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')+'"></tbody></table>');
+	$('#div-'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')).append(tab).show();
+	var fha=feeHeadsToIdenMap[iden];
+	feeHeadIdToAmountMap={};
+	feeHeadIdToNameMap={};
+	for(var i=0;i<fha.length;i++)
+	{
+		console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^   "+iden);
+		for (var k in fha[i])
+		{
+			var amnt=findFeeAmountToFeeHeadwithIden(iden,k);
+			var tr=$('<tr><td>'+fha[i][k]+'</td><td><input type="text" class="form-control '+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')+'" readonly  id="'+k+'" value="'+String(Math.abs(amnt))+'"></input></td></tr>');
+			tot=tot+Math.abs(amnt);
+			feeHeadIdToAmountMap[k]=amnt;
+			feeHeadIdToNameMap[k]=fha[i][k];
+			$('#tab-'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')).append(tr);
+		}
+		actualFeeAmount=tot;
+	}
+	var changedHeadAmountMap={}
+	fineDetailsMap[iden]['actualFeeAmount']=actualFeeAmount;
+	//tot=tot+fineAmount;
+	console.log("checking actual amount from map  ----------  "+fineDetailsMap[iden]['actualFeeAmount']);
+	console.log(tot);
+	var tr1=$('<tr><td>Fine Amount(As on today/cannot modify) </td><td>'+fineAmount+'</td><td></td></tr>');
+	var tr2=$('<tr><td>Total Amount(Fine Excluded)</td><td><b id="tot-'+iden+'">'+tot+'</b></td></tr>');
+	var tr3=$('<tr><td>Total Amount(Fine Excluded)</td><td><b id="tot-'+iden+'">'+tot+'</b></td></tr>');
+	//var tr3=$('<tr><td></td><td><button class="btn btn-success" iden="'+iden+'" id="payFee'+iden+'">Collect Fees</button></td></tr>');
+	var tr6=$('<tr><td>Remarks</td><td colspan="3"><textarea class="form-control" id="remarks-'+iden+'" ></textarea></td></tr>');
+	var tr8=$('<tr><td>Set Status</td><td colspan="3"><select id="adjustmentStatus" class="form-control"><option value="verified"> Verify & Forward</option><option value="approved">Approve</option></select></td></tr>');
+	var tr5=$('<tr><td></td><td><button class="btn btn-danger adjustButton" iden="'+iden+'" id="adjustButton'+iden+'">Apply</button></td><td></td>');
+	$('#tab-'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')).append(tr1);
+	$('#tab-'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')).append(tr2);
+	$('#tab-'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')).append(tr6);
+	$('#tab-'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')).append(tr8);
+	$('#tab-'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')).append(tr5);
+	//$('#tab-'+iden).append(tr3);
+	$('#'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')).text("");
+	$('#'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')).text(iden+' : '+tot+' Rs ');
+	
+	$('#payFee'+iden).unbind().bind('click',function()
+	{
+		var feeIden=$(this).attr('iden');
+		var feeFineDetails=fineDetailsMap[feeIden];
+		collectFee(feeIden,feeFineDetails);
+	});
+	
+	$('.adj').unbind().bind('click',function()
+	{
+		var feeheadId=$(this).attr('id').replace('removehead-','');
+		console.log("feeheadId "+feeheadId);
+		var iden=$(this).attr('iden');
+		console.log('Iden found is '+iden);
+		if($('#'+feeheadId).attr('readonly'))
+		{
+			$('#'+feeheadId).attr('readonly',false);
+			$('.adjustButton').attr('disabled',true);
+		}
+		else
+		{
+			$('#'+feeheadId).attr('readonly',true);
+			$('.adjustButton').attr('disabled',false);
+		}
+		updatetotal(iden);
+	});
+	
+	$('.adjustButton').unbind().bind('click',function()
+	{
+		var iden=$(this).attr('iden');
+		var feeHeadAmountMapArray=feeHeadsToIdenMap[iden];
+		console.log(">>>>>>>>>>>>>>>");
+		console.log(feeHeadIdToAmountMap);
+		console.log(feeHeadIdToNameMap);
+		var newMap={};
+		$('.'+iden.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')).each(function(){
+			var key=$(this).attr('id');
+			var amnt=$(this).val();
+			newMap[key]	= amnt;
+		});
+		console.log(">>>>>>>>>>>> chwecking new map");
+		console.log(newMap);
+		var activityLog="Remarks entered by user: "+ $('#remarks-'+iden).val()+".  Autogenerated Details->";
+		console.log(activityLog);
+		var negativeCheck=false;
+		var formData=new Array();
+		for(var key in newMap)
+		{
+			var map={};
+			map['sfsFeeHeadId']=key;
+			map['identity']=iden;
+			map['sfsMapAmount']=parseFloat(newMap[key]);
+			map['studentCode']=selectedStudentCode;
+			map['adjustmentStatus']=$('#adjustmentStatus').val();
+			console.log("inside iteration of newmap amonut is "+map['sfsMapAmount']);
+			
+			if(parseFloat(map['sfsMapAmount'])<0)
+			{
+				negativeCheck=true;
+			}
+			if(newMap.hasOwnProperty(key))
+			{
+				if(Math.abs(parseFloat(newMap[key]))==Math.abs(parseFloat(feeHeadIdToAmountMap[key])))
+				{
+					console.log("No change in fee Amount");
+				}
+				else
+				{
+					console.log("change in in fee Amount");
+					activityLog=activityLog+" Amount of Fee head "+feeHeadIdToNameMap[key]+ " changed from "+ String(Math.abs(parseFloat(feeHeadIdToAmountMap[key]))) + " to "+ String(Math.abs(parseFloat(newMap[key])));
+				}
+			}
+			
+			map['activityLog']=activityLog;
+			formData.push(map);	
+			console.log("Confirming formdata");
+			console.log(formData);
+		}
+		if(negativeCheck==false)
+		{
+			$.ajax(
+			{
+				"url":"/fees/verifymodifiedFees",
+				"method":"POST",
+				data:{"feeAdjustmentAmountMapWrappers":formData},
+				success:function(data)
+				{
+					try
+					{
+						console.log(data);
+						if(data)
+						{
+							showMessage("Successfull. Kindly make this entry verified");
+							$('#feeMapTableBody').empty();
+							refreshContent();
+						}
+					}
+					catch(e)
+					{
+						showError("Error in processing information.contact Admin");
+					}
+				}
+				
+			});
+		}
+		else
+		{
+			showMessage("Cannot have negative value for fee heads");
+		}
+		
+		console.log(activityLog);
+				
+	});
+}
+
+function updatetotal(iden)
+{
+	console.log("Inside total function");
+	var total=0;
+	$('.'+iden).each(function(){
+		console.log($(this).val());
+		total=total+parseFloat($(this).val());
+	});
+	$('#tot-'+iden).text(total);
+
+}
+function collectFee(feeIden,fineDetailsMap)
+{
+	console.log(fineDetailsMap);
+	fineDetailsMap["feeName"]=feeIden;
+	fineDetailsMap["studentCode"]=selectedStudentCode;
+	$.ajax(
+	{
+		url:"/fees/feeCollection",
+		method:"post",
+		data:fineDetailsMap,
+		success:function(data)
+		{
+			if(data.length!='undefined'||data.length!=undefined)
+			console.log(data);
+			showMessage("Successfully collected Fee");
+			refreshContent();
+		}
+	});
+}
+function findFeeAmountToFeeHeadwithIden(iden,feeHeadId)
+{
+	var len=fullTranArray.length;
+	var amount=0;
+	for(var i=0;i<len;i++)
+	{
+		if(fullTranArray[i]['transactionIdentifierRemarkOrProcess']==iden)
+		{
+			if(String(fullTranArray[i]['transactionIdentifierProcessId']))
+			{
+				if(String(fullTranArray[i]['transactionIdentifierProcessId'])==String(feeHeadId))
+				{
+					amount=fullTranArray[i]['transactionAmount'];
+				}
+			}
+		}
+	}
+	return amount;
+}
+function setFineDateDetailsToFeeIden(finDetailsData)
+{
+	for(var i=0;i<finDetailsData.length;i++)
+	{
+		var key=finDetailsData[i]['fee_Collection_Unique_Name']
+		fineDateDetailsToFeeIden[key]=finDetailsData[i];		
+	}
+}
+function showToBePaidFees()
+{
+	console.log("Calling show to be paid fees")
+	$.ajax(
+	{
+		url:"/fees/getFeeDetailsByFeeIdentity",
+		data:{"feeIden":String(toBePaidArray)},
+		success:function(finDetails)
+		{
+			setFineDateDetailsToFeeIden(finDetails);
+			$.ajax(
+			{
+				url:"/fees/getPresentDate",
+				success:function(data)
+				{
+					data=data.split(" ")[0].split('/');
+					today=data[0]+"-"+data[1]+"-"+data[2];
+					try
+					{
+						for(var i=0;i<toBePaidArray.length;i++)
+						{
+							
+							for(var j=0;j<fullTranArray.length;j++)
+							{
+								if(toBePaidArray[i]==fullTranArray[j]["transactionIdentifierRemarkOrProcess"])
+								{
+									if(feeIdenToAmoutMap[toBePaidArray[i]])
+									{
+										feeIdenToAmoutMap[toBePaidArray[i]]=feeIdenToAmoutMap[toBePaidArray[i]]+fullTranArray[j]["transactionAmount"]			
+									}
+									else
+									{
+										feeIdenToAmoutMap[toBePaidArray[i]]=0;
+										feeIdenToAmoutMap[toBePaidArray[i]]=feeIdenToAmoutMap[toBePaidArray[i]]+fullTranArray[j]["transactionAmount"];			
+									}
+								}
+							}
+						}
+					}
+					catch(e)
+					{
+						console.log("Error in something "+e)
+					}
+					for (var key of Object.keys(feeIdenToAmoutMap)) 
+					{
+						//alert(feeIdentifierBalanceStatusMap[key])
+						if(feeIdentifierBalanceStatusMap[key]<0)//feeIdentifierBalanceStatusMap[key]>0)
+						{
+					    	console.log(key + " -> " + feeIdenToAmoutMap[key]);
+					    	var html1=$('<h3 id="'+key.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')+'">'+key+' : '+feeIdenToAmoutMap[key]+' Rs </h3><div id="div-'+key.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')+'"></div>');
+					    	$('#accordion').append(html1);
+						}
+
+					}
+				    $( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true,
+				    beforeActivate: function( event, ui ) 
+				    {
+				    	 console.log(ui.newHeader.text().split(':')[0]);
+					     var iden=ui.newHeader.text().split(':')[0];//$(this).attr('id');
+					     iden=iden.trim();
+					     if(iden!="")
+						 {	 
+					    	//var realIdenArray=iden.split('-');
+					    	//var realIden=realIdenArray[realIdenArray.length-1];
+					    	getRecordTimeLines(selectedStudentCode,iden); 
+						 	$('#div-'+key.replace(/ /g,'').replace(/\./g,'-').replace(/#/g,'-').replace(/ /g,'')).height('auto');
+						 	var feeHeadIds=giveFeeHeadsFromIden(iden);
+						    console.log(feeHeadIds)
+						    if(feeHeadsToIdenMap[iden])
+						    {
+						    	fillFeeDetails(iden);
+						    }
+						    else
+						    {
+							 	$.ajax(
+						   		{
+						   				url:"/fees/getFeeHeadsNamesByFeeHeadArray",
+						   				data:{'feeHeadIds':feeHeadIds},
+						   				success:function(data)
+						   				{
+						   					feeHeadsInIden(iden,data);					
+						   				}
+						   			});
+						    	}
+						     }
+				    	  }
+				    	});
+					//$( "#accordion" ).accordion({active: 0,collapsible: true,active: 'none', heightStyle: "content" ,autoHeight: false,navigation: true });	
+				}
+			});
+		}
+	});
+}
+function getOutstandingFees(studentCode,fpi)
+{
+	$.ajax(
+	{
+		url:"/fees/getOwnOutsandingFeeByStudentCodeAndIdentifier",
+		data:{"studentUserCode":studentCode,"iden":fpi},
+		success:function(data)
+		{
+			if(data)
+			{
+				fullTranArray=data;
+				addFeeProcessToArray(data);
+				toBePaidArray=$(feeIdentifierArray).not(paidIdentifierArray).get();
+				console.log(feeIdentifierArray);
+				console.log(">>>>>>>>>>>>>>>>>>>>");
+				console.log(paidIdentifierArray);
+				console.log(">>>>>>>>>>>>>>>>>>>>");
+				console.log(toBePaidArray);
+				showToBePaidFees();
+			}
+		}
+	});
+}
+$(document).ready(function()
+{
+	$('#accordionFine').hide();
+	getAllPrograms();
+	$('#btnCallStudents').on('click',function()
+	{
+		var program=$('#selectProgram').val();
+		var batch=$('#selectBatch').val();
+		getUnverifiedStudents(program,batch);
+		$(this).hide();
+		$('#selectionPanel').hide();
+	});
+});
+function equateStudents(studList)
+{
+	$.ajax(
+	{
+		"url":"/fees/getFeeAdjustmentsByStudentArrayString",
+		"data":{"studList":studList},
+		success:function(data)
+		{
+			try
+			{
+				console.log(">>>abcdef>>>>ghi>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<");
+				console.log(data);
+				console.log(data.length);
+			    setUpDataTable(data,[{"feeCollectionUserCode":"Admission No"},{"fpi":"Fee Name"},{"adjustmentStatus":"Current Status"}],'gridTable',null);
+				onDataTableClick('gridTable',function()
+				{
+					var userCode=selectedRowFromDataTable[0];
+					selectedStudentCode=userCode;
+					var un=selectedRowFromDataTable[1];
+					var fpi=selectedRowFromDataTable[1];
+					$('#head').text("Outstanding Fee Details of "+un+"("+userCode+")");
+					getOutstandingFees(userCode,fpi);
+					$('#gridTableDiv').hide();
+				});	
+			}
+			catch(e)
+			{
+				console.log("Some isssueeee >>>>>>>>>>  "+e);
+			}
+		}
+	})
+}
+function getFeeAdjustmentsByStudents(d)
+{
+	var studentList=new Array();
+	for(var i=0;i<d.length;i++)
+	{
+			studentList.push(d[i]['studentCode']);
+	}
+	console.log(studentList);
+	equateStudents(String(studentList));
+}
+function getUnverifiedStudents(pgm,batch)
+{
+	$.ajax(
+	{
+		url:"/students/getUnverifiedStudents",
+		method:"get",
+		data:{"courseId":pgm,"batchId":batch,"status":$('#selectStatus').val()},
+		success:function(data)
+		{
+			console.log("Caling getFeeaDJUSTMENTS");
+			getFeeAdjustmentsByStudents(data);
+
+		}
+	});
+}
+function getAllPrograms()
+{
+		$.ajax(
+		{
+	   		url:'/course/getAllCourses',
+	   		method:'GET',
+	   		success:function(data)
+	   		{
+	   			setUpDropDown("selectProgram",data,"courseId","courseCode");
+	   			$('#selectProgram').unbind().bind('change',function()
+	   			{
+	   				getAllActiveBatchesOfProgram($(this).val());
+	   			});
+	   		},
+	   		error:function(err)
+	   		{
+	   			showMessage(err);
+	   		}
+	   	});
+ }
+ function getAllActiveBatchesOfProgram(programId)
+ {
+	$.ajax(
+	{
+  		url:'/batch/getAllActiveBatchesInAProgram',
+  	   	method:'GET',
+  	   	data:{"courseId":programId},
+  	   	success:function(data)
+  	   	{
+  	   		console.log(data);
+  	   		setUpDropDown('selectBatch',data,'batchId','batchCode');
+  	   		setUpDropDown('selectBatch1',data,'batchId','batchCode');
+  	   		/*$('#selectBatch').unbind().bind('change',function()
+  	   		{
+  	   			getAllSemsForTheBatch($(this).val());	
+  	   		});*/
+  	   	},
+  	   	error:function(err)
+  	   	{
+  	   		showMessage(err);
+  	   	}
+  	 });	  
+  }
+
+</script>
+	<div class="row well" id="selectionPanel">
+		<div class="col-md-4">
+		    <label for="accountName">Select Program</label>
+		    <select class="form-control grouping" id="selectProgram"></select>
+		</div>
+		<div class="col-md-4">
+		    <label for="accountName">Select Batch</label>
+		    <select class="form-control grouping" id="selectBatch"></select>
+		</div>
+		<div class="col-md-4">
+		    <label for="selectStatus">Select Student Status</label>
+		    <select class="form-control grouping" id="selectStatus">
+		    <option value="invalid">invalid</option>
+	    	<option value="processing">Forwarded</option>
+		    <option value="valid">Approved</option>
+		    </select>
+		</div>
+	 </div> 
+<hr>
+<div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4"><button id="btnCallStudents" class="btn btn-primary form-control">Apply</button></div>
+		<div class="col-md-4"></div>
+</div>
+<hr>
+<div class="table-responsive cell-border well" id="gridTableDiv">
+	<table id="gridTable" class="table table-striped"></table>
+</div>
+<u><h4 id="head"></h4></u>
+<div id="accordion">
+ </div>
+ <hr>
+<div id="accordionFine">
+ 	<h3>Fine Details</h3>
+ 	<div>
+ 		<table class="table table-striped">
+ 		<thead><tr><th>Fine</th><th>Fine Amount</th><th>Description</th></tr></thead>
+ 		<tbody>
+ 		<tr><td>Level-1 Fine</td> <td id="level1FineAmount"></td><td id="level1Details"></td></tr>
+ 		<tr><td>Level-2 Fine</td> <td id="level2FineAmount"></td><td id="level2Details"></td></tr>
+ 		<tr><td>Level-3 Fine</td> <td id="level3FineAmount"></td><td id="level3Details"></td></tr>
+ 		<tr><td>Re-Admission Amount</td> <td id="reAdmissionAmount"></td><td id="level4Details"></td></tr>
+ 		</tbody>
+ 		</table>
+	 </div>
+</div>
+ <hr>
+<div id="accordionRecords">
+ <h3 id="head1"></h3>
+  <div class="table-responsive">
+ 	<table class="table table-striped" id="adjRecordsTable">
+ 	</table>
+ </div>
+</div>
+ 
